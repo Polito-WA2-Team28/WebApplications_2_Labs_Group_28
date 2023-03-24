@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="WordCountTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2023-03-24T13:26:21" hostname="Davides-MacBook-Pro.local" time="0.015">
+  <properties/>
+  <testcase name="numbers are allowed" classname="WordCountTest" time="0.012"/>
+  <testcase name="one of each word" classname="WordCountTest" time="0.0"/>
+  <testcase name="multiple occurrences of a word" classname="WordCountTest" time="0.0"/>
+  <testcase name="heading substring" classname="WordCountTest" time="0.001"/>
+  <testcase name="quotations are allowed" classname="WordCountTest" time="0.0"/>
+  <testcase name="case insensitive" classname="WordCountTest" time="0.0"/>
+  <testcase name="cramped list" classname="WordCountTest" time="0.0"/>
+  <testcase name="punctuation is ignored" classname="WordCountTest" time="0.001"/>
+  <testcase name="various separators" classname="WordCountTest" time="0.0"/>
+  <testcase name="apostrophes are allowed" classname="WordCountTest" time="0.0"/>
+  <testcase name="expanded list" classname="WordCountTest" time="0.0"/>
+  <testcase name="one word" classname="WordCountTest" time="0.0"/>
+  <testcase name="multiple spaces" classname="WordCountTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
