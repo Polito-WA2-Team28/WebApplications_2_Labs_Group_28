@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ReactAdderTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2023-03-24T14:06:03" hostname="Davides-MacBook-Pro.local" time="0.007">
+  <properties/>
+  <testcase name="test[0: Input(a=false, b=false, carryIn=false) = Expected(carryOut=false, sum=false)]" classname="ReactAdderTest" time="0.006"/>
+  <testcase name="test[1: Input(a=false, b=false, carryIn=true) = Expected(carryOut=false, sum=true)]" classname="ReactAdderTest" time="0.0"/>
+  <testcase name="test[2: Input(a=false, b=true, carryIn=false) = Expected(carryOut=false, sum=true)]" classname="ReactAdderTest" time="0.0"/>
+  <testcase name="test[3: Input(a=false, b=true, carryIn=true) = Expected(carryOut=true, sum=false)]" classname="ReactAdderTest" time="0.0"/>
+  <testcase name="test[4: Input(a=true, b=false, carryIn=false) = Expected(carryOut=false, sum=true)]" classname="ReactAdderTest" time="0.0"/>
+  <testcase name="test[5: Input(a=true, b=false, carryIn=true) = Expected(carryOut=true, sum=false)]" classname="ReactAdderTest" time="0.0"/>
+  <testcase name="test[6: Input(a=true, b=true, carryIn=false) = Expected(carryOut=true, sum=false)]" classname="ReactAdderTest" time="0.0"/>
+  <testcase name="test[7: Input(a=true, b=true, carryIn=true) = Expected(carryOut=true, sum=true)]" classname="ReactAdderTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
