@@ -1,6 +1,7 @@
 package com.lab2.server.controller
 
-import com.lab2.server.model.Profile
+import com.lab2.server.dto.CustomerDTO
+import com.lab2.server.model.Customer
 import com.lab2.server.service.ProfileServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -9,43 +10,23 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
-class ProfileController @Autowired constructor(val profileServicesImpl: ProfileServiceImpl) {
+class ProfileController @Autowired constructor(val profileService: ProfileServiceImpl) {
 
-    /**
-     * Retrieve the profile associated with the given email.
-     *
-     * @param email the email associated with the profile
-     * @return a profile object
-     */
-    @GetMapping("/API/profiles/{email}")
-    fun getProfileByEmail(@PathVariable("email") email: String): Profile? {
+
+    @GetMapping("/api/profiles")
+    fun getAllCustomers(): List<CustomerDTO> {
+        return profileService.getAllProfiles()
+    }
+
+    @GetMapping("/api/profiles/{uuid}")
+    fun getCustomerById(@PathVariable("uuid") uuid:UUID): CustomerDTO?{
+        return profileService.getProfileById(uuid)
     }
 
 
-    /**
-     * Create a new profile.
-     *
-     * @param profile the new profile to add to the database.
-     */
-    @PostMapping("/API/profiles")
-    fun createProfile(@RequestBody profile: Profile?) {
 
-    }
-
-    /**
-     * Update the information related to the profile associated with the given email.
-     *
-     * @param email the email associated with the profile.
-     * @param profile the new profile to be updated.
-     */
-    @PutMapping("/API/profiles/{email}")
-    fun editProfileByEmail(
-        @PathVariable("email") email: String,
-        @RequestBody profile: Profile?
-    ) {
-
-    }
 
 }
