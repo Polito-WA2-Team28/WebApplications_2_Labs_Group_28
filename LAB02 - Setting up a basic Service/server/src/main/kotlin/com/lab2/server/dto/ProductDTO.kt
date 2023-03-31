@@ -5,11 +5,11 @@ import com.lab2.server.model.Customer
 import com.lab2.server.model.Product
 import java.util.*
 
-data class ProductDTO(val deviceType:String, val model:String, val devicePurchaseDate:Date, val owner: CustomerDTO,
+data class ProductDTO(val deviceType:String, val model:String, val devicePurchaseDate:Date, val owner: UUID,
                       val warrantyDescription:String, val warrantyExpirationDate: Date, val insurancePurchaseDate:Date,
                       val insuranceExpirationDate:Date) {
 }
 
 fun Product.toDTO(): ProductDTO{
-    return ProductDTO(deviceType, model, devicePurchaseDate, owner.toDTO(), warrantyDescription, warrantyExpirationDate, insurancePurchaseDate, insuranceExpirationDate)
+    return ProductDTO(deviceType, model, devicePurchaseDate, ownerId, warrantyDescription, warrantyExpirationDate, insurancePurchaseDate, insuranceExpirationDate)
 }

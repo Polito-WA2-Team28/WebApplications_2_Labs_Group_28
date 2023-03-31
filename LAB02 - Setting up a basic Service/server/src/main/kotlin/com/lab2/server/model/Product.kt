@@ -2,13 +2,15 @@ package com.lab2.server.model
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 
 import java.util.*
 
 @Entity
 @Table(name="product")
-class Product(var deviceType:String, var model:String, var devicePurchaseDate:Date, var owner:Customer,
+class Product(var deviceType:String, var model:String, var devicePurchaseDate:Date, var ownerId:UUID,
               var warrantyDescription:String, var warrantyExpirationDate:Date, var insurancePurchaseDate:Date,
               var insuranceExpirationDate:Date){
 
