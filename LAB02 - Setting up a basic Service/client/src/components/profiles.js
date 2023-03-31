@@ -1,18 +1,19 @@
 import { useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { API } from "../API";
+import { ProfileModal } from "./ProfileModal";
 
 export function GetProfileByEmailAddress() {
 
     const [profile, setProfile] = useState([]);
     const [error, setError] = useState();
+    const [show, setShow] = useState(false);
 
     let getProfile = async () => {
         let products = [];
         await API.getProfileByEmailAddress()
             .then(data => { products = data; setProfile(products) })
             .catch(error => setError(error));
-
         return products;
     }
 
@@ -24,7 +25,7 @@ export function GetProfileByEmailAddress() {
                     <Row><Button onClick={getProfile}>SEND REQUEST</Button></Row>
                     {profile && <Row>{profile.name}</Row>}
                     {error && <Row><Col>{String(error)}</Col></Row>}
-
+                    <ProfileModal show={show} profile={profile} handleClose={() => setShow(false)} />
                 </Col>
             </Row>
         </Container>

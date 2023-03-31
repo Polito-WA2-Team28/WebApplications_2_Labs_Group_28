@@ -2,16 +2,18 @@
 import { useState } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { API } from '../API';
+import { ProductModal } from './ProductModal';
 
 export function GetProducts() {
 
     const [products, setProducts] = useState([]);
     const [error, setError] = useState();
+    const [show, setShow] = useState(false);
 
     let getProducts = async () => {
         let products = [];
         await API.getAllProducts()
-            .then(data => { products = data; setProducts(products) })
+            .then(data => { products = data; setProducts(products); setShow(true) })
             .catch(error => setError(error));
 
         return products;
@@ -25,6 +27,7 @@ export function GetProducts() {
                     <Row><Button onClick={getProducts}>SEND REQUEST</Button></Row>
                     {products.length > 0 && products.map(product => <Row>{product.name}</Row>)}
                     {error && <Row><Col>{String(error)}</Col></Row>}
+                    {<ProductModal show={show} product={products} handleClose={()=>setShow(false)} />}
                 </Col>
             </Row>
         </Container>
@@ -36,11 +39,12 @@ export function GetProductById() {
     const [product, setProduct] = useState();
     const [id, setId] = useState(); 
     const [error, setError] = useState();
+    const [show, setShow] = useState(false);
 
     let getProduct = async () => {
         let product;
         await API.getProductById(id)
-            .then(data => { product = data; setProduct(product) })
+            .then(data => { product = data; setProduct(product);  setShow(true)})
             .catch(error => setError(error));
         return product;
     }
@@ -61,6 +65,8 @@ export function GetProductById() {
                     <Row><Button onClick={getProduct}>SEND REQUEST</Button></Row>
                     <Row>{product && <Col>{product.name}</Col>}</Row>
                     {error && <Row><Col>{String(error)}</Col></Row>}
+                    {<ProductModal show={show} products={[product]} handleClose={()=>setShow(false)} />}
+
                 </Col>
             </Row>
         </Container>
