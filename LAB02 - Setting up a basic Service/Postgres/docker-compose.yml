@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  postgres:
+    image: runcor3/webapp2_postgres:1.0
+    ports:
+      - "5432:5432"
