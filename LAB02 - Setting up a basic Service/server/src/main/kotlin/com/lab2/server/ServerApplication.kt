@@ -11,6 +11,4 @@ class ServerApplication
 fun main(args: Array<String>) {
 	runApplication<ServerApplication>(*args)
 
-	var customer = Customer("a", "b", Date(), Date(), "c", "d1")
-	println(customer.ID)
 }

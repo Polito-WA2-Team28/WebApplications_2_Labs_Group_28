@@ -1,7 +1,10 @@
 package com.lab2.server.service
 
-import org.springframework.stereotype.Service
+import com.lab2.server.dto.CustomerDTO
+import java.util.UUID
 
-@Service
-class ProfileService {
+interface ProfileService {
+    fun getAllProfiles() : List<CustomerDTO>
+
+    fun getProfileById(uuid:UUID) : CustomerDTO?
 }

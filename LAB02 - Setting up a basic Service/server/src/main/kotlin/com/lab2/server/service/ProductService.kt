@@ -1,7 +1,11 @@
 package com.lab2.server.service
 
-import org.springframework.stereotype.Service
+import com.lab2.server.dto.ProductDTO
+import com.lab2.server.model.Product
+import java.util.*
 
-@Service
-class ProductService {
+interface ProductService {
+    fun getAllProducts() : List<ProductDTO>
+
+    fun getProductById(uuid:UUID) : ProductDTO?
 }
