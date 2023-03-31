@@ -12,7 +12,7 @@ export function GetProducts() {
         let products = [];
         await API.getAllProducts()
             .then(data => { products = data; setProducts(products) })
-            .catch(error => setError("Error: " + error));
+            .catch(error => setError(error));
 
         return products;
     }
@@ -24,7 +24,7 @@ export function GetProducts() {
                     <Row ><p style={{ textAlign: 'center' }}>GET /API/products/</p></Row>
                     <Row><Button onClick={getProducts}>SEND REQUEST</Button></Row>
                     {products.length > 0 && products.map(product => <Row>{product.name}</Row>)}
-                    {error && <Row><Col>{error}</Col></Row>}
+                    {error && <Row><Col>{String(error)}</Col></Row>}
                 </Col>
             </Row>
         </Container>
@@ -41,7 +41,7 @@ export function GetProductById() {
         let product;
         await API.getProductById(id)
             .then(data => { product = data; setProduct(product) })
-            .catch(error => setError("Error: " + error));
+            .catch(error => setError(error));
         return product;
     }
 
@@ -60,7 +60,7 @@ export function GetProductById() {
                     </Row>
                     <Row><Button onClick={getProduct}>SEND REQUEST</Button></Row>
                     <Row>{product && <Col>{product.name}</Col>}</Row>
-                    {error && <Row><Col>{error}</Col></Row>}
+                    {error && <Row><Col>{String(error)}</Col></Row>}
                 </Col>
             </Row>
         </Container>
