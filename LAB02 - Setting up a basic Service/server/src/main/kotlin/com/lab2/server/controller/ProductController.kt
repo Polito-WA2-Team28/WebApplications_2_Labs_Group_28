@@ -1,5 +1,6 @@
 package com.lab2.server.controller
 
+import com.lab2.server.dto.ProductDTO
 import com.lab2.server.service.ProductServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -9,11 +10,11 @@ import java.util.UUID
 
 
 @RestController
-class ProductController @Autowired constructor(val productService: ProductServiceImpl) {
+class ProductController @Autowired constructor(val productService: ProductServiceImpl){
 
     @GetMapping("/api/products")
-    fun getProducts(){
-        productService.getAllProducts()
+    fun getProducts() : List<ProductDTO>{
+        return productService.getAllProducts()
     }
 
     @GetMapping("/api/products/{productId}")
