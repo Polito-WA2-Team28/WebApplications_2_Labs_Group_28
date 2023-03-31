@@ -1,14 +1,19 @@
 package com.lab2.server.model
 
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
+
 import java.util.*
 
-
+@Entity
+@Table(name="product")
 class ProductImpl(var deviceType:String,  var model:String, var devicePurchaseDate:Date, var owner:Profile,
                   var warrantyDescription:String, var warrantyExpirationDate:Date, var insurancePurchaseDate:Date,
                   var insuranceExpirationDate:Date) : Product{
 
 
-
+    @Id
     private var serialNumber:UUID = UUID.randomUUID()
 
 

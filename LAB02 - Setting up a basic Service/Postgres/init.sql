@@ -1,3 +1,5 @@
+
+
 CREATE TABLE PRODUCT(
                         serialNumber uuid PRIMARY KEY,
                         deviceType VARCHAR(255) NOT NULL,
