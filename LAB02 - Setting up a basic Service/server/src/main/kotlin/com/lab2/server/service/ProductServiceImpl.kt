@@ -16,7 +16,7 @@ class ProductServiceImpl @Autowired constructor(private val productRepository: P
         return productRepository.findAll().map{it -> it.toDTO()}
     }
 
-    override fun getProductById(uuid: UUID): ProductDTO? {
-        return productRepository.findByIdOrNull(uuid)?.toDTO()
+    override fun getProductById(id: Int): ProductDTO? {
+        return productRepository.findByIdOrNull(id)?.toDTO()
     }
 }

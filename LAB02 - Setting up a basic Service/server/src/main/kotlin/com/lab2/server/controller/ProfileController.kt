@@ -21,9 +21,9 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
         return profileService.getAllProfiles()
     }
 
-    @GetMapping("/api/profiles/{uuid}")
-    fun getCustomerById(@PathVariable("uuid") uuid:UUID): CustomerDTO?{
-        return profileService.getProfileById(uuid)
+    @GetMapping("/api/profiles/{id}")
+    fun getCustomerById(@PathVariable("id") id:Int): CustomerDTO?{
+        return profileService.getProfileById(id)
     }
 
 

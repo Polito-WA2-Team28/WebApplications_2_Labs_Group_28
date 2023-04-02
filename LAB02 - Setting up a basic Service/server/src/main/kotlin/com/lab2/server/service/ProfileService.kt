@@ -6,5 +6,5 @@ import java.util.UUID
 interface ProfileService {
     fun getAllProfiles() : List<CustomerDTO>
 
-    fun getProfileById(uuid:UUID) : CustomerDTO?
+    fun getProfileById(id:Int) : CustomerDTO?
 }

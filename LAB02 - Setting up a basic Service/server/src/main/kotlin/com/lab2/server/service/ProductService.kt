@@ -7,5 +7,5 @@ import java.util.*
 interface ProductService {
     fun getAllProducts() : List<ProductDTO>
 
-    fun getProductById(uuid:UUID) : ProductDTO?
+    fun getProductById(id:Int) : ProductDTO?
 }

@@ -14,7 +14,7 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
         return profileRepository.findAll().map{it -> it.toDTO()}
     }
 
-    override fun getProfileById(uuid: UUID): CustomerDTO? {
-        return profileRepository.findByIdOrNull(uuid)?.toDTO()
+    override fun getProfileById(id: Int): CustomerDTO? {
+        return profileRepository.findByIdOrNull(id)?.toDTO()
     }
 }

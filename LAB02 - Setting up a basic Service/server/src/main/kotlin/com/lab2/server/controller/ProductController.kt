@@ -18,8 +18,12 @@ class ProductController @Autowired constructor(val productService: ProductServic
     }
 
     @GetMapping("/api/products/{productId}")
-    fun getProductById(@PathVariable("productId") productId: UUID){
-        productService.getProductById(productId)
+    fun getProductById(@PathVariable("productId") productId: Int): ProductDTO?{
+
+        //check here for null and return either 200 or 404
+        var product = productService.getProductById(productId)
+
+        return product
     }
 
 
