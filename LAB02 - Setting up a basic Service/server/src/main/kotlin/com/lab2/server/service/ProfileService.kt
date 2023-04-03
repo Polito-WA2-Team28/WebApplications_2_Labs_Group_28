@@ -8,7 +8,7 @@ interface ProfileService {
 
     fun getProfileByEmail(email:String) : ProfileDTO?
 
-    fun addProfile(profile:ProfileDTO)
+    fun addProfile(profile:ProfileDTO):ProfileDTO?
 
     fun editProfile(profile:ProfileDTO)
 }

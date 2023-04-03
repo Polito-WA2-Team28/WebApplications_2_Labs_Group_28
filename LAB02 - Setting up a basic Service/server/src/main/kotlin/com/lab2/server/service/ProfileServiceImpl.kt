@@ -2,6 +2,8 @@ package com.lab2.server.service
 
 import com.lab2.server.dto.ProfileDTO
 import com.lab2.server.dto.toDTO
+import com.lab2.server.model.Profile
+import com.lab2.server.model.toModel
 import com.lab2.server.repository.ProfileRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
@@ -19,8 +21,8 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
 
     //Validate body
     //Insert
-    override fun addProfile(profile: ProfileDTO) {
-        TODO("Not yet implemented")
+    override fun addProfile(profile: ProfileDTO):ProfileDTO? {
+        return profileRepository.save(profile.toModel()).toDTO()
     }
 
     //Validate body

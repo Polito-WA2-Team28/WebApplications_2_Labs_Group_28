@@ -31,7 +31,7 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
     //Save
     @PostMapping("/api/profiles")
     fun addProfile(@RequestBody @Valid profile:ProfileDTO){
-
+        println(profileService.addProfile(profile))
     }
 
     //Validate body
