@@ -1,9 +1,7 @@
 package com.lab2.server
 
-import com.lab2.server.model.Customer
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import java.util.Date
 
 @SpringBootApplication
 class ServerApplication

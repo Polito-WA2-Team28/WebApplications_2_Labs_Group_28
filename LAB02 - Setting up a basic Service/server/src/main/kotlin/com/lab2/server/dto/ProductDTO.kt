@@ -1,7 +1,6 @@
 package com.lab2.server.dto
 
 
-import com.lab2.server.model.Customer
 import com.lab2.server.model.Product
 import java.util.*
 

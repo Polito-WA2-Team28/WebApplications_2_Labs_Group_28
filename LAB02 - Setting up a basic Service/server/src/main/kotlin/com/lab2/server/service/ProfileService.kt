@@ -1,10 +1,14 @@
 package com.lab2.server.service
 
-import com.lab2.server.dto.CustomerDTO
+import com.lab2.server.dto.ProfileDTO
 import java.util.UUID
 
 interface ProfileService {
-    fun getAllProfiles() : List<CustomerDTO>
 
-    fun getProfileById(id:Int) : CustomerDTO?
+
+    fun getProfileByEmail(email:String) : ProfileDTO?
+
+    fun addProfile(profile:ProfileDTO)
+
+    fun editProfile(profile:ProfileDTO)
 }
