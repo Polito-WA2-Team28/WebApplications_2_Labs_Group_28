@@ -26,6 +26,8 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
     }
 
 
+    //Create another class similar to Profile without an ID
+
     //Validate body
     //Check if email exists (there should be a repository method that either saves or returns an error)
     //Save

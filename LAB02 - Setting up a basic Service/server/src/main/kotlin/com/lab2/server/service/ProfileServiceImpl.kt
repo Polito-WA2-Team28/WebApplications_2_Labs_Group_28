@@ -18,6 +18,8 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
         return profileRepository.findByEmail(email)?.toDTO()
     }
 
+    // Receive the class similar to profile, call toEntity and save it
+    // On the entity we receive back we can call toDTO
 
     //Validate body
     //Insert
