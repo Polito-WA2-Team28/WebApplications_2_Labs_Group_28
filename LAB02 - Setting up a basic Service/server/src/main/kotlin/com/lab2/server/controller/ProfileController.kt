@@ -5,6 +5,7 @@ import com.lab2.server.dto.ProfileDTO
 import com.lab2.server.dto.ProfileFormModification
 import com.lab2.server.dto.ProfileFormRegistration
 import com.lab2.server.dto.toDTO
+import com.lab2.server.exception.Exception
 import com.lab2.server.model.toModel
 import com.lab2.server.service.ProfileServiceImpl
 import jakarta.validation.Valid
@@ -42,7 +43,7 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
     fun addProfile(@RequestBody @Valid profile:ProfileFormRegistration, br:BindingResult){
         if(br.hasErrors()){
             //validation error
-            throw IllegalArgumentException("test")
+            throw Exception.ValidationException("", br.fieldErrors)
         }
         else if(profileService.getProfileByEmail(profile.email) != null) {
 
