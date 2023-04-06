@@ -2,10 +2,12 @@ package com.lab2.server.controller
 
 
 import com.lab2.server.dto.ProfileDTO
+import com.lab2.server.dto.ProfileForm
 import com.lab2.server.service.ProfileServiceImpl
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -28,19 +30,26 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
 
     //Create another class similar to Profile without an ID
 
-    //Validate body
-    //Check if email exists (there should be a repository method that either saves or returns an error)
-    //Save
+    //Validate body => @Valid annotations compares against constraints in ProfileForm class
+    //Check if email exists (there should be a repository method that either saves or returns an error) => checked in service
+    //Save => works
     @PostMapping("/api/profiles")
-    fun addProfile(@RequestBody @Valid profile:ProfileDTO){
-        println(profileService.addProfile(profile))
+    @ResponseStatus(HttpStatus.CREATED)
+    fun addProfile(@RequestBody @Valid profile:ProfileForm, br:BindingResult){
+        if(br.hasErrors()){
+            //validation error
+        }
+        else{
+            profileService.addProfile(profile)
+        }
     }
+
 
     //Validate body
     //Check if email exists
     //Update
     @PutMapping("/api/profiles/{email}")
-    fun editProfile(@RequestParam email:String, @RequestBody profile:ProfileDTO){
+    fun editProfile(@RequestParam email:String, @RequestBody @Valid profile:ProfileForm){
 
     }
 

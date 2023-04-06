@@ -1,6 +1,7 @@
 package com.lab2.server.service
 
 import com.lab2.server.dto.ProfileDTO
+import com.lab2.server.dto.ProfileForm
 import com.lab2.server.dto.toDTO
 import com.lab2.server.model.Profile
 import com.lab2.server.model.toModel
@@ -18,13 +19,16 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
         return profileRepository.findByEmail(email)?.toDTO()
     }
 
-    // Receive the class similar to profile, call toEntity and save it
-    // On the entity we receive back we can call toDTO
 
     //Validate body
     //Insert
-    override fun addProfile(profile: ProfileDTO):ProfileDTO? {
-        return profileRepository.save(profile.toModel()).toDTO()
+    override fun addProfile(profile: ProfileForm):ProfileDTO? {
+        return if(this.getProfileByEmail(profile.email) == null){
+            profileRepository.save(profile.toModel()).toDTO()
+        } else{
+            //profile with this email exists already
+            null
+        }
     }
 
     //Validate body

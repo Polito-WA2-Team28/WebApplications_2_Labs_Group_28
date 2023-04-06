@@ -1,6 +1,7 @@
 package com.lab2.server.model
 
-import com.lab2.server.dto.ProfileDTO
+
+import com.lab2.server.dto.ProfileForm
 import jakarta.persistence.*
 import java.util.*
 
@@ -32,6 +33,6 @@ class Profile {
 
 }
 
-fun ProfileDTO.toModel(): Profile{
-    return Profile(id, name, surname, registrationDate, birthDate, email, phoneNumber)
+fun ProfileForm.toModel(): Profile{
+    return Profile(0, name, surname, registrationDate, birthDate, email, phoneNumber)
 }
