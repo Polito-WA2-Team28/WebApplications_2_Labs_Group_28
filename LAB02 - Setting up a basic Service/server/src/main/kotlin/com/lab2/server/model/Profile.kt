@@ -1,7 +1,8 @@
 package com.lab2.server.model
 
 
-import com.lab2.server.dto.ProfileForm
+import com.lab2.server.dto.ProfileFormModification
+import com.lab2.server.dto.ProfileFormRegistration
 import jakarta.persistence.*
 import java.util.*
 
@@ -33,6 +34,19 @@ class Profile {
 
 }
 
-fun ProfileForm.toModel(): Profile{
+fun ProfileFormRegistration.toModel(): Profile{
     return Profile(0, name, surname, registrationDate, birthDate, email, phoneNumber)
+}
+
+/**
+ * Create a (model) Profile object given the Profile information retrieved from the Profile modification form.
+ * It receives in input the additional information the user could not modify.
+ *
+ * @param id the identifier of the user retrieved from the database.
+ * @param registrationDate the registration date of the user retrieved from the database.
+ * @param email the email of the user retrieved from the database.
+ * @return a Profile object.
+ */
+fun ProfileFormModification.toModel(id: Int, registrationDate: Date, email: String): Profile {
+    return Profile(id, name, surname, registrationDate, birthDate, email, phoneNumber)
 }

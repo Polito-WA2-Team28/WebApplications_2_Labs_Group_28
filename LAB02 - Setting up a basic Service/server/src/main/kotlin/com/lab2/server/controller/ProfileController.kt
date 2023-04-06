@@ -2,7 +2,8 @@ package com.lab2.server.controller
 
 
 import com.lab2.server.dto.ProfileDTO
-import com.lab2.server.dto.ProfileForm
+import com.lab2.server.dto.ProfileFormModification
+import com.lab2.server.dto.ProfileFormRegistration
 import com.lab2.server.dto.toDTO
 import com.lab2.server.model.toModel
 import com.lab2.server.service.ProfileServiceImpl
@@ -38,26 +39,43 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
     //Save => works
     @PostMapping("/api/profiles")
     @ResponseStatus(HttpStatus.CREATED)
-    fun addProfile(@RequestBody @Valid profile:ProfileForm, br:BindingResult){
+    fun addProfile(@RequestBody @Valid profile:ProfileFormRegistration, br:BindingResult){
         if(br.hasErrors()){
             //validation error
             throw IllegalArgumentException("test")
         }
-        else if(profileService.getProfileByEmail(profile.email) != null){
-
+        else if(profileService.getProfileByEmail(profile.email) != null) {
 
         }
-            profileService.addProfile(profile)
-        }
+
+        profileService.addProfile(profile)
     }
 
 
-    //Validate body
-    //Check if email exists
-    //Update
+    /**
+     * Controller function used to manage updated of the user's profile. The new profile is
+     * validated against the ProfileFormModification, and it is passed to the service in order
+     * to update the database.
+     *
+     * @param email the email of the user whose profile needs to be updated.
+     * @param profile the updated profile of the user
+     */
     @PutMapping("/api/profiles/{email}")
-    fun editProfile(@RequestParam email:String, @RequestBody @Valid profile:ProfileForm){
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun editProfile(
+        @PathVariable("email") email: String,
+        @RequestBody @Valid profile: ProfileFormModification,
+        br: BindingResult
+    ) {
 
+        /* Checking validation errors */
+        if (br.hasErrors()) {
+            throw IllegalArgumentException("test")
+        } else if (profileService.getProfileByEmail(email) == null) {
+            throw IllegalArgumentException("test")
+        }
+
+        profileService.editProfile(email, profile)
     }
 
 

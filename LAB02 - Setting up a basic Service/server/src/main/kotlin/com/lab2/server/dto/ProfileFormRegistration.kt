@@ -1,15 +1,13 @@
 package com.lab2.server.dto
 
-import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 import org.jetbrains.annotations.NotNull
 import org.springframework.format.annotation.DateTimeFormat
 import java.util.*
-import javax.swing.SpringLayout.Constraints
 
-class ProfileForm {
+class ProfileFormRegistration {
     @field:NotBlank
     @field:NotNull
     @field:Size(max = 30)
