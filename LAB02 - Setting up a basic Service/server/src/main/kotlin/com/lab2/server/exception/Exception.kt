@@ -1,14 +1,22 @@
 package com.lab2.server.exception
 
-open class Exception(message:String) {
+import org.springframework.validation.FieldError
 
-    class ProfileAlreadyExistingException(message:String) : Exception(message) {
+open class Exception(message:String) : Throwable() {
+
+    open fun error(errorMessage:String):String{
+        return errorMessage
     }
 
-    class ProductNotFoundException(message:String) : Exception(message){
-    }
+    class ProfileAlreadyExistingException(message:String) : Exception(message)
 
-    class ProfileNotFoundException(message:String) : Exception(message){
+    class ProductNotFoundException(message:String) : Exception(message)
 
+    class ProfileNotFoundException(message:String) : Exception(message)
+
+    class ValidationException(message:String, private val invalidFields:MutableList<FieldError>) : Exception(message){
+        override fun error(errorMessage: String): String {
+            return "The following fields are invalid: $invalidFields"
+        }
     }
 }
