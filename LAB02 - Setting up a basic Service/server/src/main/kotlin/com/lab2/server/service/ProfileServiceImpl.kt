@@ -23,12 +23,7 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
     //Validate body
     //Insert
     override fun addProfile(profile: ProfileForm):ProfileDTO? {
-        return if(this.getProfileByEmail(profile.email) == null){
-            profileRepository.save(profile.toModel()).toDTO()
-        } else{
-            //profile with this email exists already
-            null
-        }
+        return profileRepository.save(profile.toModel()).toDTO()
     }
 
     //Validate body

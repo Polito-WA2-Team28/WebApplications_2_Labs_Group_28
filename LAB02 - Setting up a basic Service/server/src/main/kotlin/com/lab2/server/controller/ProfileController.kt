@@ -3,6 +3,8 @@ package com.lab2.server.controller
 
 import com.lab2.server.dto.ProfileDTO
 import com.lab2.server.dto.ProfileForm
+import com.lab2.server.dto.toDTO
+import com.lab2.server.model.toModel
 import com.lab2.server.service.ProfileServiceImpl
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
+import java.lang.IllegalArgumentException
 
 @RestController
 class ProfileController @Autowired constructor(val profileService: ProfileServiceImpl) {
@@ -38,8 +41,12 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
     fun addProfile(@RequestBody @Valid profile:ProfileForm, br:BindingResult){
         if(br.hasErrors()){
             //validation error
+            throw IllegalArgumentException("test")
         }
-        else{
+        else if(profileService.getProfileByEmail(profile.email) != null){
+
+
+        }
             profileService.addProfile(profile)
         }
     }
