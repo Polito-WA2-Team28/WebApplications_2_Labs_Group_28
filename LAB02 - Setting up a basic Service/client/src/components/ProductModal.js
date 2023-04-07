@@ -33,15 +33,15 @@ export function ProductModal(props) {
 }
 
 function ProductRow(props) {
-    return <tr key={props.UUID}>
-        <td>{props.UUID}</td>
-        <td>{props.deviceType}</td>
-        <td>{props.model}</td>
-        <td>{props.devicePurchaseDate}</td>
-        <td>{props.owner}</td>
-        <td>{props.warrantyDescription}</td>
-        <td>{props.warrantyExpirationDate}</td>
-        <td>{props.insurancePurchaseDate}</td>
-        <td>{props.insuranceExpirationDate}</td>
+    return <tr key={props.product.UUID}>
+        <td>{props.product.UUID}</td>
+        <td>{props.product.deviceType}</td>
+        <td>{props.product.model}</td>
+        <td>{props.product.devicePurchaseDate}</td>
+        <td>{props.product.owner}</td>
+        <td>{props.product.warrantyDescription}</td>
+        <td>{props.product.warrantyExpirationDate}</td>
+        <td>{props.product.insurancePurchaseDate}</td>
+        <td>{props.product.insuranceExpirationDate}</td>
     </tr>
 }

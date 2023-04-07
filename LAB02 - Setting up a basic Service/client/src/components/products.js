@@ -27,7 +27,7 @@ export function GetProducts() {
                     <Row><Button onClick={getProducts}>SEND REQUEST</Button></Row>
                     {products.length > 0 && products.map(product => <Row>{product.name}</Row>)}
                     {error && <Row><Col>{String(error)}</Col></Row>}
-                    {<ProductModal show={show} product={products} handleClose={()=>setShow(false)} />}
+                    {<ProductModal show={show} products={products} handleClose={()=>setShow(false)} />}
                 </Col>
             </Row>
         </Container>
