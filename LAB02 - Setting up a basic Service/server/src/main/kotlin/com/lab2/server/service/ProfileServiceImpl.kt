@@ -31,7 +31,7 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
      *
      * @param email the email of the user whose profile needs to be updated
      * @param profile the profile modified by the user in the front-end
-     * @return possibly, the new profile updated in the database
+     * @return possibly, the new profile updated in the database. Null otherwise.
      */
     override fun editProfile(
         email: String,
@@ -40,7 +40,14 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
 
         /* Note: originalProfile must be non-null because email is checked in the controller. */
         val originalProfile: Profile? = profileRepository.findByEmail(email)
-        val updatedProfile: Profile = profile.toModel(originalProfile!!.id, originalProfile!!.registrationDate, originalProfile!!.email)
-        return profileRepository.save(updatedProfile).toDTO()
+        val updatedProfile: Profile = profile.toModel(
+            id = originalProfile?.id ?: return null,
+            registrationDate = originalProfile.registrationDate,
+            email = originalProfile.email
+        )
+
+        /* Storing the result in the database and checking that the operation is successful. */
+        val result: Profile = profileRepository.save(updatedProfile)
+        return if (result == updatedProfile) result.toDTO() else null
     }
 }

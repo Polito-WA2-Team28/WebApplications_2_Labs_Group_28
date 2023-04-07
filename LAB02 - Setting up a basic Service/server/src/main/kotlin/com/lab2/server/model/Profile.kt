@@ -32,6 +32,25 @@ class Profile {
     }
 
 
+    /**
+     * Overriding the "==" operator to compare two profiles. This has been first used in the
+     * editProfile() method of the ProfileServiceImpl in order to check that the returned object
+     * stored in the database is equal to th eobject provided by the user.
+     */
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Profile) return false
+
+        /* Comparing properties for equality. */
+        return this.id == other.id &&
+                this.name == other.name &&
+                this.surname == other.surname &&
+                this.registrationDate == other.registrationDate &&
+                this.birthDate == other.birthDate &&
+                this.email == other.email &&
+                this.phoneNumber == other.phoneNumber
+    }
+
 }
 
 fun ProfileFormRegistration.toModel(): Profile{

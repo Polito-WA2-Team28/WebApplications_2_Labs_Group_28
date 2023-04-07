@@ -76,12 +76,12 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
         if (br.hasErrors()) {
             val invalidFields = br.fieldErrors.map { it.field }
             throw Exception.ValidationException("", invalidFields)
-
         } else if (profileService.getProfileByEmail(email) == null) {
             throw Exception.ProfileNotFoundException("This profile couldn't be found")
+        } else if (profileService.editProfile(email, profile) == null) {
+            throw Exception.DatabaseError("Database error.")
         }
 
-        profileService.editProfile(email, profile)
     }
 
 
