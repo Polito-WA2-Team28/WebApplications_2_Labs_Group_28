@@ -10,6 +10,15 @@ import com.lab2.server.exception.Exception
 
 @ControllerAdvice
 class ProfileAdvice {
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(Exception.ProductNotFoundException::class)
+    fun productNotFoundError(e: Exception.ProductNotFoundException): ErrorDetails {
+        return ErrorDetails(
+            e.error()
+        )
+    }
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Exception.ValidationException::class)

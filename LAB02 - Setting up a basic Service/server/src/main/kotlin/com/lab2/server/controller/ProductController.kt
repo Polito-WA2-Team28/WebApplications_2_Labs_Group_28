@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
+import com.lab2.server.exception.Exception
 import java.util.UUID
 
 
@@ -22,6 +23,7 @@ class ProductController @Autowired constructor(val productService: ProductServic
 
         //check here for null and return either 200 or 404
         var product = productService.getProductById(productId)
+            ?: throw Exception.ProductNotFoundException("No product matched the requested Id")
 
         return product
     }
