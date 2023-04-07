@@ -45,9 +45,8 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
     @ResponseStatus(HttpStatus.CREATED)
     fun addProfile(@RequestBody @Valid profile:ProfileFormRegistration, br:BindingResult){
         if(br.hasErrors()){
-            //validation error
-            println(br.fieldErrors)
-            throw Exception.ValidationException("", br.fieldErrors)
+            val invalidFields = br.fieldErrors.map { it.field }
+            throw Exception.ValidationException("", invalidFields)
         }
         else if(profileService.getProfileByEmail(profile.email) != null) {
             throw Exception.ProfileAlreadyExistingException("A profile with this email already exists")
@@ -75,7 +74,9 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
 
         /* Checking validation errors */
         if (br.hasErrors()) {
-            throw Exception.ValidationException("", br.fieldErrors)
+            val invalidFields = br.fieldErrors.map { it.field }
+            throw Exception.ValidationException("", invalidFields)
+
         } else if (profileService.getProfileByEmail(email) == null) {
             throw Exception.ProfileNotFoundException("This profile couldn't be found")
         }

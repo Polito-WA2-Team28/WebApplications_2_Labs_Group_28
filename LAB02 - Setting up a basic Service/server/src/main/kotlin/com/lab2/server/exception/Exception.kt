@@ -1,11 +1,12 @@
 package com.lab2.server.exception
 
 import org.springframework.validation.FieldError
+import com.fasterxml.jackson.annotation.JsonProperty
 
-open class Exception(message:String) : Throwable() {
+open class Exception(override val message:String) : Throwable() {
 
     open fun error():String {
-        return ""
+        return message
     }
 
     class ProfileAlreadyExistingException(message:String) : Exception(message)
@@ -14,7 +15,7 @@ open class Exception(message:String) : Throwable() {
 
     class ProfileNotFoundException(message:String) : Exception(message)
 
-    class ValidationException(message:String, private val invalidFields:MutableList<FieldError>) : Exception(message){
+    class ValidationException(message:String, private val invalidFields:List<String>) : Exception(message){
         override fun error(): String {
             return "The following fields are invalid: $invalidFields"
         }
