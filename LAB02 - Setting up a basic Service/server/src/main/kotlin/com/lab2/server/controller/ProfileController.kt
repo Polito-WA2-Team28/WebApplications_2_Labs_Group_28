@@ -29,7 +29,10 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
     @GetMapping("/api/profiles/{email}")
     @ResponseStatus(HttpStatus.OK)
     fun getCustomerById(@PathVariable("email") email:String): ProfileDTO?{
-        return profileService.getProfileByEmail(email)
+        var profile: ProfileDTO? = profileService.getProfileByEmail(email)
+            ?: throw Exception.ProfileNotFoundException("This profile couldn't be found")
+
+        return profile
     }
 
 
@@ -43,10 +46,11 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
     fun addProfile(@RequestBody @Valid profile:ProfileFormRegistration, br:BindingResult){
         if(br.hasErrors()){
             //validation error
+            println(br.fieldErrors)
             throw Exception.ValidationException("", br.fieldErrors)
         }
         else if(profileService.getProfileByEmail(profile.email) != null) {
-
+            throw Exception.ProfileAlreadyExistingException("A profile with this email already exists")
         }
 
         profileService.addProfile(profile)
@@ -71,9 +75,9 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
 
         /* Checking validation errors */
         if (br.hasErrors()) {
-            throw IllegalArgumentException("test")
+            throw Exception.ValidationException("", br.fieldErrors)
         } else if (profileService.getProfileByEmail(email) == null) {
-            throw IllegalArgumentException("test")
+            throw Exception.ProfileNotFoundException("This profile couldn't be found")
         }
 
         profileService.editProfile(email, profile)

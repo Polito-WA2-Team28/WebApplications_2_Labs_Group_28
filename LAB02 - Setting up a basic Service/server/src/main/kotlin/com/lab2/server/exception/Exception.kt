@@ -4,8 +4,8 @@ import org.springframework.validation.FieldError
 
 open class Exception(message:String) : Throwable() {
 
-    open fun error(errorMessage:String):String{
-        return errorMessage
+    open fun error():String {
+        return ""
     }
 
     class ProfileAlreadyExistingException(message:String) : Exception(message)
@@ -15,7 +15,7 @@ open class Exception(message:String) : Throwable() {
     class ProfileNotFoundException(message:String) : Exception(message)
 
     class ValidationException(message:String, private val invalidFields:MutableList<FieldError>) : Exception(message){
-        override fun error(errorMessage: String): String {
+        override fun error(): String {
             return "The following fields are invalid: $invalidFields"
         }
     }

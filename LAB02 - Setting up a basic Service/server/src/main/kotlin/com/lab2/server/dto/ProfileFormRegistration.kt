@@ -1,5 +1,6 @@
 package com.lab2.server.dto
 
+
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
@@ -19,12 +20,10 @@ class ProfileFormRegistration {
     val surname:String
 
     @field:DateTimeFormat
-    @field:NotBlank
     @field:NotNull
     val registrationDate: Date
 
     @field:DateTimeFormat
-    @field:NotBlank
     @field:NotNull
     val birthDate: Date
 

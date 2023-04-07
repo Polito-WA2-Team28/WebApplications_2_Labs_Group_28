@@ -6,15 +6,26 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import com.lab2.server.exception.ErrorDetails
+import com.lab2.server.exception.Exception
 
 @ControllerAdvice
 class ProfileAdvice {
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(IllegalArgumentException::class)
-    fun validationError(e: IllegalArgumentException): ErrorDetails {
+    @ExceptionHandler(Exception.ValidationException::class)
+    fun validationError(e: Exception.ValidationException): ErrorDetails {
         return ErrorDetails(
-            "validation exception for field ${e.message!!}"
+            e.error()
         )
     }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(Exception.ProfileNotFoundException::class)
+    fun profileNotFoundError(e: Exception.ProfileNotFoundException): ErrorDetails {
+        return ErrorDetails(
+            e.error()
+        )
+    }
+
 }
