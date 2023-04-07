@@ -1,8 +1,7 @@
 package com.lab2.server.model
 
 
-import com.lab2.server.dto.ProfileFormModification
-import com.lab2.server.dto.ProfileFormRegistration
+import com.lab2.server.dto.ProfileForm
 import jakarta.persistence.*
 import java.util.*
 
@@ -53,8 +52,11 @@ class Profile {
 
 }
 
-fun ProfileFormRegistration.toModel(): Profile{
-    return Profile(0, name, surname, registrationDate, birthDate, email, phoneNumber)
+fun ProfileForm.toModel(): Profile? {
+    return if (registrationDate != null && email != null)
+        Profile(0, name, surname, registrationDate, birthDate, email, phoneNumber)
+    else
+        null
 }
 
 /**
@@ -66,6 +68,6 @@ fun ProfileFormRegistration.toModel(): Profile{
  * @param email the email of the user retrieved from the database.
  * @return a Profile object.
  */
-fun ProfileFormModification.toModel(id: Int, registrationDate: Date, email: String): Profile {
+fun ProfileForm.toModel(id: Int, registrationDate: Date, email: String): Profile {
     return Profile(id, name, surname, registrationDate, birthDate, email, phoneNumber)
 }

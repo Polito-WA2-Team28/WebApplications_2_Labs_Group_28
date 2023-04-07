@@ -1,8 +1,9 @@
 package com.lab2.server.service
 
 import com.lab2.server.dto.ProfileDTO
-import com.lab2.server.dto.ProfileFormModification
-import com.lab2.server.dto.ProfileFormRegistration
+import com.lab2.server.dto.ProfileForm
+import com.lab2.server.dto.ProfileFormPOST
+import com.lab2.server.dto.ProfileFormPUT
 import com.lab2.server.dto.toDTO
 import com.lab2.server.model.Profile
 import com.lab2.server.model.toModel
@@ -15,15 +16,18 @@ import java.util.*
 class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRepository) : ProfileService {
 
 
-    override fun getProfileByEmail(email: String): ProfileDTO? {
-        return profileRepository.findByEmail(email)?.toDTO()
+    override fun getProfileByEmail(email: String?): ProfileDTO? {
+        return if (email != null)
+            profileRepository.findByEmail(email)?.toDTO()
+        else
+            null
     }
 
 
     //Validate body
     //Insert
-    override fun addProfile(profile: ProfileFormRegistration):ProfileDTO? {
-        return profileRepository.save(profile.toModel()).toDTO()
+    override fun addProfile(profile: ProfileForm):ProfileDTO? {
+        return profileRepository.save(profile.toModel()!!).toDTO()
     }
 
     /**
@@ -35,7 +39,7 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
      */
     override fun editProfile(
         email: String,
-        profile: ProfileFormModification
+        profile: ProfileForm
     ): ProfileDTO? {
 
         /* Note: originalProfile must be non-null because email is checked in the controller. */
