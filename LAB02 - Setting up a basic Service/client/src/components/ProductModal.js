@@ -23,9 +23,9 @@ export function ProductModal(props) {
                     <th>insuranceExpirationDate</th>
                     </tr>
                 </thead>
-            {props.products &&
-                    props.products.map(product =>
-                        <ProductRow product={product} />
+                {props.products !== undefined &&
+                    props.products.map((product,i) =>
+                        <ProductRow product={product} key={"product " + i} />
                     )}
                 </Table>
         </Modal.Body>
@@ -33,7 +33,7 @@ export function ProductModal(props) {
 }
 
 function ProductRow(props) {
-    return <tr>
+    return <tr key={props.UUID}>
         <td>{props.UUID}</td>
         <td>{props.deviceType}</td>
         <td>{props.model}</td>

@@ -8,11 +8,12 @@ export function GetProfileByEmailAddress() {
     const [profile, setProfile] = useState([]);
     const [error, setError] = useState();
     const [show, setShow] = useState(false);
+    const [email, setEmail] = useState("");
 
     let getProfile = async () => {
         let products = [];
-        await API.getProfileByEmailAddress()
-            .then(data => { products = data; setProfile(products) })
+        await API.getProfileByEmailAddress(email)
+            .then(data => { products = data; setProfile(products); setShow(true) })
             .catch(error => setError(error));
         return products;
     }
@@ -22,8 +23,15 @@ export function GetProfileByEmailAddress() {
             <Row>
                 <Col>
                     <Row><p style={{ textAlign: 'center' }}>GET /API/profiles/:emailAddress</p></Row>
+                    <Row>
+                    <Form>
+                            <Form.Group className="mb-3" controlId="email">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control value={email} placeholder="Enter email" onChange={e => setEmail(e.target.value)} />
+                        </Form.Group>
+                        </Form>
+                    </Row>
                     <Row><Button onClick={getProfile}>SEND REQUEST</Button></Row>
-                    {profile && <Row>{profile.name}</Row>}
                     {error && <Row><Col>{String(error)}</Col></Row>}
                     <ProfileModal show={show} profile={profile} handleClose={() => setShow(false)} />
                 </Col>
