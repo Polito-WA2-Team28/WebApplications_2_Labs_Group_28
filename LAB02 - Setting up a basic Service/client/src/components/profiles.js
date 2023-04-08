@@ -42,19 +42,19 @@ export function GetProfileByEmailAddress() {
 
 export function CreateProfile() {
 
-    const [profile, setProfile] = useState();
-    const [email, setEmail] = useState();
-    const [name, setName] = useState();
-    const [surname, setSurname] = useState();
-    const [birthdate, setBirtdate] = useState();
-    const [phoneNumber, setPhoneNumber] = useState();
-    const [error, setError] = useState();
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [surname, setSurname] = useState("");
+    const [birthDate, setBirtdate] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [error, setError] = useState("");
+    const [footer, setFooter] = useState("");
 
     let createProfile = async () => {
-        let profile = { email: email, name: name, surname:surname, birthdate:birthdate, phoneNumber:phoneNumber}
+        let profile = { email: email, name: name, surname:surname, birthDate:birthDate, phoneNumber:phoneNumber}
         await API.createProfile(profile)
-            .then(data => { profile = data; setProfile(profile)})
-            .catch(error => setError(error));
+            .then(data => { profile = data; setError(false); setFooter("Profile created") })
+            .catch(error => { setFooter(false); setError(error)});
     }
 
     return <>
@@ -76,9 +76,9 @@ export function CreateProfile() {
                                 <Form.Label>Surname</Form.Label>
                                 <Form.Control value={surname} placeholder="Enter surname" onChange={e => setSurname(e.target.value)} />
                             </Form.Group>
-                            <Form.Group className="mb-3" controlId="birthdate">
-                                <Form.Label>Birthdate</Form.Label>
-                                <Form.Control value={birthdate} type="date" placeholder="Enter Birthdate" onChange={e => setBirtdate(e.target.value)} />
+                            <Form.Group className="mb-3" controlId="birthDate">
+                                <Form.Label>birthDate</Form.Label>
+                                <Form.Control value={birthDate} type="date" placeholder="Enter birthDate" onChange={e => setBirtdate(e.target.value)} />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="phoneNumber">
                                 <Form.Label>Phone Number</Form.Label>
@@ -87,7 +87,7 @@ export function CreateProfile() {
                         </Form>
                     </Row>
                     <Row><Button onClick={createProfile}>SEND REQUEST</Button></Row>
-                    {profile && <Row>{profile.name}</Row>}
+                    {footer && <Row>{footer}</Row>}
                     {error && <Row><Col>{String(error)}</Col></Row>}
 
                 </Col>
@@ -102,12 +102,12 @@ export function UpdateProfile() {
     const [email, setEmail] = useState();
     const [name, setName] = useState();
     const [surname, setSurname] = useState();
-    const [birthdate, setBirtdate] = useState();
+    const [birthDate, setBirtdate] = useState();
     const [phoneNumber, setPhoneNumber] = useState();
     const [error, setError] = useState();
 
     let updateProfile = async () => {
-        let profile = { email: email, name: name, surname: surname, birthdate: birthdate, phoneNumber: phoneNumber }
+        let profile = { email: email, name: name, surname: surname, birthDate: birthDate, phoneNumber: phoneNumber }
         await API.updateProfile(profile)
             .then(data => { profile = data; setProfile(profile)})
             .catch(error => setError(error));
@@ -131,9 +131,9 @@ export function UpdateProfile() {
                                 <Form.Label>Surname</Form.Label>
                                 <Form.Control value={surname} placeholder="Enter surname" onChange={e => setSurname(e.target.value)} />
                             </Form.Group>
-                            <Form.Group className="mb-3" controlId="birthdate">
-                                <Form.Label>Birthdate</Form.Label>
-                                <Form.Control value={birthdate} type="date" placeholder="Enter Birthdate" onChange={e => setBirtdate(e.target.value)} />
+                            <Form.Group className="mb-3" controlId="birthDate">
+                                <Form.Label>birthDate</Form.Label>
+                                <Form.Control value={birthDate} type="date" placeholder="Enter birthDate" onChange={e => setBirtdate(e.target.value)} />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="phoneNumber">
                                 <Form.Label>Phone Number</Form.Label>
