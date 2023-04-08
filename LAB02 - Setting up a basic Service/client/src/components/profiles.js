@@ -98,19 +98,19 @@ export function CreateProfile() {
 
 export function UpdateProfile() {
 
-    const [profile, setProfile] = useState();
     const [email, setEmail] = useState();
     const [name, setName] = useState();
     const [surname, setSurname] = useState();
     const [birthDate, setBirtdate] = useState();
     const [phoneNumber, setPhoneNumber] = useState();
     const [error, setError] = useState();
+    const [footer, setFooter] = useState("");
 
     let updateProfile = async () => {
-        let profile = { email: email, name: name, surname: surname, birthDate: birthDate, phoneNumber: phoneNumber }
-        await API.updateProfile(profile)
-            .then(data => { profile = data; setProfile(profile)})
-            .catch(error => setError(error));
+        let profile = { name: name, surname: surname, birthDate: birthDate, phoneNumber: phoneNumber }
+        await API.updateProfile(email,profile)
+            .then(data => { profile = data; setFooter("Profile updated"); setError(false) })
+            .catch(error => { setError(error);  setFooter(false)});
     }
 
     return <>
@@ -141,7 +141,7 @@ export function UpdateProfile() {
                             </Form.Group>                           
                         </Form>
                     <Row><Button onClick={updateProfile}>SEND REQUEST</Button></Row>
-                    {profile && <Row>{profile.name}</Row>}
+                    {footer && <Row>{footer}</Row>}
                     {error && <Row><Col>{String(error)}</Col></Row>
                     }
 

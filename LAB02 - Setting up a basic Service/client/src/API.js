@@ -55,9 +55,9 @@ async function createProfile(profile) {
 
 }
 
-async function updateProfile(profile) {
+async function updateProfile(email,profile) {
     try {
-        const res = await fetch(url + "/profiles/" + profile.email,
+        const res = await fetch(url + "/profiles/" + email,
             {
                 method: "PUT",
                 headers: { 'Content-Type': 'application/json' },
