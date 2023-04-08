@@ -7,18 +7,11 @@ import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
 import com.lab2.server.exception.ErrorDetails
 import com.lab2.server.exception.Exception
+import java.net.ConnectException
 
 @ControllerAdvice
 class ProfileAdvice {
 
-    @ResponseBody
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(Exception.ProductNotFoundException::class)
-    fun productNotFoundError(e: Exception.ProductNotFoundException): ErrorDetails {
-        return ErrorDetails(
-            e.error()
-        )
-    }
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Exception.ValidationException::class)
@@ -36,5 +29,24 @@ class ProfileAdvice {
             e.error()
         )
     }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(Exception.ProfileAlreadyExistingException::class)
+    fun profileAlreadyExisting(e: Exception.ProfileAlreadyExistingException): ErrorDetails {
+        return ErrorDetails(
+            e.error()
+        )
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(ConnectException::class)
+    fun lostServerConnection(e: ConnectException): ErrorDetails {
+        return ErrorDetails(
+            e.message?: "Unknown server error"
+        )
+    }
+
 
 }

@@ -20,8 +20,6 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
     }
 
 
-    //Validate body
-    //Insert
     override fun addProfile(profile: ProfileFormRegistration):ProfileDTO? {
         return profileRepository.save(profile.toModel()).toDTO()
     }

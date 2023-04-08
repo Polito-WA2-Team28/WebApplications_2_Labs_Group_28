@@ -36,11 +36,6 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
     }
 
 
-    //Create another class similar to Profile without an ID
-
-    //Validate body => @Valid annotations compares against constraints in ProfileForm class
-    //Check if email exists (there should be a repository method that either saves or returns an error) => checked in service
-    //Save => works
     @PostMapping("/api/profiles")
     @ResponseStatus(HttpStatus.CREATED)
     fun addProfile(@RequestBody @Valid profile:ProfileFormRegistration, br:BindingResult){
@@ -72,7 +67,7 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
         br: BindingResult
     ) {
 
-        /* Checking validation errors */
+        /* Checking errors */
         if (br.hasErrors()) {
             val invalidFields = br.fieldErrors.map { it.field }
             throw Exception.ValidationException("", invalidFields)

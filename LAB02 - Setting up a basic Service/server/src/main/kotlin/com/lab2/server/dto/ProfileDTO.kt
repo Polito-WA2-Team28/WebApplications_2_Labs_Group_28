@@ -8,7 +8,6 @@ data class ProfileDTO(val id:Int, val name:String, val surname:String, val regis
 
 }
 
-
 fun Profile.toDTO() : ProfileDTO {
     return ProfileDTO(id, name, surname, registrationDate, birthDate, email, phoneNumber)
 }
