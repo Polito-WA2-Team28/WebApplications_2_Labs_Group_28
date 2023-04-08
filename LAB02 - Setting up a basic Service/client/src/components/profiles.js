@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { API } from "../API";
 import { ProfileModal } from "./ProfileModal";
+import { errorHandler } from "./ErrorHandler";
 
 export function GetProfileByEmailAddress() {
 
@@ -14,7 +15,7 @@ export function GetProfileByEmailAddress() {
         let products = [];
         await API.getProfileByEmailAddress(email)
             .then(data => { products = data; setProfile(products); setShow(true) })
-            .catch(error => setError(error));
+            .catch(error => {setError(error); errorHandler(error);});
         return products;
     }
 
@@ -32,7 +33,6 @@ export function GetProfileByEmailAddress() {
                         </Form>
                     </Row>
                     <Row><Button onClick={getProfile}>SEND REQUEST</Button></Row>
-                    {error && <Row><Col>{String(error)}</Col></Row>}
                     <ProfileModal show={show} profile={profile} handleClose={() => setShow(false)} />
                 </Col>
             </Row>
@@ -54,7 +54,7 @@ export function CreateProfile() {
         let profile = { email: email, name: name, surname:surname, birthDate:birthDate, phoneNumber:phoneNumber}
         await API.createProfile(profile)
             .then(data => { profile = data; setError(false); setFooter("Profile created") })
-            .catch(error => { setFooter(false); setError(error)});
+            .catch(error => { setFooter(false); setError(error); errorHandler(error);});
     }
 
     return <>
@@ -88,7 +88,6 @@ export function CreateProfile() {
                     </Row>
                     <Row><Button onClick={createProfile}>SEND REQUEST</Button></Row>
                     {footer && <Row>{footer}</Row>}
-                    {error && <Row><Col>{String(error)}</Col></Row>}
 
                 </Col>
             </Row>
@@ -110,7 +109,7 @@ export function UpdateProfile() {
         let profile = { name: name, surname: surname, birthDate: birthDate, phoneNumber: phoneNumber }
         await API.updateProfile(email,profile)
             .then(data => { profile = data; setFooter("Profile updated"); setError(false) })
-            .catch(error => { setError(error);  setFooter(false)});
+            .catch(error => { setError(error);  setFooter(false); errorHandler(error);});
     }
 
     return <>
@@ -142,9 +141,6 @@ export function UpdateProfile() {
                         </Form>
                     <Row><Button onClick={updateProfile}>SEND REQUEST</Button></Row>
                     {footer && <Row>{footer}</Row>}
-                    {error && <Row><Col>{String(error)}</Col></Row>
-                    }
-
                 </Col>
             </Row>
         </Container>

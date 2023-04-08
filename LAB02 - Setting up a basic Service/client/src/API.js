@@ -1,15 +1,29 @@
 const url = "http://localhost:3000/api";
 
 async function getAllProducts() {
-    return await fetch(url + "/products/")
-        .then(response => response.json())
-        .catch(error => { console.log(error); throw error; });
+    try {
+        const res = await fetch(url + "/products/")
+        if (!res.ok) {
+            const response = await res.json();
+            throw response.error
+        }
+        return await res.json();
+    } catch (error) {
+        throw error;
+    }
 }
 
 async function getProductById(id) {
-    return await fetch(url + "/products/" + id)
-        .then(response => response.json())
-        .catch(error => { console.log(error); throw error; });
+    try {
+        const res = await fetch(url + "/products/" + id)
+        if (!res.ok) {
+            const response = await res.json();
+            throw response.error
+        }
+        return await res.json();
+    } catch (error) {
+        throw error;
+    }
 }
 
 async function getProfileByEmailAddress(emailAddress) {
@@ -17,23 +31,18 @@ async function getProfileByEmailAddress(emailAddress) {
 
     try {
         const res = await fetch(url + "/profiles/" + emailAddress)
-        console.log(res)
         if (!res.ok) {
             const response = await res.json();
-            console.log(response)
-            console.log(res)
             throw response.error
         }
         return await res.json();
     } catch (error) {
-        console.error(error);
         throw error;
     }
 }
 
 async function createProfile(profile) {
     profile.registrationDate = new Date().toISOString().slice(0, 10);
-    console.log("PROFILE",profile)
     try {
         const res = await fetch(url + "/profiles",
             {
@@ -43,13 +52,10 @@ async function createProfile(profile) {
             })
         if (!res.ok) {
             const response = await res.json();
-            console.log(response)
-            console.log(res)
             throw response.error
         }
         return true
     } catch (error) {
-        console.error(error);
         throw error;
     }
 
@@ -65,11 +71,9 @@ async function updateProfile(email,profile) {
             })
         if (!res.ok) {
             const response = await res.json();
-            console.log(response)
             throw response.error
         }
     } catch (error) {
-        console.error(error);
         throw error;
     }
 }
