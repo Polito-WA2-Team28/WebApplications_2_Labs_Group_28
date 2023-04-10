@@ -13,7 +13,8 @@ import java.util.UUID
 class ProductServiceImpl @Autowired constructor(private val productRepository: ProductRepository) : ProductService {
 
     override fun getAllProducts(): List<ProductDTO> {
-        return productRepository.findAll().map{it -> it.toDTO()}
+        println("product call")
+        return productRepository.findAll().map{it.toDTO()}
     }
 
     override fun getProductById(id: Int): ProductDTO? {

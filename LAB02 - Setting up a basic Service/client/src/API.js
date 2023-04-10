@@ -2,7 +2,8 @@ const url = "http://localhost:3000/api";
 
 async function getAllProducts() {
     try {
-        const res = await fetch(url + "/products/")
+        const res = await fetch(url + "/products")
+        console.log(res)
         if (!res.ok) {
             const response = await res.json();
             throw response.error

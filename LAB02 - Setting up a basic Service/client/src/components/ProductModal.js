@@ -12,7 +12,7 @@ export function ProductModal(props) {
             <Table>
                 <thead>
                     <tr>
-                    <th>UUID</th>
+                    <th>Serial Number</th>
                     <th>deviceType</th>
                     <th>model</th>
                     <th>devicePurchaseDate</th>
@@ -33,8 +33,8 @@ export function ProductModal(props) {
 }
 
 function ProductRow(props) {
-    return <tr key={props.product.UUID}>
-        <td>{props.product.UUID}</td>
+    return <tr key={props.product.serialNumber}>
+        <td>{props.product.serialNumber}</td>
         <td>{props.product.deviceType}</td>
         <td>{props.product.model}</td>
         <td>{props.product.devicePurchaseDate}</td>

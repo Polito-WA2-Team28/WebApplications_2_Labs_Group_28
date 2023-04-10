@@ -14,7 +14,7 @@ export function GetProducts() {
     let getProducts = async () => {
         let products = [];
         await API.getAllProducts()
-            .then(data => { products = data; setProducts(products); setShow(true) })
+            .then(data => { products = data; setProducts(products); console.log(products); setShow(true) })
             .catch(error => {setError(error); errorHandler(error)});
 
         return products;
