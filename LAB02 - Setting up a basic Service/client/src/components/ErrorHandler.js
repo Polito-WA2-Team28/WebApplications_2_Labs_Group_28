@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify';
 
-export const errorHandler = (message) => {
+export function errorHandler(message) {
+    console.error(message);
     toast.error(message, {
         position: "top-center",
         autoClose: 2500,
@@ -10,5 +11,5 @@ export const errorHandler = (message) => {
         draggable: true,
         progress: undefined,
         theme: "colored",
-        });
+    })
 }

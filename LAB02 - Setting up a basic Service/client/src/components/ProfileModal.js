@@ -1,8 +1,13 @@
+import dayjs from "dayjs";
 import { Modal, Table } from "react-bootstrap";
 
 export function ProfileModal(props) {
+
+    const registrationDate = dayjs(props.profile.registrationDate).format('YYYY-MM-DD');
+    const birthDate = dayjs(props.profile.birthDate).format('YYYY-MM-DD');
+
     //return a modal
-    return <Modal fullscreen show={props.show} onHide={props.handleClose}>
+    return <Modal size="xl" show={props.show} onHide={props.handleClose}>
         <Modal.Header closeButton>
             <Modal.Title>Profile</Modal.Title>
         </Modal.Header>
@@ -18,14 +23,16 @@ export function ProfileModal(props) {
                     <th>phoneNumber</th>
                     </tr>
                 </thead>
+                <tbody>
                 <tr>
                     <td>{props.profile.name}</td>
                     <td>{props.profile.surname}</td>
-                    <td>{props.profile.registrationDate}</td>
-                    <td>{props.profile.birthDate}</td>
+                    <td>{registrationDate}</td>
+                    <td>{birthDate}</td>
                     <td>{props.profile.email}</td>
                     <td>{props.profile.phoneNumber}</td>
-                </tr>
+                    </tr>
+                </tbody>
             
                 </Table>
         </Modal.Body>

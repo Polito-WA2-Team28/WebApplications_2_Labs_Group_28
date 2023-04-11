@@ -8,25 +8,21 @@ import { errorHandler } from './ErrorHandler';
 export function GetProducts() {
 
     const [products, setProducts] = useState([]);
-    const [error, setError] = useState();
     const [show, setShow] = useState(false);
 
     let getProducts = async () => {
         let products = [];
         await API.getAllProducts()
-            .then(data => { products = data; setProducts(products); console.log(products); setShow(true) })
-            .catch(error => {setError(error); errorHandler(error)});
-
-        return products;
+            .then(data => { products = data; setProducts(products);setShow(true) })
+            .catch(error => errorHandler(error));
     }
 
     return <>
         <Container>
             <Row>
                 <Col>
-                    <Row ><p style={{ textAlign: 'center' }}>GET /API/products/</p></Row>
+                    <Row ><p style={{ textAlign: 'center' }}>GET ALL PRODUCTS</p></Row>
                     <Row><Button onClick={getProducts}>SEND REQUEST</Button></Row>
-                    {products.length > 0 && products.map(product => <Row>{product.name}</Row>)}
                     {<ProductModal show={show} products={products} handleClose={()=>setShow(false)} />}
                 </Col>
             </Row>
@@ -36,24 +32,22 @@ export function GetProducts() {
 
 export function GetProductById(props) {
 
-    const [product, setProduct] = useState();
-    const [id, setId] = useState(); 
-    const [error, setError] = useState();
+    const [product, setProduct] = useState(null);
+    const [id, setId] = useState(""); 
     const [show, setShow] = useState(false);
 
     let getProduct = async () => {
         let product;
         await API.getProductById(id)
             .then(data => { product = data; setProduct(product);  setShow(true)})
-            .catch(error => {setError(error); errorHandler(error)});
-        return product;
+            .catch(error =>  errorHandler(error));
     }
 
     return <>
         <Container>
             <Row>
                 <Col>
-                    <Row><p style={{ textAlign: 'center' }}>GET /API/products/:id</p></Row>
+                    <Row><p style={{ textAlign: 'center' }}>FIND A PRODUCT BY ID</p></Row>
                     <Row>
                         <Form>
                             <Form.Group className="mb-3" controlId="productID">
