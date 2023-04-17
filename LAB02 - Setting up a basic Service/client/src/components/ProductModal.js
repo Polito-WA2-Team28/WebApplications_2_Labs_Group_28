@@ -48,7 +48,7 @@ function ProductRow(props) {
         <td>{props.product.deviceType}</td>
         <td>{props.product.model}</td>
         <td>{devicePurchaseDate}</td>
-        <td>{props.product.owner}</td>
+        <td style={{textAlign:"center"}}>{props.product.owner}</td>
         <td>{props.product.warrantyDescription}</td>
         <td>{warrantyExpirationDate}</td>
         <td>{insurancePurchaseDate}</td>

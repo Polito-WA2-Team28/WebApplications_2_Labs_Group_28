@@ -20,11 +20,15 @@ export function GetProducts() {
     return <>
         <Container>
             <Row>
+            <Col xl={3}/>
+
                 <Col>
                     <Row ><p style={{ textAlign: 'center' }}>GET ALL PRODUCTS</p></Row>
                     <Row><Button onClick={getProducts}>SEND REQUEST</Button></Row>
                     {<ProductModal show={show} products={products} handleClose={()=>setShow(false)} />}
                 </Col>
+            <Col xl={3}/>
+
             </Row>
         </Container>
     </>
@@ -38,19 +42,19 @@ export function GetProductById(props) {
 
     let getProduct = async () => {
 
-        if (id === "") {
-            errorHandler("ID is empty");
-            return;
-        }
+        const reID = RegExp('^[0-9]+$');
+        if(!reID.test(id)) return errorHandler("ID is not valid");
 
         await API.getProductById(id)
-            .then(data => { setProduct(product);  setShow(true)})
+            .then(data => { setProduct(data);  setShow(true)})
             .catch(error =>  errorHandler(error));
     }
 
     return <>
         <Container>
             <Row>
+            <Col xl={3}/>
+
                 <Col>
                     <Row><p style={{ textAlign: 'center' }}>FIND A PRODUCT BY ID</p></Row>
                     <Row>
@@ -64,8 +68,9 @@ export function GetProductById(props) {
                     <Row><Button onClick={getProduct}>SEND REQUEST</Button></Row>
                     <Row>{product && <Col>{product.name}</Col>}</Row>
                     {<ProductModal show={show} products={[product]} handleClose={()=>setShow(false)} />}
-
                 </Col>
+            <Col xl={3}/>
+
             </Row>
         </Container>
     </>

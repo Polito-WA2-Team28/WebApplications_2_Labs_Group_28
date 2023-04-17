@@ -24,8 +24,9 @@ export function GetProfileByEmailAddress() {
 
     return <>
         <Container>
-            <Row>
-                <Col>
+            <Row >
+            <Col xl={3}/>
+                <Col xl={6}>
                     <Row><p style={{ textAlign: 'center' }}>FIND A PROFILE BY EMAIL</p></Row>
                     <Row>
                     <Form>
@@ -38,6 +39,7 @@ export function GetProfileByEmailAddress() {
                     <Row><Button onClick={getProfile}>SEND REQUEST</Button></Row>
                     <ProfileModal show={show} profile={profile} handleClose={() => setShow(false)} />
                 </Col>
+            <Col xl={3}/>
             </Row>
             
         </Container>
@@ -86,6 +88,7 @@ export function CreateProfile() {
     return <>
         <Container>
             <Row>
+            <Col xl={3}/>
                 <Col>
                     <Row><p style={{ textAlign: 'center' }}>CREATE A PROFILE</p></Row>
                     <Row>
@@ -116,6 +119,8 @@ export function CreateProfile() {
                     {footer && <Row>{footer}</Row>}
 
                 </Col>
+            <Col xl={3}/>
+
             </Row>
             
         </Container>
@@ -162,6 +167,8 @@ export function UpdateProfile() {
     return <>
         <Container>
             <Row>
+            <Col xl={3}/>
+
                 <Col>
                     <Row><p style={{ textAlign: 'center' }}>EDIT A PROFILE</p></Row>
                     <Form>
@@ -189,6 +196,8 @@ export function UpdateProfile() {
                     <Row><Button onClick={updateProfile}>SEND REQUEST</Button></Row>
                     {footer && <Row>{footer}</Row>}
                 </Col>
+            <Col xl={3}/>
+
             </Row>
             
         </Container>

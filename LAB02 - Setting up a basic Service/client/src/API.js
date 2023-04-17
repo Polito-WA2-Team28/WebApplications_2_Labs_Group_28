@@ -54,7 +54,7 @@ async function createProfile(profile) {
         })
     if (!res.ok) {
         const response = await res.json();
-        throw response.body
+        throw response.error
     }
 }
 
