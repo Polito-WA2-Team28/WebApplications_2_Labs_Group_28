@@ -1,14 +1,10 @@
-import './App.css';
 import { Tab, Tabs } from 'react-bootstrap';
 import { GetProductById, GetProducts } from './components/products';
 import { CreateProfile, GetProfileByEmailAddress, UpdateProfile } from './components/profiles';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ToastContainer } from 'react-toastify';
 
-
 function App() {
-
-  
   return (
     <>
       <Tabs>
@@ -28,7 +24,7 @@ function App() {
           <UpdateProfile />
         </Tab>
       </Tabs>
-      <ToastContainer/>
+      <ToastContainer />
     </>
   );
 }
