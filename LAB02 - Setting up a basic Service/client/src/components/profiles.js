@@ -81,8 +81,16 @@ export function CreateProfile() {
             phoneNumber: phoneNumber
         }
         await API.createProfile(profile)
-            .then(_ =>  successToast("Profile created") )
+            .then(_ => { successToast("Profile created"); resetStates()} )
             .catch(error => errorHandler(error));
+    }
+
+    const resetStates = () => {
+        setEmail("");
+        setName("");
+        setSurname("");
+        setBirtdate("");
+        setPhoneNumber("");
     }
 
     return <>
@@ -155,10 +163,18 @@ export function UpdateProfile() {
             phoneNumber: phoneNumber
         }
         await API.updateProfile(email,profile)
-            .then( _ =>  successToast("Profile updated"))
+            .then(_ => { successToast("Profile updated");  resetStates()})
             .catch(error => { errorHandler(error);});
     }
 
+    const resetStates = () => {
+        setEmail("");
+        setName("");
+        setSurname("");
+        setBirtdate("");
+        setPhoneNumber("");
+    }
+    
     return <>
         <Container>
             <Row>
