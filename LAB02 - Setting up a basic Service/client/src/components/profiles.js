@@ -12,6 +12,11 @@ export function GetProfileByEmailAddress() {
     const [email, setEmail] = useState("");
 
     let getProfile = async () => {
+
+        if (!emailIsValid(email)) {
+            return errorHandler("Email is not valid")
+        }
+
         await API.getProfileByEmailAddress(email)
             .then(profile => { setProfile(profile); setShow(true) })
             .catch(error => errorHandler(error));
@@ -21,7 +26,7 @@ export function GetProfileByEmailAddress() {
         <Container>
             <Row>
                 <Col>
-                    <Row><p style={{ textAlign: 'center' }}>FIND ALL PROFILES</p></Row>
+                    <Row><p style={{ textAlign: 'center' }}>FIND A PROFILE BY EMAIL</p></Row>
                     <Row>
                     <Form>
                             <Form.Group className="mb-3" controlId="email">
@@ -49,6 +54,23 @@ export function CreateProfile() {
     const [footer, setFooter] = useState("");
 
     let createProfile = async () => {
+
+        if (!emailIsValid(email)) {
+            return errorHandler("Email is not valid")
+        }
+        if (!parameterIsValid(name)) {
+            return errorHandler("Name is empty")
+        }
+        if (!parameterIsValid(surname)) {
+            return errorHandler("Surname is empty")
+        }
+        if (!parameterIsValid(birthDate)) {
+            return errorHandler("Birthdate is empty")
+        }
+        if (!phoneIsValid(phoneNumber)) {
+            return errorHandler("Phone number is not valid")
+        }
+
         let profile = {
             email: email,
             name: name,
@@ -110,6 +132,22 @@ export function UpdateProfile() {
     const [footer, setFooter] = useState("");
 
     let updateProfile = async () => {
+        if (!emailIsValid(email)) {
+            return errorHandler("Email is not valid")
+        }
+        if (!parameterIsValid(name)) {
+            return errorHandler("Name is empty")
+        }
+        if (!parameterIsValid(surname)) {
+            return errorHandler("Surname is empty")
+        }
+        if (!parameterIsValid(birthDate)) {
+            return errorHandler("Birthdate is empty")
+        }
+        if (!phoneIsValid(phoneNumber)) {
+            return errorHandler("Phone number is not valid")
+        }
+
         let profile = {
             name: name,
             surname: surname,
@@ -155,4 +193,19 @@ export function UpdateProfile() {
             
         </Container>
     </>
+}
+
+function emailIsValid(email) {
+    const regExpMail = new RegExp("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$");
+    return regExpMail.test(email)
+}
+
+function phoneIsValid(phone) {
+
+    const regExpPhone = new RegExp("^[0-9]{10}$");
+    return regExpPhone.test(phone)
+}
+
+function parameterIsValid(parameter) {
+return !(parameter === "" || parameter == null || parameter === undefined);
 }

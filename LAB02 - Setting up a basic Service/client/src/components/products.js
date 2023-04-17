@@ -37,9 +37,14 @@ export function GetProductById(props) {
     const [show, setShow] = useState(false);
 
     let getProduct = async () => {
-        let product;
+
+        if (id === "") {
+            errorHandler("ID is empty");
+            return;
+        }
+
         await API.getProductById(id)
-            .then(data => { product = data; setProduct(product);  setShow(true)})
+            .then(data => { setProduct(product);  setShow(true)})
             .catch(error =>  errorHandler(error));
     }
 
