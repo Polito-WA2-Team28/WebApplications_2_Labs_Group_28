@@ -44,8 +44,7 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
             email = originalProfile.email
         )
 
-        /* Storing the result in the database and checking that the operation is successful. */
-        val result: Profile = profileRepository.save(updatedProfile)
-        return if (result == updatedProfile) result.toDTO() else null
+        /* Storing the result in the database. */
+        return profileRepository.save(updatedProfile).toDTO()
     }
 }
