@@ -3,6 +3,7 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { API } from "../API";
 import { ProfileModal } from "./ProfileModal";
 import { errorHandler } from "./ErrorHandler";
+import { successToast } from "./SuccessToast";
 import dayjs from "dayjs";
 
 export function GetProfileByEmailAddress() {
@@ -53,7 +54,6 @@ export function CreateProfile() {
     const [surname, setSurname] = useState("");
     const [birthDate, setBirtdate] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
-    const [footer, setFooter] = useState("");
 
     let createProfile = async () => {
 
@@ -81,8 +81,8 @@ export function CreateProfile() {
             phoneNumber: phoneNumber
         }
         await API.createProfile(profile)
-            .then(_ =>  setFooter("Profile created") )
-            .catch(error => { setFooter(false); errorHandler(error);});
+            .then(_ =>  successToast("Profile created") )
+            .catch(error => errorHandler(error));
     }
 
     return <>
@@ -116,13 +116,9 @@ export function CreateProfile() {
                         </Form>
                     </Row>
                     <Row><Button onClick={createProfile}>SEND REQUEST</Button></Row>
-                    {footer && <Row>{footer}</Row>}
-
                 </Col>
             <Col xl={3}/>
-
             </Row>
-            
         </Container>
     </>
 }
@@ -134,7 +130,6 @@ export function UpdateProfile() {
     const [surname, setSurname] = useState("");
     const [birthDate, setBirtdate] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
-    const [footer, setFooter] = useState("");
 
     let updateProfile = async () => {
         if (!emailIsValid(email)) {
@@ -160,8 +155,8 @@ export function UpdateProfile() {
             phoneNumber: phoneNumber
         }
         await API.updateProfile(email,profile)
-            .then( _ =>  setFooter("Profile updated"))
-            .catch(error => {setFooter(false); errorHandler(error);});
+            .then( _ =>  successToast("Profile updated"))
+            .catch(error => { errorHandler(error);});
     }
 
     return <>
@@ -194,7 +189,6 @@ export function UpdateProfile() {
                             </Form.Group>                           
                         </Form>
                     <Row><Button onClick={updateProfile}>SEND REQUEST</Button></Row>
-                    {footer && <Row>{footer}</Row>}
                 </Col>
             <Col xl={3}/>
 

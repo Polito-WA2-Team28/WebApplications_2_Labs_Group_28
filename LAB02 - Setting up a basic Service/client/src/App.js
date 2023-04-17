@@ -14,7 +14,7 @@ function App() {
         <Tab eventKey="productById" title="ProductById">
           <GetProductById />
         </Tab>
-        <Tab eventKey="getProfiles" title="GetProfileById">
+        <Tab eventKey="getProfiles" title="GetProfileByEmail">
           <GetProfileByEmailAddress  />
         </Tab>
         <Tab eventKey="createProfiles" title="CreateProfiles">

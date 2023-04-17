@@ -37,21 +37,29 @@ export function ProductModal(props) {
 
 function ProductRow(props) {
 
-    const warrantyExpirationDate = dayjs(props.product.warrantyExpirationDate).format('YYYY-MM-DD');
-    const insuranceExpirationDate = dayjs(props.product.insuranceExpirationDate).format('YYYY-MM-DD');
-    const devicePurchaseDate = dayjs(props.product.devicePurchaseDate).format('YYYY-MM-DD');
-    const insurancePurchaseDate = dayjs(props.product.insurancePurchaseDate).format('YYYY-MM-DD');
+    const product = props.product
+
+    const warrantyExpirationDate = product.warrantyExpirationDate
+    const insuranceExpirationDate = product.insuranceExpirationDate
+    const devicePurchaseDate = product.devicePurchaseDate
+    const insurancePurchaseDate = product.insurancePurchaseDate
 
 
-    return <tr key={props.product.serialNumber}>
-        <td>{props.product.serialNumber}</td>
-        <td>{props.product.deviceType}</td>
-        <td>{props.product.model}</td>
-        <td>{devicePurchaseDate}</td>
+    return <tr key={product.serialNumber}>
+        <td>{product.serialNumber}</td>
+        <td>{product.deviceType}</td>
+        <td>{product.model}</td>
+        <td>{formatDateOrNull(devicePurchaseDate)}</td>
         <td style={{textAlign:"center"}}>{props.product.owner}</td>
-        <td>{props.product.warrantyDescription}</td>
-        <td>{warrantyExpirationDate}</td>
-        <td>{insurancePurchaseDate}</td>
-        <td>{insuranceExpirationDate}</td>
+        <td>{product.warrantyDescription}</td>
+        <td>{formatDateOrNull(warrantyExpirationDate)}</td>
+        <td>{formatDateOrNull(insurancePurchaseDate)}</td>
+        <td>{formatDateOrNull(insuranceExpirationDate)}</td>
     </tr>
+}
+
+function formatDateOrNull(date) {
+    if (date == null) 
+        return "none";
+    return dayjs(date).format('YYYY-MM-DD');
 }
