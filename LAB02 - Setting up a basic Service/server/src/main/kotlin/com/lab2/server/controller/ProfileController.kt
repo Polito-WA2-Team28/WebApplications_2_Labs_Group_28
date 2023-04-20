@@ -26,7 +26,7 @@ import java.lang.IllegalArgumentException
 class ProfileController @Autowired constructor(val profileService: ProfileServiceImpl) {
 
 
-    @GetMapping("/api/profiles/{email}")
+    @GetMapping("/API/profiles/{email}")
     @ResponseStatus(HttpStatus.OK)
     fun getCustomerById(@PathVariable("email") email:String): ProfileDTO?{
         var profile: ProfileDTO? = profileService.getProfileByEmail(email)
@@ -36,7 +36,7 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
     }
 
 
-    @PostMapping("/api/profiles")
+    @PostMapping("/API/profiles")
     @ResponseStatus(HttpStatus.CREATED)
     fun addProfile(@RequestBody @Valid profile:ProfileFormRegistration, br:BindingResult){
         if(br.hasErrors()){
@@ -59,7 +59,7 @@ class ProfileController @Autowired constructor(val profileService: ProfileServic
      * @param email the email of the user whose profile needs to be updated.
      * @param profile the updated profile of the user
      */
-    @PutMapping("/api/profiles/{email}")
+    @PutMapping("/API/profiles/{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun editProfile(
         @PathVariable("email") email: String,

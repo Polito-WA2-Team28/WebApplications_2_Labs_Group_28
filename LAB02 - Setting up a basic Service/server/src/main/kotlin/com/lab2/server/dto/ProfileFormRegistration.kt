@@ -33,7 +33,7 @@ class ProfileFormRegistration(
 
     @field:NotBlank
     @field:NotNull
-    @field:Pattern(regexp = "\\d{10}")
+    @field:Pattern(regexp = "[-+0-9 ]{7,15}")
     val phoneNumber:String
 ) {
 

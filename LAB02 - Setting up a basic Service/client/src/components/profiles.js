@@ -119,7 +119,7 @@ export function CreateProfile() {
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="phoneNumber">
                                 <Form.Label>Phone Number</Form.Label>
-                                <Form.Control value={phoneNumber} type="number" placeholder="Enter PhoneNumber" onChange={e => setPhoneNumber(e.target.value)} />
+                                <Form.Control value={phoneNumber} placeholder="Enter PhoneNumber" onChange={e => setPhoneNumber(e.target.value)} />
                             </Form.Group>                           
                         </Form>
                     </Row>
@@ -201,7 +201,7 @@ export function UpdateProfile() {
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="phoneNumber">
                                 <Form.Label>Phone Number</Form.Label>
-                                <Form.Control value={phoneNumber} type="number" placeholder="Enter PhoneNumber" onChange={e => setPhoneNumber(e.target.value)} />
+                                <Form.Control value={phoneNumber}  placeholder="Enter PhoneNumber" onChange={e => setPhoneNumber(e.target.value)} />
                             </Form.Group>                           
                         </Form>
                     <Row><Button onClick={updateProfile}>SEND REQUEST</Button></Row>
@@ -220,8 +220,9 @@ function emailIsValid(email) {
 }
 
 function phoneIsValid(phone) {
-
-    const regExpPhone = new RegExp("^[0-9]{10}$");
+    console.error("fafwafawf")
+    const regExpPhone = new RegExp("[-+0-9 ]{7,15}");
+    console.log("dadw" + phone)
     return regExpPhone.test(phone)
 }
 
