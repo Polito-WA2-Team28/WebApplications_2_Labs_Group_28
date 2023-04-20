@@ -21,8 +21,8 @@
 ### PRODUCT
 | serial_number |  device_type  |        model        | device_purchase_date |           owner_id           | warranty_description | warranty_expiration_date | insurance_purchase_date | insurance_expiration_date |
 | :-----------: | :-----------: | :-----------------: | :------------------: | :--------------------------: | :------------------: | :----------------------: | :---------------------: | :-----------------------: |
-|    Laptop     |  Dell XPS 13  | 2022-03-15 12:00:00 |          1           | 3-year manufacturer warranty | 2025-03-15 12:00:00  |   2022-03-15 12:00:00    |   2023-03-15 12:00:00   |
-|  Smartphone   | iPhone 14 Pro | 2022-03-16 12:00:00 |          2           | 1-year manufacturer warranty | 2023-03-16 12:00:00  |           NULL           |          NULL           |
+| 1 |    Laptop     |  Dell XPS 13  | 2022-03-15 12:00:00 |          1           | 3-year manufacturer warranty | 2025-03-15 12:00:00  |   2022-03-15 12:00:00    |   2023-03-15 12:00:00   |
+| 2 |  Smartphone   | iPhone 14 Pro | 2022-03-16 12:00:00 |          2           | 1-year manufacturer warranty | 2023-03-16 12:00:00  |           NULL           |          NULL           |
 
 ## The web application
 
