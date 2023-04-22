@@ -1,0 +1,6 @@
+# IntelliJ
+*.idea
+
+# MacOS filesystem related
+.DS_Store
+
