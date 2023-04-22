@@ -1,0 +1,49 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: productschema.json
+title: Product
+description: JSON Schema representing the product object in the Ticket Management service application.
+type: object
+additionalProperties: false
+properties:
+  $schema:
+    type: string
+    description: Path to the JSON Schema to use for the validation of the JSON data structure.
+  serial_number:
+    type: integer
+    description: Unique identifier of the product.
+  device_type:
+    type: string
+    description: Type of the product.
+  model:
+    type: string
+    description: Model of the product.
+  device_purchase_date:
+    type: date
+    description: When the product has been purchased.
+  owner_id:
+    type: integer
+    $ref: "./profileschema.yaml#/properties/profile_id"
+    description: The identifier of the user who bought the product.
+  warranty_description:
+    type: string
+    description: Which type of warranty has been released for this product.
+  warranty_expiration_date:
+    type: date
+    description: When the warranty expires (automatically assigned when the product is bought).
+  insurance_purchase_date:
+    type: date
+    description: Added insurance (after the product has been boolean).
+  insurance_expiration_date:
+    type: date
+    description: When the insurance expires.
+required:
+- serial_number
+- device_type
+- model
+- device_purchase_date
+- owner_id
+- warranty_description
+- warranty_expiration_date
+dependencies:
+  insurance_purchase_date: ["insurance_expiration_date"]
+  insurance_expiration_date: ["insurance_purchase_date"]

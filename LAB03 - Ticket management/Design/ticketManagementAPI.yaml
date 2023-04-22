@@ -1,0 +1,135 @@
+openapi: 3.0.1
+info:
+  title: Ticket Management
+  version: 1.0.0
+  description: REST APIs for the interaction with the Ticket Management microservice.
+  termsOfService: 'http://swagger.io/terms/'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'
+servers:
+  - url: 'http://localhost:8080'
+tags:
+  - name: Tickets
+    description: Operations about the whole set of tickets.
+paths:
+  '/api/tickets':
+    post:
+      summary: Create (open) a new ticket.
+      description: A customer creates a new ticket describing the issues encountered.
+      tags:
+        - Tickets
+      operationId: newTicket
+      parameters: []
+      requestBody:
+        description: The customer needs to provide the description of the issue encountered, along with the specifications of the product to which the ticket is related.
+        content:
+          application/json:
+            schema: 
+              $ref: "./Schemas/Requests/newTicketRequest.yaml"
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "./Schemas/Responses/newTicketResponse.yaml"
+          links:
+            self:
+              description: The `ticket_id` returned in the response can be used as the `ticket_id` parameter in `GET api/tickets/:ticketsId`.
+              operationId: getTicketById
+              parameters:
+                userId: "$response.body#/ticket_id"
+            
+        400:
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Invalid requestBody!
+        401:
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Incorrect username or password.
+        500:
+          description: Server error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the server error.
+        505:
+          description: Network Error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the network error.
+    get: 
+      summary: Retrieve all the tickets.
+      description: Retrieve all the tickets from the database, independently of the status or the user. Note that the tickets are returned by means of a pagination mechanism.
+      tags:
+        - Tickets
+      operationId: getTickets
+      parameters:
+        - in: query
+          name: pageNo
+          required: false
+          schema:
+            type: integer
+          example: 2
+          description: The `id` of the requested page (if absent, the first page is returned)      
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "./Schemas/Responses/paginationSchema.yaml"
+          links:
+            self:
+              description: The `ticket_id` of every ticket returned in the response can be used as the `ticket_id` parameter in `GET api/tickets/:ticketId`.
+              operationId: getTicketById
+              parameters:
+                filmId: "$response.body#/tickets/ticket_id"
+            next:
+              description: The `pageNo` defined in the query can be used to retrieve the following page with the same `GET /api/tickets` operation.
+              operationId: getTickets
+              parameters:
+                pageNo: "$request.query.pageNo"
+        400:
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Invalid requestBody!
+        401:
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Incorrect username or password.
+        500:
+          description: Server error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the server error.
+        505:
+          description: Network Error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the network error.
