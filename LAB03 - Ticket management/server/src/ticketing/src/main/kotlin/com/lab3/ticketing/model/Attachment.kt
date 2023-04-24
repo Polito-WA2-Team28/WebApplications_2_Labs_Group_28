@@ -1,4 +1,4 @@
-package com.lab3.server.model
+package com.lab3.ticketing.model
 
 import jakarta.persistence.Entity
 import jakarta.persistence.Table
