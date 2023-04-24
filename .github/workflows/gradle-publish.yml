@@ -38,6 +38,7 @@ jobs:
       run: gradle build --dry-run
 
   publish-jib-image:
+    needs: build-gradle-project
     runs-on: ubuntu-latest
     steps:
       - name: JIB container build and publish
