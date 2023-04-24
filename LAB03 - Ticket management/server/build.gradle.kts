@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	id("org.springframework.boot") version "3.0.5"
 	id("io.spring.dependency-management") version "1.1.0"
+	id("com.google.cloud.tools.jib") version "3.1.4"
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
 	kotlin("plugin.jpa") version "1.7.22"
@@ -36,3 +37,14 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+jib {
+	container {
+		jvmFlags = listOf("-Xms512m", "-Xdebug")
+		args = listOf()
+		ports = listOf("8080/tcp")
+	}
+}
+
+jib.from.image = "amazoncorretto:17-alpine"
+jib.to.image = "runcor3/ticketing-service:0.1"
