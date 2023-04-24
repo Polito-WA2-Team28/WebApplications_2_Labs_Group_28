@@ -13,6 +13,7 @@ on:
       - main
     paths:
       - 'LAB03 - Ticket management/**'
+      - './github/**'
 
 jobs:
   build-gradle-project:
@@ -35,6 +36,19 @@ jobs:
     - name: Build with Gradle
       working-directory: './LAB03 - Ticket management/server'
       run: gradle build --dry-run
+
+  publish-jib-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: JIB container build and publish
+        uses: MathieuSoysal/jib-container-publish.yml@v2.1.4
+        with:
+          REGISTRY: docker.io
+          IMAGE_NAME: runcor3/ticketing-service
+          tag-name: latest
+          USERNAME: runcor3
+          PASSWORD: ${{ secrets.DOCKERHUB_RUNCOR3_TOKEN }}
+          java-version: 17
       
 
 
