@@ -5,3 +5,8 @@ services:
     image: runcor3/webapp2_postgres:3.0
     ports:
       - "5432:5432"
+
+  ticketing-service:
+    image: runcor3/ticketing-service:latest
+    ports:
+      - "8080:8080"
