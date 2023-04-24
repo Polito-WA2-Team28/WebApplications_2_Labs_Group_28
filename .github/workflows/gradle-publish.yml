@@ -21,13 +21,17 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/setup-java@v3
       with:
-        distribution: temurin
         java-version: 17
       
-    - uses: gradle/gradle-build-action@v2
-      with:
-        gradle-version: 7.6.1
-    - run: gradle build
+    - name: Set up Gradle
+      run: |
+        export GRADLE_VERSION=7.6.1
+        wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
+        unzip gradle-${GRADLE_VERSION}-bin.zip
+        export PATH="${PWD}/gradle-${GRADLE_VERSION}/bin:${PATH}"
+
+    - name: Build with Gradle
+      run: gradle build
       
 
 
