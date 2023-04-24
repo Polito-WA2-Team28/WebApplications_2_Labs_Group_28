@@ -47,4 +47,4 @@ jib {
 }
 
 jib.from.image = "amazoncorretto:17-alpine"
-jib.to.image = "runcor3/ticketing-service:0.1"
+jib.to.image = "runcor3/ticketing-service:latest"

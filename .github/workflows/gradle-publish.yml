@@ -15,8 +15,12 @@ on:
       - 'LAB03 - Ticket management/**'
       - '.github/**'
 
+env:
+  IMAGE_NAME: runcor3/ticketing-service
+  IMAGE_VERSION: latest
+
 jobs:
-  build-gradle-project:
+  build-gradle-project-and-push-container:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -37,19 +41,18 @@ jobs:
       working-directory: './LAB03 - Ticket management/server'
       run: gradle build --dry-run
 
-  publish-jib-image:
-    needs: build-gradle-project
-    runs-on: ubuntu-latest
-    steps:
-      - name: JIB container build and publish
-        uses: MathieuSoysal/jib-container-publish.yml@v2.1.4
-        with:
-          REGISTRY: docker.io
-          IMAGE_NAME: runcor3/ticketing-service
-          tag-name: latest
-          USERNAME: runcor3
-          PASSWORD: ${{ secrets.DOCKERHUB_RUNCOR3_TOKEN }}
-          java-version: 17
+    - name: Configure Docker credentials
+      uses: docker/login-action@v1
+      with:
+        registry: docker.io
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_RUNCOR3_TOKEN }}
+
+    - name: Build and push Docker image with JIB
+      working-directory: './LAB03 - Ticket management/server'
+      run: |
+        gradle jib --image=$IMAGE_NAME:$IMAGE_VERSION
+
       
 
 
