@@ -32,7 +32,7 @@ jobs:
         export PATH="${PWD}/gradle-${GRADLE_VERSION}/bin:${PATH}"
         
     - name: Move to Lab3 Directory
-      working-directory: "./LAB03 - Ticket management/server"
+      working-directory: './LAB03 - Ticket management/server'
     - name: Build with Gradle
       run: gradle build
       
