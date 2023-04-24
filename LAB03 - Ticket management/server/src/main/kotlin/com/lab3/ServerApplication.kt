@@ -1,4 +1,4 @@
-package com.lab3.server
+package com.lab3
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -7,6 +7,6 @@ import org.springframework.boot.runApplication
 class ServerApplication
 
 fun main(args: Array<String>) {
-	runApplication<com.lab3.server.ServerApplication>(*args)
+	runApplication<ServerApplication>(*args)
 
 }
