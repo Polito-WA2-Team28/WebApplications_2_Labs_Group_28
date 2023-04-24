@@ -2,9 +2,9 @@ package com.lab3.ticketing.model
 
 
 
-//import com.lab3.server.model.Profile
 import com.lab3.ticketing.util.TicketState
 import jakarta.persistence.*
+
 
 @Entity
 @Table
