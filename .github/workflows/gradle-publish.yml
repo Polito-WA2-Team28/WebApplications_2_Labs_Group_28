@@ -31,9 +31,9 @@ jobs:
         unzip gradle-${GRADLE_VERSION}-bin.zip
         export PATH="${PWD}/gradle-${GRADLE_VERSION}/bin:${PATH}"
         
-    - name: Move to Lab3 Directory
-      working-directory: './LAB03 - Ticket management/server'
+      
     - name: Build with Gradle
+      working-directory: './LAB03 - Ticket management/server'
       run: gradle build
       
 
