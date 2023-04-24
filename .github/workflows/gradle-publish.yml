@@ -53,6 +53,20 @@ jobs:
       run: |
         gradle jib --image=$IMAGE_NAME:$IMAGE_VERSION
 
+
+  docker-compose-test-deployment:
+    needs: build-gradle-project-and-push-container
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: isbang/compose-action@v1.4.1
+      with:
+        compose-file: "./LAB03 - Ticket management/Postgres/docker-compose.yml"
+        down-flags: "--volumes"
+        services: |
+          postgres
+          ticketing-service
+
       
 
 
