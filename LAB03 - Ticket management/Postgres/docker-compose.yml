@@ -7,6 +7,9 @@ services:
       - "5432:5432"
 
   ticketing-service:
+    depends_on: 
+    - postgres
+    
     image: runcor3/ticketing-service:latest
     ports:
       - "8080:8080"
