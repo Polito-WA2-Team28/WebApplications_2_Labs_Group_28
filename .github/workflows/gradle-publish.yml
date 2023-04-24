@@ -30,7 +30,9 @@ jobs:
         wget https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip
         unzip gradle-${GRADLE_VERSION}-bin.zip
         export PATH="${PWD}/gradle-${GRADLE_VERSION}/bin:${PATH}"
-
+        
+    - name: Move to Lab3 Directory
+      working-directory: "./LAB03 - Ticket management/server"
     - name: Build with Gradle
       run: gradle build
       
