@@ -8,42 +8,42 @@ properties:
   $schema:
     type: string
     description: Path to the JSON Schema to use for the validation of the JSON data structure.
-  serial_number:
+  serialNumber:
     type: integer
     description: Unique identifier of the product.
-  device_type:
+  deviceType:
     type: string
     description: Type of the product.
   model:
     type: string
     description: Model of the product.
-  device_purchase_date:
+  devicePurchaseDate:
     type: date
     description: When the product has been purchased.
-  owner_id:
+  ownerId:
     type: integer
-    $ref: "./profileschema.yaml#/properties/profile_id"
+    $ref: "./profileschema.yaml#/properties/profileId"
     description: The identifier of the user who bought the product.
-  warranty_description:
+  warrantyDescription:
     type: string
     description: Which type of warranty has been released for this product.
-  warranty_expiration_date:
+  warrantyExpirationDate:
     type: date
     description: When the warranty expires (automatically assigned when the product is bought).
-  insurance_purchase_date:
+  insurancePurchaseDate:
     type: date
     description: Added insurance (after the product has been boolean).
-  insurance_expiration_date:
+  insuranceExpirationDate:
     type: date
     description: When the insurance expires.
 required:
-- serial_number
-- device_type
+- serialNumber
+- deviceType
 - model
-- device_purchase_date
-- owner_id
-- warranty_description
-- warranty_expiration_date
+- devicePurchaseDate
+- ownerId
+- warrantyDescription
+- warrantyExpirationDate
 dependencies:
-  insurance_purchase_date: ["insurance_expiration_date"]
-  insurance_expiration_date: ["insurance_purchase_date"]
+  insurancePurchaseDate: ["warrantyExpirationDate"]
+  warrantyExpirationDate: ["insurancePurchaseDate"]

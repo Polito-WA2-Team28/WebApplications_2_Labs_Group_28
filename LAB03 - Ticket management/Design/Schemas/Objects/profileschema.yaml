@@ -8,7 +8,7 @@ properties:
   $schema:
     type: string
     description: Path to the JSON Schema to use for the validation of the JSON data structure.
-  profile_id:
+  profileId:
     type: integer
     description: Unique identifier of the user.
   name:
@@ -17,24 +17,24 @@ properties:
   surname:
     type: string
     description: Surname of the user.
-  registration_date:
+  registrationDate:
     type: date
     description: When the profile corresponding to the user has been created in the system.
-  birth_date:
+  birthDate:
     type: date
     description: Birthday of the user.
   email:
     type: string
     format: email
     description: The user email (used for authentication in the service application).
-  phone_number:
+  phoneNumber:
     type: string
     description: The phone number of the user.
 required:
-- profile_id
+- profileId
 - name
 - surname
-- registration_date
-- birth_date
+- registrationDate
+- birthDate
 - email
-- phone_number
+- phoneNumber
