@@ -133,4 +133,41 @@ paths:
               schema:
                 type: string
               example: Reason(s) for the network error.
-  '/api/'
+
+
+
+
+
+# Create a ticket [Customer]    POST /api/tickets
+
+# Get all tickets
+  # Get for Customer GET /api/customer/:customerId/tickets/
+  # Get for Expert GET /api/expert/:expertId/tickets/
+  # Get for Manager GET /api/manager/:managerId/tickets/
+
+# Get ticket by Id [Customer, Expert, Manager]
+  # Get for Customer GET /api/tickets/:ticketId/customer/:customerId
+  # Get for Expert GET /api/tickets/:ticketId/expert/:expertId
+  # Get for Manager GET /api/tickets/:ticketId/manager/:managerId/
+
+# Change ticket state [Customer, Expert, Manager]
+  # Assign ticket to expert [Manager]  Open => In progress    PATCH /api/tickets/:ticketId/assignTicket
+  # Remove Expert from Ticket [Manager] In progress => Open   PATCH /api/tickets/:ticketId/unassignExpert
+  # Reopen a ticket [Customer] Closed => Reopened | Resolved => Reopened  PATCH /api/tickets/:ticketId/reopen
+  # Resolve ticket [Expert] Open => Resolved | Reopened => Resolved | In Progress => Resolved  PATCH /api/tickets/:ticketId/resolve
+  # Close ticket [Customer, Expert, Manager] Open => Closed | Reopened => Closed PATCH /api/tickets/:ticketId/close
+  # Resume progress on Reopened ticket [Manager] | Reopened => In progress   PATCH /api/tickets/:ticketId/resumeProgress
+  # Compile questionary [Customer] Resolved => Closed
+
+
+# Send message 
+  # Body => customerId, ticketId, text, attachments
+  # Customer: /api/message/customer POST
+  # Expert: /api/message/expert POST
+
+# Get All Messages
+  # Customer: /api/tickets/:ticketId/messages/customer/:customerId
+  # Expert: /api/tickets/:ticketId/messages/expert/:expertId
+  # Manager: /api/tickets/:ticketId/messages/manager/:managerId/
+
+  
