@@ -8,7 +8,7 @@ import java.util.*
 
 @Entity
 @Table
-class Profile (
+class Customer (
     var name:String,
     var surname:String,
 
@@ -20,6 +20,7 @@ class Profile (
     var email:String,
     var phoneNumber:String
 
+
 ):EntityBase<Long>() {
 
 
@@ -28,23 +29,23 @@ class Profile (
 
 
 /**
- * Create a (model) Profile object given the Profile information retrieved from the Profile registration form.
+ * Create a (model) Customer object given the Customer information retrieved from the Customer registration form.
  *
- * @return a Profile object.
+ * @return a Customer object.
  */
-fun ProfileFormRegistration.toModel(): Profile{
-    return Profile(name, surname, registrationDate, birthDate, email, phoneNumber)
+fun ProfileFormRegistration.toModel(): Customer{
+    return Customer(name, surname, registrationDate, birthDate, email, phoneNumber)
 }
 
 /**
- * Create a (model) Profile object given the Profile information retrieved from the Profile modification form.
+ * Create a (model) Customer object given the Customer information retrieved from the Customer modification form.
  * It receives in input the additional information the user could not modify.
  *
  * @param id the identifier of the user retrieved from the database.
  * @param registrationDate the registration date of the user retrieved from the database.
  * @param email the email of the user retrieved from the database.
- * @return a Profile object.
+ * @return a Customer object.
  */
-fun ProfileFormModification.toModel(id:Long?, registrationDate: Date, email: String): Profile {
-    return Profile(name, surname, registrationDate, birthDate, email, phoneNumber)
+fun ProfileFormModification.toModel(id:Long?, registrationDate: Date, email: String): Customer {
+    return Customer(name, surname, registrationDate, birthDate, email, phoneNumber)
 }

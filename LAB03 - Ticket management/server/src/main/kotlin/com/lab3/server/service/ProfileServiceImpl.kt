@@ -4,12 +4,11 @@ import com.lab3.server.dto.ProfileDTO
 import com.lab3.server.dto.ProfileFormModification
 import com.lab3.server.dto.ProfileFormRegistration
 import com.lab3.server.dto.toDTO
-import com.lab3.server.model.Profile
+import com.lab3.server.model.Customer
 import com.lab3.server.model.toModel
 import com.lab3.server.repository.ProfileRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRepository) : ProfileService {
@@ -37,14 +36,14 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
     ): ProfileDTO? {
 
         /* Note: originalProfile must be non-null because email is checked in the controller. */
-        val originalProfile: Profile? = profileRepository.findByEmail(email)
-        val updatedProfile: Profile = profile.toModel(
-            id = originalProfile?.getId() ?: return null,
-            registrationDate = originalProfile.registrationDate,
-            email = originalProfile.email
+        val originalCustomer: Customer? = profileRepository.findByEmail(email)
+        val updatedCustomer: Customer = profile.toModel(
+            id = originalCustomer?.getId() ?: return null,
+            registrationDate = originalCustomer.registrationDate,
+            email = originalCustomer.email
         )
 
         /* Storing the result in the database. */
-        return profileRepository.save(updatedProfile).toDTO()
+        return profileRepository.save(updatedCustomer).toDTO()
     }
 }

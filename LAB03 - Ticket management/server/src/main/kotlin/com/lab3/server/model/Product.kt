@@ -13,7 +13,7 @@ class Product(
     @Temporal(value= TemporalType.DATE)
     var devicePurchaseDate:Date,
 
-    @ManyToOne var owner:Profile,
+    @ManyToOne var owner:Customer,
     var warrantyDescription:String,
 
     @Temporal(value= TemporalType.DATE)

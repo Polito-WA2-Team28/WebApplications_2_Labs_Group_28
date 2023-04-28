@@ -9,8 +9,12 @@ import java.util.Date
 class Message(
     var messageText:String,
     @Temporal(value=TemporalType.TIMESTAMP) var timestamp:Date,
-    //@ManyToOne var sender:Profile,
-    @OneToMany var attachmentSet:MutableSet<Attachment>
+    var sender:String,
+    @OneToMany var attachmentSet:MutableSet<Attachment>,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_id")
+    var ticket:Ticket
 
 ): EntityBase<Long>() {
 }
