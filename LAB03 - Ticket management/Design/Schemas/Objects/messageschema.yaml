@@ -11,15 +11,26 @@ properties:
   messageId:
     type: integer
     description: Unique identifier of the message inside the specific ticket.
+  ticketId:
+    type: integer
+    $ref: "./ticketschema.yaml#/properties/ticketId"
+    description: Unique identifier of the parent ticket.
   text:
     type: string
-    description: description .
-  Date:
+    description: Additional information about about the motivation behind the ticket.
+  date:
     type: date
-    description: When the product has been purchased.
-
+    description: When the message was created.
+  sender:
+    type: integer
+    $ref: "./profileschema.yaml#/properties/profileId"
+    description: Identifier of the sender of the message.
+  attachmentList:
+    type: array
+    items:
+      type: object
 required:
-
-dependencies:
-
+  - text
+  - sender
+  - date
 
