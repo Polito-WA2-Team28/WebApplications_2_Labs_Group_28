@@ -19,6 +19,12 @@ tags:
     description: Operations on tickets by Experts
   - name: Tickets Managers
     description: Operations on tickets by Managers
+  - name: Messages Customers
+    description: Operations on messages by Customers
+  - name: Messages Experts
+    description: Operations on messages by Experts
+  - name: Messages Managers
+    description: Operations on messages by Managers
 paths:
     
   # Get and Create Tickets for Customer
@@ -264,7 +270,7 @@ paths:
               example: Reason(s) for the network error.
         
 
-#   # Get Single Ticket for Customer
+  # Get Single Ticket for Customer
   '/api/customers/:customerId/tickets/:ticketId':
     get:
       summary: Retrieve a single ticket for a Customer.
@@ -321,7 +327,7 @@ paths:
                 type: string
               example: Reason(s) for the network error.
 
-#   # Get Single Ticket for Expert
+  # Get Single Ticket for Expert
   '/api/experts/:expertId/tickets/:ticketId':
     get:
       summary: Retrieve a single ticket for an Expert.
@@ -378,7 +384,7 @@ paths:
                 type: string
               example: Reason(s) for the network error.
 
-#   # Get Single Ticket for Manager
+  # Get Single Ticket for Manager
   '/api/managers/:managerId/tickets/:ticketId':
     get:
       summary: Retrieve a single ticket for a Manager.
@@ -441,7 +447,7 @@ paths:
 
 # # Change ticket state
 
-#   # Assign ticket to expert [Manager]  Open => In progress
+  # Assign ticket to expert [Manager]  Open => In progress
   '/api/managers/:managerId/tickets/:ticketId/assignTicket':
     patch:
       summary: Assign a ticket
@@ -492,7 +498,7 @@ paths:
           description: Internal Server Error
           content: {}
 
-#   # Remove Expert from Ticket [Manager] In progress => Open
+  # Remove Expert from Ticket [Manager] In progress => Open
   '/api/managers/:managerId/tickets/:ticketId/unassignExpert':
     patch:
       summary: Deassign ticket
@@ -543,7 +549,7 @@ paths:
           description: Internal Server Error
           content: {}
 
-#   # Reopen a ticket [Customer] Closed => Reopened | Resolved => Reopened
+  # Reopen a ticket [Customer] Closed => Reopened | Resolved => Reopened
   '/api/customers/:customerId/tickets/:ticketId/reopen':
     patch:
       summary: Reopen ticket
@@ -587,7 +593,7 @@ paths:
           description: Internal Server Error
           content: {}
 
-#   # Resolve ticket [Expert] Open => Resolved | Reopened => Resolved | In Progress => Resolved
+  # Resolve ticket [Expert] Open => Resolved | Reopened => Resolved | In Progress => Resolved
   '/api/experts/:expertId/tickets/:ticketId/resolve':
     patch:
       summary: Resolve a ticket
@@ -631,8 +637,7 @@ paths:
           description: Internal Server Error
           content: {}
 
-#   # Close ticket [Expert, Manager] Open => Closed | Reopened => Closed
-
+  # Close ticket [Expert, Manager] Open => Closed | Reopened => Closed
   '/api/experts/:expertId/tickets/:ticketId/close':
     patch:
       summary: Close a ticket
@@ -720,7 +725,7 @@ paths:
           content: {}
 
 
-#   # Resume progress on Reopened ticket [Manager] | Reopened => In progress
+  # Resume progress on Reopened ticket [Manager] | Reopened => In progress
   '/api/managers/:managerId/tickets/:ticketId/resumeProgress':
     patch:
       summary: Put ticket in progress again
@@ -771,8 +776,8 @@ paths:
           description: Internal Server Error
           content: {}
 
-#   # Compile survey [Customer] Resolved => Closed
-  '/api/customer/:customerId/tickets/:ticketId/compileSurvey':
+  # Compile survey [Customer] Resolved => Closed
+  '/api/customers/:customerId/tickets/:ticketId/compileSurvey':
     patch:
       summary: Compile satisfaction survey
       description: Operation performed by a customer that closes a ticket
@@ -816,8 +821,8 @@ paths:
           content: {}
 
 
-# Remove a ticket from the system
-  '/api/manager/:managerId/tickets/:ticketId/removeTicket':
+  # Remove a ticket from the system
+  '/api/managers/:managerId/tickets/:ticketId/removeTicket':
     delete:
       summary: Remove Ticket
       description: Operation that completely removes a ticket from the system
@@ -856,32 +861,387 @@ paths:
           description: Internal Server Error
           content: {}
 
-# # Messages management
+  # Customer manages message
+  '/api/customers/:customerId/tickets/:ticketId/messages':
+    get:
+      summary: Customer retrieve messages.
+      description: Operation performed by a Customer to retrieve all messages related to the specified ticket. Note that the messages are returned by means of a pagination mechanism.
+      tags:
+        - Messages Customers
+      operationId: getMessagesCustomers
+      parameters:
+        - in: path
+          name: customerId
+          schema:
+            type: integer
+          required: true
+          description: Id of the customer
+        - in: query
+          name: pageNo
+          required: false
+          schema:
+            type: integer
+          example: 2
+          description: The `id` of the requested page (if absent, the first page is returned)
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "./Schemas/Responses/paginationSchema.yaml"
+          links:
+            self:
+              description: The `ticket_id` of every ticket returned in the response can be used as the `ticket_id` parameter in `GET api/customers/:customerId/tickets/:ticketId`.
+              operationId: getTicketById
+              parameters:
+                filmId: "$response.body#/tickets/ticket_id"
+            next:
+              description: The `pageNo` defined in the query can be used to retrieve the following page with the same `GET /api/customers/:customerId/tickets` operation.
+              operationId: getTickets
+              parameters:
+                pageNo: "$request.query.pageNo"
+        401:
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Incorrect username or password.
+        404:
+          description:  Not found
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Ticket not found.
+        500:
+          description: Server error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the server error.
+        505:
+          description: Network Error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the network error.
+    post:
+      summary: Customer sends a new message.
+      description: A customer sends a new message for the specified ticket.
+      tags:
+        - Messages Customers
+      operationId: newMessageCustomer
+      parameters: []
+      requestBody:
+        description: The customer needs to provide the textual description of the new message and, eventually, the attachment files.
+        content:
+          application/json:
+            schema: 
+              $ref: "./Schemas/Requests/newMessageRequest.yaml"
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "./Schemas/Responses/newMessageResponse.yaml"
+          links:
+            self:
+              description: The `ticket_id` returned in the response can be used as the `ticket_id` parameter in `GET api/tickets/:ticketsId`.
+              operationId: getTicketById
+              parameters:
+                userId: "$response.body#/ticket_id"
+            
+        400:
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Invalid requestBody!
+        401:
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Incorrect username or password.
+        500:
+          description: Server error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the server error.
+        505:
+          description: Network Error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the network error.
+  
 
-#   # Customer Send message
-#   '/api/customer/tickets/:ticketId/message':
-#     post:
 
-#   # Expert Send message 
-#   '/api/expert/tickets/:ticketId/message':
-#     post:
+    
 
-#   # Manager Send message
-#   '/api/manager/tickets/:ticketId/message':
-#     post:
+# Expert manages message
+  '/api/experts/:expertId/tickets/:ticketId/messages':
+    get:
+      summary: Expert retrieve messages.
+      description: Operation performed by a Expert to retrieve all messages related to the specified ticket. Note that the messages are returned by means of a pagination mechanism.
+      tags:
+        - Messages Experts
+      operationId: getMessagesExperts
+      parameters:
+        - in: path
+          name: expertId
+          schema:
+            type: integer
+          required: true
+          description: Id of the expert
+        - in: query
+          name: pageNo
+          required: false
+          schema:
+            type: integer
+          example: 2
+          description: The `id` of the requested page (if absent, the first page is returned)
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "./Schemas/Responses/paginationSchema.yaml"
+          links:
+            self:
+              description: The `ticket_id` of every ticket returned in the response can be used as the `ticket_id` parameter in `GET api/customers/:customerId/tickets/:ticketId`.
+              operationId: getTicketById
+              parameters:
+                filmId: "$response.body#/tickets/ticket_id"
+            next:
+              description: The `pageNo` defined in the query can be used to retrieve the following page with the same `GET /api/customers/:customerId/tickets` operation.
+              operationId: getTickets
+              parameters:
+                pageNo: "$request.query.pageNo"
+        401:
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Incorrect username or password.
+        404:
+          description:  Not found
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Ticket not found.
+        500:
+          description: Server error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the server error.
+        505:
+          description: Network Error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the network error.
+    post:
+      summary: Expert sends a new message.
+      description: An expert sends a new message for the specified ticket.
+      tags:
+        - Messages Experts
+      operationId: newMessageExpert
+      parameters: []
+      requestBody:
+        description: The expert needs to provide the textual description of the new message and, eventually, the attachment files.
+        content:
+          application/json:
+            schema: 
+              $ref: "./Schemas/Requests/newMessageRequest.yaml"
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "./Schemas/Responses/newMessageResponse.yaml"
+          links:
+            self:
+              description: The `ticket_id` returned in the response can be used as the `ticket_id` parameter in `GET api/tickets/:ticketsId`.
+              operationId: getTicketById
+              parameters:
+                userId: "$response.body#/ticket_id"
+            
+        400:
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Invalid requestBody!
+        401:
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Incorrect username or password.
+        500:
+          description: Server error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the server error.
+        505:
+          description: Network Error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the network error.
+  
+    
 
-#   # Customer Get Messages
-#   '/api/customer/:customerId/tickets/:ticketId/messages':
-#     get:
-
-#   # Expert Get Messages
-#   '/api/expert/:expertId/tickets/:ticketId/messages':
-#     get:
-
-#   # Manager Get Messages
-#   '/api/manager/:managerId/tickets/:ticketId/messages':
-#     get:
-
+# Expert manages message
+  '/api/managers/:managerId/tickets/:ticketId/messages':
+    get:
+      summary: Manager retrieve messages.
+      description: Operation performed by a Manager to retrieve all messages related to the specified ticket. Note that the messages are returned by means of a pagination mechanism.
+      tags:
+        - Messages Managers
+      operationId: getMessagesManagers
+      parameters:
+        - in: path
+          name: managerId
+          schema:
+            type: integer
+          required: true
+          description: Id of the manager
+        - in: query
+          name: pageNo
+          required: false
+          schema:
+            type: integer
+          example: 2
+          description: The `id` of the requested page (if absent, the first page is returned)
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "./Schemas/Responses/paginationSchema.yaml"
+          links:
+            self:
+              description: The `ticket_id` of every ticket returned in the response can be used as the `ticket_id` parameter in `GET api/customers/:customerId/tickets/:ticketId`.
+              operationId: getTicketById
+              parameters:
+                filmId: "$response.body#/tickets/ticket_id"
+            next:
+              description: The `pageNo` defined in the query can be used to retrieve the following page with the same `GET /api/customers/:customerId/tickets` operation.
+              operationId: getTickets
+              parameters:
+                pageNo: "$request.query.pageNo"
+        401:
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Incorrect username or password.
+        404:
+          description:  Not found
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Ticket not found.
+        500:
+          description: Server error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the server error.
+        505:
+          description: Network Error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the network error.
+    post:
+      summary: Manager sends a new message.
+      description: A manager sends a new message for the specified ticket.
+      tags:
+        - Messages Managers
+      operationId: newMessageManager
+      parameters: []
+      requestBody:
+        description: The manager needs to provide the textual description of the new message and, eventually, the attachment files.
+        content:
+          application/json:
+            schema: 
+              $ref: "./Schemas/Requests/newMessageRequest.yaml"
+        required: true
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "./Schemas/Responses/newMessageResponse.yaml"
+          links:
+            self:
+              description: The `ticket_id` returned in the response can be used as the `ticket_id` parameter in `GET api/tickets/:ticketsId`.
+              operationId: getTicketById
+              parameters:
+                userId: "$response.body#/ticket_id"
+            
+        400:
+          description: Bad request
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Invalid requestBody!
+        401:
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Incorrect username or password.
+        500:
+          description: Server error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the server error.
+        505:
+          description: Network Error
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: Reason(s) for the network error.
+  
 
 
 

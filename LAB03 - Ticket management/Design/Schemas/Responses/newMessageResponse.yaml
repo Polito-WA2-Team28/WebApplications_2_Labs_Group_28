@@ -1,7 +1,7 @@
 $schema: http://json-schema.org/draft-07/schema#
-$id: messageschema.yaml
+$id: newMessageResponse.yaml
 title: Message
-description: JSON Schema representing the message object in the Ticket Management service application.
+description: JSON Schema representing the message response in the Ticket Management service application.
 type: object
 additionalProperties: false
 properties:
@@ -13,7 +13,7 @@ properties:
     description: Unique identifier of the message inside the specific ticket.
   ticketId:
     type: integer
-    $ref: "./ticketschema.yaml#/properties/ticketId"
+    $ref: "../Objects/ticketschema.yaml#/properties/ticketId"
     description: Unique identifier of the parent ticket.
   text:
     type: string
@@ -23,12 +23,12 @@ properties:
     description: When the message was created.
   sender:
     type: integer
-    $ref: "./profileschema.yaml#/properties/profileId"
+    $ref: "../Objects/profileschema.yaml#/properties/profileId"
     description: Identifier of the sender of the message.
   attachmentList:
     type: array
     items:
-      $ref: "./attachmentschema.yaml"
+      $ref: "../Objects/attachmentschema.yaml"
 required:
   - text
   - sender

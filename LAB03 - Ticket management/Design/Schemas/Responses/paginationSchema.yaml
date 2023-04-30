@@ -1,5 +1,5 @@
 $schema: http://json-schema.org/draft-07/schema#
-$id: paginationschema.json
+$id: paginationschema.yaml
 title: Pagination Response Body
 description: JSON Schema representing the pagination object of any response.
 type: object
