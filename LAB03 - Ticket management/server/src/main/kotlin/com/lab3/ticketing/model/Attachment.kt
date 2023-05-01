@@ -7,5 +7,13 @@ import jakarta.persistence.*
 @Table
 class Attachment(
 
+    @Column(name = "fileName")
+    var fileName: String,
+    @Column(name = "contentType")
+    var contentType: String,
+    @Lob
+    @Column(name = "fileData")
+    var fileData: ByteArray
+
 ): EntityBase<Long>() {
 }
