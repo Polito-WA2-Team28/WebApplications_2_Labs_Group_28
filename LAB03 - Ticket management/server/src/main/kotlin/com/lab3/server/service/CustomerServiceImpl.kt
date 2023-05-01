@@ -1,26 +1,26 @@
 package com.lab3.server.service
 
-import com.lab3.server.dto.ProfileDTO
-import com.lab3.server.dto.ProfileFormModification
-import com.lab3.server.dto.ProfileFormRegistration
+import com.lab3.server.dto.CustomerDTO
+import com.lab3.server.dto.CustomerFormModification
+import com.lab3.server.dto.CustomerFormRegistration
 import com.lab3.server.dto.toDTO
 import com.lab3.server.model.Customer
 import com.lab3.server.model.toModel
-import com.lab3.server.repository.ProfileRepository
+import com.lab3.server.repository.CustomerRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
-class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRepository) : ProfileService {
+class CustomerServiceImpl @Autowired constructor(val customerRepository: CustomerRepository) : CustomerService {
 
 
-    override fun getProfileByEmail(email: String): ProfileDTO? {
-        return profileRepository.findByEmail(email)?.toDTO()
+    override fun getProfileByEmail(email: String): CustomerDTO? {
+        return customerRepository.findByEmail(email)?.toDTO()
     }
 
 
-    override fun addProfile(profile: ProfileFormRegistration):ProfileDTO? {
-        return profileRepository.save(profile.toModel()).toDTO()
+    override fun addProfile(profile: CustomerFormRegistration):CustomerDTO? {
+        return customerRepository.save(profile.toModel()).toDTO()
     }
 
     /**
@@ -32,11 +32,11 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
      */
     override fun editProfile(
         email: String,
-        profile: ProfileFormModification
-    ): ProfileDTO? {
+        profile: CustomerFormModification
+    ): CustomerDTO? {
 
         /* Note: originalProfile must be non-null because email is checked in the controller. */
-        val originalCustomer: Customer? = profileRepository.findByEmail(email)
+        val originalCustomer: Customer? = customerRepository.findByEmail(email)
         val updatedCustomer: Customer = profile.toModel(
             id = originalCustomer?.getId() ?: return null,
             registrationDate = originalCustomer.registrationDate,
@@ -44,6 +44,6 @@ class ProfileServiceImpl @Autowired constructor(val profileRepository: ProfileRe
         )
 
         /* Storing the result in the database. */
-        return profileRepository.save(updatedCustomer).toDTO()
+        return customerRepository.save(updatedCustomer).toDTO()
     }
 }

@@ -3,6 +3,7 @@ package com.lab3.ticketing.model
 import com.lab3.server.model.*
 import com.lab3.ticketing.util.TicketState
 import jakarta.persistence.*
+import java.util.Date
 
 
 @Entity
@@ -15,7 +16,13 @@ class Ticket(
     @ManyToOne(fetch = FetchType.LAZY) var product: Product,
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "ticket")
-    var messages: MutableSet<Message>
+    var messages: MutableSet<Message>,
+
+    @Temporal(value = TemporalType.DATE)
+    var creationDate:Date,
+
+    @Temporal(value = TemporalType.DATE)
+    var lastModified:Date
 
 ): EntityBase<Long>() {
 

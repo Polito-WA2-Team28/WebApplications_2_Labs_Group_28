@@ -9,6 +9,7 @@ import java.util.*
 class Product(
     var deviceType:String,
     var model:String,
+    var serialNumber:Long,
 
     @Temporal(value= TemporalType.DATE)
     var devicePurchaseDate:Date,

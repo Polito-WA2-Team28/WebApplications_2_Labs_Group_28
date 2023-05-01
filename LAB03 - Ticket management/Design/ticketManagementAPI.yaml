@@ -61,7 +61,7 @@ paths:
               description: The `ticket_id` of every ticket returned in the response can be used as the `ticket_id` parameter in `GET api/customer/:customerId/tickets/:ticketId`.
               operationId: getTicketById
               parameters:
-                filmId: "$response.body#/tickets/ticket_id"
+                ticketId: "$response.body#/tickets/ticket_id"
             next:
               description: The `pageNo` defined in the query can be used to retrieve the following page with the same `GET /api/customer/:customerId/tickets` operation.
               operationId: getTickets
@@ -448,7 +448,7 @@ paths:
 # # Change ticket state
 
   # Assign ticket to expert [Manager]  Open => In progress
-  '/api/managers/:managerId/tickets/:ticketId/assignTicket':
+  '/api/managers/:managerId/tickets/:ticketId/assign':
     patch:
       summary: Assign a ticket
       description: Operation performed by a manager to assign a specific ticket to an expert.
@@ -499,13 +499,13 @@ paths:
           content: {}
 
   # Remove Expert from Ticket [Manager] In progress => Open
-  '/api/managers/:managerId/tickets/:ticketId/unassignExpert':
+  '/api/managers/:managerId/tickets/:ticketId/relieveExpert':
     patch:
-      summary: Deassign ticket
-      description: Operation performed by a manager to deassign an expert from a ticket
+      summary: Relieve Expert from ticket
+      description: Operation performed by a manager to relieve an expert from a ticket
       tags:
         - Tickets Managers
-      operationId: deassignTicket
+      operationId: relieveTicket
       parameters:
         - in: path
           name: managerId
@@ -520,7 +520,7 @@ paths:
           required: true
           description: Id of the ticket
       requestBody:
-        description: Contains the id of the expert that has to be deassigned
+        description: Contains the id of the expert that has to be relieved
         content:
           application/json:
             schema: 
@@ -822,7 +822,7 @@ paths:
 
 
   # Remove a ticket from the system
-  '/api/managers/:managerId/tickets/:ticketId/removeTicket':
+  '/api/managers/:managerId/tickets/:ticketId/remove':
     delete:
       summary: Remove Ticket
       description: Operation that completely removes a ticket from the system

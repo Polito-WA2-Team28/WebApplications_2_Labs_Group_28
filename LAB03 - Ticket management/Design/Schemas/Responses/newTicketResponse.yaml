@@ -11,6 +11,9 @@ properties:
   ticketId:
     type: integer
     description: Unique identifier of the ticket.
+  state:
+    type: string
+    enum: [OPEN, CLOSED, RESOLVED, IN_PROGRESS, REOPENED]
   description:
     type: string
     description: Textual description od the issue encountered by the user.

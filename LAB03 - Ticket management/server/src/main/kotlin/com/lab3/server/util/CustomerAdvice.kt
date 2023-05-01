@@ -10,7 +10,7 @@ import com.lab3.server.exception.Exception
 import java.net.ConnectException
 
 @ControllerAdvice
-class ProfileAdvice {
+class CustomerAdvice {
 
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)

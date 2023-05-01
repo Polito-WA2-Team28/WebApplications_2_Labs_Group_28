@@ -1,6 +1,5 @@
 package com.lab3.server.dto
 
-
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
@@ -8,7 +7,7 @@ import org.jetbrains.annotations.NotNull
 import org.springframework.format.annotation.DateTimeFormat
 import java.util.*
 
-class ProfileFormRegistration(
+class CustomerFormModification(
     @field:NotBlank
     @field:NotNull
     @field:Size(max = 30)
@@ -21,20 +20,12 @@ class ProfileFormRegistration(
 
     @field:DateTimeFormat
     @field:NotNull
-    val registrationDate: Date,
-
-    @field:DateTimeFormat
-    @field:NotNull
     val birthDate: Date,
-
-    @field:NotNull
-    @field:Pattern(regexp = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})")
-    val email:String,
 
     @field:NotBlank
     @field:NotNull
     @field:Pattern(regexp = "[-+0-9 ]{7,15}")
     val phoneNumber:String
-) {
+){
 
 }

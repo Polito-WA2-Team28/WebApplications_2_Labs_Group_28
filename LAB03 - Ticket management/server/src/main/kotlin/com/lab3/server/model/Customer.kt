@@ -1,8 +1,8 @@
 package com.lab3.server.model
 
 
-import com.lab3.server.dto.ProfileFormModification
-import com.lab3.server.dto.ProfileFormRegistration
+import com.lab3.server.dto.CustomerFormModification
+import com.lab3.server.dto.CustomerFormRegistration
 import jakarta.persistence.*
 import java.util.*
 
@@ -33,7 +33,7 @@ class Customer (
  *
  * @return a Customer object.
  */
-fun ProfileFormRegistration.toModel(): Customer{
+fun CustomerFormRegistration.toModel(): Customer{
     return Customer(name, surname, registrationDate, birthDate, email, phoneNumber)
 }
 
@@ -46,6 +46,6 @@ fun ProfileFormRegistration.toModel(): Customer{
  * @param email the email of the user retrieved from the database.
  * @return a Customer object.
  */
-fun ProfileFormModification.toModel(id:Long?, registrationDate: Date, email: String): Customer {
+fun CustomerFormModification.toModel(id:Long?, registrationDate: Date, email: String): Customer {
     return Customer(name, surname, registrationDate, birthDate, email, phoneNumber)
 }
