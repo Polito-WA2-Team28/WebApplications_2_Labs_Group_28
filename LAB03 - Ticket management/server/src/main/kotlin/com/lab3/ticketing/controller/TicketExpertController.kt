@@ -19,7 +19,7 @@ class TicketExpertController @Autowired constructor(val ticketService: TicketSer
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(@PathVariable("expertId") expertId:Long,
                         @PathVariable("ticketId") ticketId:Long): TicketDTO?{
-        return ticketService.getTicketById(ticketId) //Add exception handling like in product controller
+        return ticketService.getTicketDTOById(ticketId) //Add exception handling like in product controller
     }
 
     @PatchMapping("/API/experts/{expertId}/tickets/{ticketId}/resolve")

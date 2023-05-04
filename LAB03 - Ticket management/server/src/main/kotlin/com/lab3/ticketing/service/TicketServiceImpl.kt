@@ -45,7 +45,7 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
         return ticketRepository.findByCustomerId(customerId).map{it.toDTO()}
     }
 
-    override fun changeTicketStatus(ticket: Ticket, initialState: TicketState, newState: TicketState): TicketDTO {
+    override fun changeTicketStatus(ticket: Ticket, newState: TicketState): TicketDTO {
         ticket.state = newState
         return ticketRepository.save(ticket).toDTO()
     }

@@ -23,6 +23,6 @@ interface TicketService {
 
     fun getAllCustomerTickets(customerId: Long): List<TicketDTO>
 
-    fun changeTicketStatus(ticket:Ticket, initialState:TicketState, newState:TicketState): TicketDTO
+    fun changeTicketStatus(ticket:Ticket, newState:TicketState): TicketDTO
 
 }

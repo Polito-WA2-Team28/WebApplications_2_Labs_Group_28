@@ -70,8 +70,11 @@ class TicketCustomerController @Autowired constructor(
                      @PathVariable("ticketId") ticketId:Long):TicketDTO? {
         var ticket = ticketService.getTicketModelById(ticketId)
 
-        return if(ticket != null && (ticket.state == TicketState.OPEN || ticket.state == TicketState.RESOLVED)){
-            ticketService.changeTicketStatus(ticket, ticket.state, TicketState.REOPENED)
+        return if(ticket != null &&
+                  ticket.customer.getId() == customerId &&
+                  (ticket.state == TicketState.OPEN || ticket.state == TicketState.RESOLVED)){
+
+                  ticketService.changeTicketStatus(ticket, TicketState.REOPENED)
         } else{
             null
         }
@@ -80,7 +83,17 @@ class TicketCustomerController @Autowired constructor(
     @PatchMapping("/API/customers/{customerId}/tickets/{ticketId}/compileSurvey")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun compileTicketSurvey(@PathVariable("customerId") customerId:Long,
-                     @PathVariable("ticketId") ticketId:Long){
+                     @PathVariable("ticketId") ticketId:Long):TicketDTO?{
 
+        var ticket = ticketService.getTicketModelById(ticketId)
+
+        return if(ticket != null &&
+                  ticket.customer.getId() == customerId &&
+                  (ticket.state == TicketState.RESOLVED)){
+
+            ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
+        } else {
+            null
+        }
     }
 }
