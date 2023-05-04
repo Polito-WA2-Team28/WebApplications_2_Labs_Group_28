@@ -2,6 +2,7 @@ package com.lab3.ticketing.controller
 
 import com.lab3.ticketing.dto.TicketDTO
 import com.lab3.ticketing.service.TicketServiceImpl
+import com.lab3.ticketing.util.TicketState
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
@@ -27,6 +28,20 @@ class TicketExpertController @Autowired constructor(val ticketService: TicketSer
     fun resolveTicket(@PathVariable("expertId") expertId:Long,
                      @PathVariable("ticketId") ticketId:Long){
 
+        var ticket = ticketService.getTicketModelById(ticketId)
+        var expert = ticket?.expert
+        var allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED, TicketState.IN_PROGRESS)
+
+        if(ticket != null &&
+           expert != null &&
+           expert.getId() == expertId &&
+           allowedStates.contains(ticket.state)){
+
+            ticketService.changeTicketStatus(ticket, TicketState.RESOLVED)
+        }
+
+
+
     }
 
     @PatchMapping("/API/experts/{expertId}/tickets/{ticketId}/close")
@@ -34,5 +49,16 @@ class TicketExpertController @Autowired constructor(val ticketService: TicketSer
     fun closeTicket(@PathVariable("expertId") expertId:Long,
                      @PathVariable("ticketId") ticketId:Long){
 
+        var ticket = ticketService.getTicketModelById(ticketId)
+        var expert = ticket?.expert
+        var allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED)
+
+        if(ticket != null &&
+           expert != null &&
+           expert.getId() == expertId &&
+           allowedStates.contains(ticket.state)){
+
+            ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
+        }
     }
 }

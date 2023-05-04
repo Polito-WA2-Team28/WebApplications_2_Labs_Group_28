@@ -35,11 +35,10 @@ class TicketCustomerController @Autowired constructor(
 
 
         if (customer != null && product != null && product.owner == customer) {
-            println("All checked")
             ticketService.createTicket(ticket, customer, product)
         }
         else{
-            println("nope")
+            //throw exception
         }
     }
 
@@ -69,10 +68,11 @@ class TicketCustomerController @Autowired constructor(
     fun reopenTicket(@PathVariable("customerId") customerId:Long,
                      @PathVariable("ticketId") ticketId:Long):TicketDTO? {
         var ticket = ticketService.getTicketModelById(ticketId)
+        var allowedStates = mutableSetOf(TicketState.CLOSED, TicketState.RESOLVED)
 
         return if(ticket != null &&
                   ticket.customer.getId() == customerId &&
-                  (ticket.state == TicketState.OPEN || ticket.state == TicketState.RESOLVED)){
+                  allowedStates.contains(ticket.state)){
 
                   ticketService.changeTicketStatus(ticket, TicketState.REOPENED)
         } else{
@@ -89,7 +89,7 @@ class TicketCustomerController @Autowired constructor(
 
         return if(ticket != null &&
                   ticket.customer.getId() == customerId &&
-                  (ticket.state == TicketState.RESOLVED)){
+                  ticket.state == TicketState.RESOLVED){
 
             ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
         } else {
