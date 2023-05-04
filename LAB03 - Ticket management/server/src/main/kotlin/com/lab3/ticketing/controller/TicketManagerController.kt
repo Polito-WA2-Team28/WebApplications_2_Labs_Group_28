@@ -1,12 +1,12 @@
 package com.lab3.ticketing.controller
 
-import com.lab3.ticketing.service.TicketCustomerService
+import com.lab3.ticketing.service.TicketServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
-class TicketManagerController @Autowired constructor(val ticketService: TicketCustomerService) {
+class TicketManagerController @Autowired constructor(val ticketService: TicketServiceImpl) {
     @GetMapping("/API/managers/{managerId}/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(@PathVariable("managerId") managerId:Long){

@@ -11,5 +11,5 @@ data class TicketDTO(val ticketId:Long?, val ticketState:TicketState, val descri
 
 fun Ticket.toDTO() : TicketDTO {
     return TicketDTO(this.getId(), state, description, this.product.serialNumber,
-                     this.customer.getId(), this.expert.getId(), this.creationDate, this.lastModified)
+                     this.customer.getId(), this.expert?.getId(), this.creationDate, this.lastModified)
 }

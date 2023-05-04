@@ -3,11 +3,14 @@ package com.lab3.server.service
 import com.lab3.server.dto.CustomerDTO
 import com.lab3.server.dto.CustomerFormModification
 import com.lab3.server.dto.CustomerFormRegistration
+import com.lab3.server.model.Customer
 
 interface CustomerService {
 
 
     fun getProfileByEmail(email:String) : CustomerDTO?
+
+    fun getCustomerById(id: Long): Customer?
 
     fun addProfile(profile:CustomerFormRegistration):CustomerDTO?
 

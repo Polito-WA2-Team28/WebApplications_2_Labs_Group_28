@@ -22,7 +22,7 @@ class ProductController @Autowired constructor(val productService: ProductServic
 
     @GetMapping("/API/products/{productId}")
     @ResponseStatus(HttpStatus.OK)
-    fun getProductById(@PathVariable("productId") productId: Int): ProductDTO? {
+    fun getProductById(@PathVariable("productId") productId: Long): ProductDTO? {
         return productService.getProductById(productId)
             ?: throw Exception.ProductNotFoundException("No product matched the requested Id")
     }
