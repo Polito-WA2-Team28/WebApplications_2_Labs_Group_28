@@ -26,4 +26,20 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
     override fun createTicket(ticket: TicketCreationData, customer: Customer, product: Product): TicketDTO? {
         return ticketRepository.save(ticket.toModel(customer, product)).toDTO()
     }
+
+    override fun getAllTickets(): List<TicketDTO> {
+        return ticketRepository.findAll().map{it.toDTO()}
+    }
+
+    override fun getAllExpertTickets(expertId: Long): List<TicketDTO> {
+        return ticketRepository.findByExpertId(expertId).map{it.toDTO()}
+    }
+
+    override fun getAllCustomerTickets(customerId: Long): List<TicketDTO> {
+        return ticketRepository.findByCustomerId(customerId).map{it.toDTO()}
+    }
+
+
+
+
 }

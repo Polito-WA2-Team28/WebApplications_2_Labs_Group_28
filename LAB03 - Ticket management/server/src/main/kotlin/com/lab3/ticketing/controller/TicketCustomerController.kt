@@ -44,15 +44,23 @@ class TicketCustomerController @Autowired constructor(
 
     @GetMapping("/API/customers/{customerId}/tickets")
     @ResponseStatus(HttpStatus.OK)
-    fun getTickets(@PathVariable("customerId") customerId:Long){
-
+    fun getTickets(@PathVariable("customerId") customerId:Long): List<TicketDTO>{
+        return ticketService.getAllCustomerTickets(customerId)
     }
 
     @GetMapping("/API/customers/{customerId}/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(@PathVariable("customerId") customerId:Long,
                         @PathVariable("ticketId") ticketId:Long): TicketDTO?{
-        return ticketService.getTicketById(ticketId)
+        var ticket = ticketService.getTicketById(ticketId)
+
+        if(ticket != null && ticket.customerId == customerId){
+            return ticket
+        }
+        else{
+            // not allowed
+            return null
+        }
     }
 
     @PatchMapping("/API/customers/{customerId}/tickets/{ticketId}/reopen")

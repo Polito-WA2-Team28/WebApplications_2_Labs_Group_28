@@ -12,4 +12,10 @@ interface TicketService {
     fun getTicketById(id:Long) : TicketDTO?
 
     fun createTicket(ticket: TicketCreationData, customer: Customer, product: Product): TicketDTO?
+
+    fun getAllTickets(): List<TicketDTO>
+
+    fun getAllExpertTickets(expertId: Long): List<TicketDTO>
+
+    fun getAllCustomerTickets(customerId: Long): List<TicketDTO>
 }
