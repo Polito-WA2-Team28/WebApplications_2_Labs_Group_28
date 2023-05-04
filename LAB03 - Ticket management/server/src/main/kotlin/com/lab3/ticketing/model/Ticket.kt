@@ -1,13 +1,13 @@
 package com.lab3.ticketing.model
 
-import com.lab3.server.dto.CustomerDTO
-import com.lab3.server.dto.CustomerFormModification
-import com.lab3.server.dto.ProductDTO
-import com.lab3.server.model.*
+import com.lab3.server.model.Customer
+import com.lab3.server.model.EntityBase
+import com.lab3.server.model.Expert
+import com.lab3.server.model.Product
 import com.lab3.ticketing.dto.TicketCreationData
 import com.lab3.ticketing.util.TicketState
 import jakarta.persistence.*
-import java.util.Date
+import java.util.*
 
 
 @Entity
@@ -30,6 +30,10 @@ class Ticket(
 
 ): EntityBase<Long>() {
 
+    fun assignExpert(expert: Expert): Ticket {
+        this.expert = expert
+        return this
+    }
 }
 
 
@@ -37,3 +41,4 @@ fun TicketCreationData.toModel(customer: Customer, product: Product): Ticket {
     val date = Date()
     return Ticket(TicketState.OPEN, customer, null, description, product, mutableSetOf(), date, date)
 }
+

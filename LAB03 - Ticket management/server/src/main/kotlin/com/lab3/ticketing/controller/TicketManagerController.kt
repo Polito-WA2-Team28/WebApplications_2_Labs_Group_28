@@ -1,7 +1,11 @@
 package com.lab3.ticketing.controller
 
+import com.lab3.server.exception.Exception
+import com.lab3.server.model.Expert
+import com.lab3.server.service.ExpertService
+import com.lab3.server.service.ManagerService
 import com.lab3.ticketing.dto.TicketDTO
-import com.lab3.ticketing.exception.Exception
+import com.lab3.ticketing.exception.TicketException
 import com.lab3.ticketing.model.Ticket
 import com.lab3.ticketing.service.TicketServiceImpl
 import com.lab3.ticketing.util.TicketState
@@ -10,7 +14,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
-class TicketManagerController @Autowired constructor(val ticketService: TicketServiceImpl) {
+class TicketManagerController @Autowired constructor(
+    val ticketService: TicketServiceImpl,
+    val managerService: ManagerService,
+    val expertService: ExpertService
+) {
     @GetMapping("/API/managers/{managerId}/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(@PathVariable("managerId") managerId:Long):List<TicketDTO>{
@@ -28,16 +36,29 @@ class TicketManagerController @Autowired constructor(val ticketService: TicketSe
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun assignTicket (
         @PathVariable("managerId") managerId: Long,
-        @PathVariable("ticketId") ticketId: Long
+        @PathVariable("ticketId") ticketId: Long,
+        @RequestBody expertId: Long
     ): TicketDTO? {
 
         /* retrieve the ticket from the database */
         val ticket: Ticket = ticketService.getTicketModelById(ticketId)
-            ?: throw Exception.TicketNotFoundException("Ticket not found.")
+            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
 
         /* checking the state of the ticket */
         if (ticket.state != TicketState.OPEN) {
-            throw Exception.TicketInvalidOperationException("Invalid ticket status for this operation.")
+            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
+        }
+
+        /* retrieving the expert and checking that manager exists */
+        val expert: Expert? = expertService.getExpertById(expertId)
+            ?: throw Exception.ExpertNotFoundException("Expert not found.")
+        if (managerService.getManagerById(managerId) == null) {
+            throw Exception.ManagerNotFoundException("Manager not found.")
+        }
+
+        /* assign the expert to the ticket */
+        if (expert != null) {
+            ticket.assignExpert(expert)
         }
 
         /* change the ticket status */
@@ -54,11 +75,11 @@ class TicketManagerController @Autowired constructor(val ticketService: TicketSe
 
         /* retrieve the ticket from the database */
         val ticket: Ticket = ticketService.getTicketModelById(ticketId)
-            ?: throw Exception.TicketNotFoundException("Ticket not found.")
+            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
 
         /* checking the state of the ticket */
         if (ticket.state != TicketState.IN_PROGRESS) {
-            throw Exception.TicketInvalidOperationException("Invalid ticket status for this operation.")
+            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
         /* change the ticket status */
@@ -74,11 +95,11 @@ class TicketManagerController @Autowired constructor(val ticketService: TicketSe
 
         /* retrieve the ticket from the database */
         val ticket: Ticket = ticketService.getTicketModelById(ticketId)
-            ?: throw Exception.TicketNotFoundException("Ticket not found.")
+            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
 
         /* checking the state of the ticket */
         if (ticket.state != TicketState.OPEN || ticket.state != TicketState.RESOLVED || ticket.state != TicketState.REOPENED) {
-            throw Exception.TicketInvalidOperationException("Invalid ticket status for this operation.")
+            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
         /* change the ticket status */
@@ -94,11 +115,11 @@ class TicketManagerController @Autowired constructor(val ticketService: TicketSe
 
         /* retrieve the ticket from the database */
         val ticket: Ticket = ticketService.getTicketModelById(ticketId)
-            ?: throw Exception.TicketNotFoundException("Ticket not found.")
+            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
 
         /* checking the state of the ticket */
         if (ticket.state != TicketState.REOPENED) {
-            throw Exception.TicketInvalidOperationException("Invalid ticket status for this operation.")
+            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
         /* change the ticket status */
