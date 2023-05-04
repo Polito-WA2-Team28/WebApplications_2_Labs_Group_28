@@ -19,7 +19,7 @@ properties:
     description: Current status of the ticket.
   serialNumber:
     type: integer
-    $ref: "./productschema.yaml#/properties/serialNumber"
+    $ref: "../Objects/productschema.yaml#/properties/serialNumber"
     description: The identifier of the product on which the ticket has been opened by the user.
   userId:
     type: integer
@@ -27,7 +27,7 @@ properties:
     description: Identifier of the user who has opened the ticket.
   expertId:
     type: integer
-    $ref: "./profileschema.yaml#/properties/profileId"
+    $ref: "../Objects/profileschema.yaml#/properties/profileId"
     description: Identifier of the expert to whom the ticket has been assigned.
   creationDate:
     type: date
