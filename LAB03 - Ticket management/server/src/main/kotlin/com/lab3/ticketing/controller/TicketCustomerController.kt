@@ -10,6 +10,7 @@ import com.lab3.server.service.ProductServiceImpl
 import com.lab3.ticketing.dto.TicketCreationData
 import com.lab3.ticketing.dto.TicketDTO
 import com.lab3.ticketing.service.TicketServiceImpl
+import com.lab3.ticketing.util.TicketState
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -52,7 +53,7 @@ class TicketCustomerController @Autowired constructor(
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(@PathVariable("customerId") customerId:Long,
                         @PathVariable("ticketId") ticketId:Long): TicketDTO?{
-        var ticket = ticketService.getTicketById(ticketId)
+        var ticket = ticketService.getTicketDTOById(ticketId)
 
         if(ticket != null && ticket.customerId == customerId){
             return ticket
@@ -66,8 +67,14 @@ class TicketCustomerController @Autowired constructor(
     @PatchMapping("/API/customers/{customerId}/tickets/{ticketId}/reopen")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun reopenTicket(@PathVariable("customerId") customerId:Long,
-                        @PathVariable("ticketId") ticketId:Long){
+                     @PathVariable("ticketId") ticketId:Long):TicketDTO? {
+        var ticket = ticketService.getTicketModelById(ticketId)
 
+        return if(ticket != null && (ticket.state == TicketState.OPEN || ticket.state == TicketState.RESOLVED)){
+            ticketService.changeTicketStatus(ticket, ticket.state, TicketState.REOPENED)
+        } else{
+            null
+        }
     }
 
     @PatchMapping("/API/customers/{customerId}/tickets/{ticketId}/compileSurvey")

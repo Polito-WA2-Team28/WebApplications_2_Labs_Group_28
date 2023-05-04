@@ -6,10 +6,14 @@ import com.lab3.server.model.Customer
 import com.lab3.server.model.Product
 import com.lab3.ticketing.dto.TicketCreationData
 import com.lab3.ticketing.dto.TicketDTO
+import com.lab3.ticketing.model.Ticket
+import com.lab3.ticketing.util.TicketState
 
 interface TicketService {
 
-    fun getTicketById(id:Long) : TicketDTO?
+    fun getTicketDTOById(id:Long) : TicketDTO?
+
+    fun getTicketModelById(id:Long) : Ticket?
 
     fun createTicket(ticket: TicketCreationData, customer: Customer, product: Product): TicketDTO?
 
@@ -18,4 +22,7 @@ interface TicketService {
     fun getAllExpertTickets(expertId: Long): List<TicketDTO>
 
     fun getAllCustomerTickets(customerId: Long): List<TicketDTO>
+
+    fun changeTicketStatus(ticket:Ticket, initialState:TicketState, newState:TicketState): TicketDTO
+
 }

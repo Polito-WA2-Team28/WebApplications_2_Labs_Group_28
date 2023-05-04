@@ -8,8 +8,10 @@ import com.lab3.server.model.Product
 import com.lab3.ticketing.dto.TicketCreationData
 import com.lab3.ticketing.dto.TicketDTO
 import com.lab3.ticketing.dto.toDTO
+import com.lab3.ticketing.model.Ticket
 import com.lab3.ticketing.model.toModel
 import com.lab3.ticketing.repository.TicketRepository
+import com.lab3.ticketing.util.TicketState
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
@@ -18,8 +20,12 @@ import org.springframework.stereotype.Service
 @Service
 class TicketServiceImpl @Autowired constructor(private val ticketRepository: TicketRepository) : TicketService{
 
-    override fun getTicketById(id: Long): TicketDTO? {
+    override fun getTicketDTOById(id: Long): TicketDTO? {
         return ticketRepository.findByIdOrNull(id)?.toDTO()
+    }
+
+    override fun getTicketModelById(id: Long): Ticket? {
+        return ticketRepository.findByIdOrNull(id)
     }
 
     @Transactional
@@ -39,7 +45,10 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
         return ticketRepository.findByCustomerId(customerId).map{it.toDTO()}
     }
 
-
+    override fun changeTicketStatus(ticket: Ticket, initialState: TicketState, newState: TicketState): TicketDTO {
+        ticket.state = newState
+        return ticketRepository.save(ticket).toDTO()
+    }
 
 
 }
