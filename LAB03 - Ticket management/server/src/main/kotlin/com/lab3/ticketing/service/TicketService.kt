@@ -1,7 +1,5 @@
 package com.lab3.ticketing.service
 
-import com.lab3.server.dto.CustomerDTO
-import com.lab3.server.dto.ProductDTO
 import com.lab3.server.model.Customer
 import com.lab3.server.model.Product
 import com.lab3.ticketing.dto.TicketCreationData
@@ -24,5 +22,7 @@ interface TicketService {
     fun getAllCustomerTickets(customerId: Long): List<TicketDTO>
 
     fun changeTicketStatus(ticket:Ticket, newState:TicketState): TicketDTO
+
+    fun removeTicketById(ticketId: Long): Unit
 
 }

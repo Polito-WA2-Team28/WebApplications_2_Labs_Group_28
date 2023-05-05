@@ -1,8 +1,5 @@
 package com.lab3.ticketing.service
 
-import com.lab3.server.dto.CustomerDTO
-import com.lab3.server.dto.ProductDTO
-import com.lab3.server.dto.toDTO
 import com.lab3.server.model.Customer
 import com.lab3.server.model.Product
 import com.lab3.ticketing.dto.TicketCreationData
@@ -50,5 +47,8 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
         return ticketRepository.save(ticket).toDTO()
     }
 
+    override fun removeTicketById(ticketId: Long): Unit {
+        ticketRepository.deleteById(ticketId)
+    }
 
 }

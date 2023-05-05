@@ -34,6 +34,11 @@ class Ticket(
         this.expert = expert
         return this
     }
+
+    fun relieveExpert(): Ticket {
+        this.expert = null
+        return this
+    }
 }
 
 
