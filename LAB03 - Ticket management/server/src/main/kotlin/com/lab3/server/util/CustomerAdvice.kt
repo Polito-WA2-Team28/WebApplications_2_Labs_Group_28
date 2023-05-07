@@ -1,12 +1,12 @@
 package com.lab3.server.util
 
+import com.lab3.server.exception.ErrorDetails
+import com.lab3.server.exception.Exception
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.ResponseStatus
-import com.lab3.server.exception.ErrorDetails
-import com.lab3.server.exception.Exception
 import java.net.ConnectException
 
 @ControllerAdvice
@@ -45,6 +45,15 @@ class CustomerAdvice {
     fun lostServerConnection(e: ConnectException): ErrorDetails {
         return ErrorDetails(
             e.message?: "Unknown server error"
+        )
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(Exception.CustomerNotFoundException::class)
+    fun customerNotFoundError(e: Exception.CustomerNotFoundException): ErrorDetails {
+        return ErrorDetails(
+            e.error()
         )
     }
 

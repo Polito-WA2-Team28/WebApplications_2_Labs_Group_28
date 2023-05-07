@@ -8,32 +8,36 @@ import com.lab3.ticketing.dto.TicketDTO
 import com.lab3.ticketing.dto.TicketUpdateData
 import com.lab3.ticketing.exception.TicketException
 import com.lab3.ticketing.model.Ticket
-import com.lab3.ticketing.service.TicketServiceImpl
+import com.lab3.ticketing.service.TicketService
 import com.lab3.ticketing.util.TicketState
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
 class TicketManagerController @Autowired constructor(
-    val ticketService: TicketServiceImpl,
+    val ticketService: TicketService,
     val managerService: ManagerService,
     val expertService: ExpertService
 ) {
-    @GetMapping("/API/managers/{managerId}/tickets")
+    @GetMapping("/api/managers/{managerId}/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(
-        @PathVariable("managerId") managerId: Long
-    ): List<TicketDTO> {
+        @PathVariable("managerId") managerId: Long,
+        @RequestParam("pageNo", defaultValue = "0") pageNo: Int
+    ): Page<TicketDTO> {
 
         /* checking that the manager exists */
-        if (managerService.getManagerById(managerId) == null) {
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
+        managerService.getManagerById(managerId)
+            ?: throw Exception.ManagerNotFoundException("Manager not found.")
 
-        /* retrieving all the tickets */
-        return ticketService.getAllTickets()
+        /* computing page and retrieving all the tickets */
+        var page: Pageable = PageRequest.of(pageNo, 3)
+        return ticketService.getAllTicketsWithPaging(page)
     }
 
     @GetMapping("/API/managers/{managerId}/tickets/{ticketId}")
@@ -79,8 +83,7 @@ class TicketManagerController @Autowired constructor(
 
         /* assign the expert to the ticket */
         if (expert != null) {
-            ticket.assignExpert(expert) // do I need also to implement the reverse-mapping operation?
-                                        // i.e. expert.assignTicket(ticket)? But we don't have the list of tickets...
+            ticket.assignExpert(expert)
         }
 
         /* change the ticket status */
@@ -161,8 +164,7 @@ class TicketManagerController @Autowired constructor(
 
         /* assign the expert to the ticket */
         if (expert != null) {
-            ticket.assignExpert(expert) // do I need also to implement the reverse-mapping operation?
-                                        // i.e. expert.assignTicket(ticket)? But we don't have the list of tickets...
+            ticket.assignExpert(expert)
         }
 
         /* change the ticket status */

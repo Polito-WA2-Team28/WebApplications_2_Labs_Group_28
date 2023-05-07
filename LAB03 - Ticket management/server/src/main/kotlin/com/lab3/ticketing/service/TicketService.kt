@@ -6,6 +6,8 @@ import com.lab3.ticketing.dto.TicketCreationData
 import com.lab3.ticketing.dto.TicketDTO
 import com.lab3.ticketing.model.Ticket
 import com.lab3.ticketing.util.TicketState
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 
 interface TicketService {
 
@@ -19,10 +21,13 @@ interface TicketService {
 
     fun getAllExpertTickets(expertId: Long): List<TicketDTO>
 
-    fun getAllCustomerTickets(customerId: Long): List<TicketDTO>
-
     fun changeTicketStatus(ticket:Ticket, newState:TicketState): TicketDTO
 
     fun removeTicketById(ticketId: Long): Unit
+
+    fun getAllTicketsWithPaging(pageable: Pageable): Page<TicketDTO>
+
+    fun getAllTicketsWithPagingByCustomerId(customerId: Long, pageable: Pageable): Page<TicketDTO>
+    fun getAllTicketsWithPagingByExpertId(expertId: Long, pageable: Pageable): Page<TicketDTO>
 
 }

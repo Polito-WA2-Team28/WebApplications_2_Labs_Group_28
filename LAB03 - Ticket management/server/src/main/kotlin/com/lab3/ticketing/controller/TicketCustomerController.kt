@@ -1,27 +1,29 @@
 package com.lab3.ticketing.controller
 
-import com.lab3.server.dto.CustomerDTO
-import com.lab3.server.dto.CustomerFormRegistration
-import com.lab3.server.dto.ProductDTO
+import com.lab3.server.exception.Exception
 import com.lab3.server.model.Customer
 import com.lab3.server.model.Product
-import com.lab3.server.service.CustomerServiceImpl
-import com.lab3.server.service.ProductServiceImpl
+import com.lab3.server.service.CustomerService
+import com.lab3.server.service.ProductService
 import com.lab3.ticketing.dto.TicketCreationData
 import com.lab3.ticketing.dto.TicketDTO
-import com.lab3.ticketing.service.TicketServiceImpl
+import com.lab3.ticketing.service.TicketService
 import com.lab3.ticketing.util.TicketState
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 
+
 @RestController
 class TicketCustomerController @Autowired constructor(
-    val ticketService: TicketServiceImpl,
-    val customerService: CustomerServiceImpl,
-    val productService: ProductServiceImpl
+    val ticketService: TicketService,
+    val customerService: CustomerService,
+    val productService: ProductService
 ) {
 
     @PostMapping("/API/customers/{customerId}/tickets")
@@ -42,10 +44,20 @@ class TicketCustomerController @Autowired constructor(
         }
     }
 
-    @GetMapping("/API/customers/{customerId}/tickets")
+    @GetMapping("/api/customers/{customerId}/tickets")
     @ResponseStatus(HttpStatus.OK)
-    fun getTickets(@PathVariable("customerId") customerId:Long): List<TicketDTO>{
-        return ticketService.getAllCustomerTickets(customerId)
+    fun getTickets(
+        @PathVariable("customerId") customerId: Long,
+        @RequestParam("pageNo", defaultValue = "0") pageNo: Int
+    ): Page<TicketDTO> {
+
+        /* checking that customer exists */
+        customerService.getCustomerById(customerId)
+            ?: throw Exception.CustomerNotFoundException("Customer not found.")
+
+        /* computing page and retrieving all the tickets corresponding to this customer */
+        var page: Pageable = PageRequest.of(pageNo, 3)
+        return ticketService.getAllTicketsWithPagingByCustomerId(customerId, page)
     }
 
     @GetMapping("/API/customers/{customerId}/tickets/{ticketId}")

@@ -11,6 +11,8 @@ import com.lab3.ticketing.repository.TicketRepository
 import com.lab3.ticketing.util.TicketState
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -38,10 +40,6 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
         return ticketRepository.findByExpertId(expertId).map{it.toDTO()}
     }
 
-    override fun getAllCustomerTickets(customerId: Long): List<TicketDTO> {
-        return ticketRepository.findByCustomerId(customerId).map{it.toDTO()}
-    }
-
     override fun changeTicketStatus(ticket: Ticket, newState: TicketState): TicketDTO {
         ticket.state = newState
         return ticketRepository.save(ticket).toDTO()
@@ -49,6 +47,27 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
 
     override fun removeTicketById(ticketId: Long): Unit {
         ticketRepository.deleteById(ticketId)
+    }
+
+    override fun getAllTicketsWithPaging(pageable: Pageable): Page<TicketDTO> {
+        return ticketRepository.findAll(pageable)
+            .map {
+                it.toDTO()
+            }
+    }
+
+    override fun getAllTicketsWithPagingByCustomerId(customerId: Long, pageable: Pageable): Page<TicketDTO> {
+        return ticketRepository.findAllByCustomerId(customerId, pageable)
+            .map {
+                it.toDTO()
+            }
+    }
+
+    override fun getAllTicketsWithPagingByExpertId(expertId: Long, pageable: Pageable): Page<TicketDTO> {
+        return ticketRepository.findAllByExpertId(expertId, pageable)
+            .map {
+                it.toDTO()
+            }
     }
 
 }

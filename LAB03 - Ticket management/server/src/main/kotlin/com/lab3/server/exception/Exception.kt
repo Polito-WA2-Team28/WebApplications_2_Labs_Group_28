@@ -19,6 +19,7 @@ open class Exception(override val message:String) : Throwable() {
         }
     }
 
+    class CustomerNotFoundException(message: String): Exception(message)
     class ExpertNotFoundException(message: String): Exception(message)
     class ManagerNotFoundException(message: String): Exception(message)
 
