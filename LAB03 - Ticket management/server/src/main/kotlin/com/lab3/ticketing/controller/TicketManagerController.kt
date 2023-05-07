@@ -48,9 +48,8 @@ class TicketManagerController @Autowired constructor(
     ): TicketDTO? {
 
         /* checking that the manager exists */
-        if (managerService.getManagerById(managerId) == null) {
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
+        managerService.getManagerById(managerId)
+            ?: throw Exception.ManagerNotFoundException("Manager not found.")
 
         /* retrieving the ticket */
         ticketService.getTicketDTOById(ticketId)?.let {
@@ -75,16 +74,13 @@ class TicketManagerController @Autowired constructor(
         }
 
         /* retrieving the expert and checking that manager exists */
-        val expert: Expert? = expertService.getExpertById(ticketUpdateData.expertId)
+        val expert: Expert = expertService.getExpertById(ticketUpdateData.expertId)
             ?: throw Exception.ExpertNotFoundException("Expert not found.")
-        if (managerService.getManagerById(managerId) == null) {
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
+        managerService.getManagerById(managerId)
+            ?: throw Exception.ManagerNotFoundException("Manager not found.")
 
         /* assign the expert to the ticket */
-        if (expert != null) {
-            ticket.assignExpert(expert)
-        }
+        ticket.assignExpert(expert)
 
         /* change the ticket status */
         return ticketService.changeTicketStatus(ticket, TicketState.IN_PROGRESS)
@@ -106,9 +102,8 @@ class TicketManagerController @Autowired constructor(
         }
 
         /* checking if manager exists */
-        if (managerService.getManagerById(managerId) == null) {
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
+        managerService.getManagerById(managerId)
+            ?: throw Exception.ManagerNotFoundException("Manager not found.")
 
         /* relieving the expert from the ticket */
         ticket.relieveExpert()
@@ -132,9 +127,8 @@ class TicketManagerController @Autowired constructor(
         }
 
         /* checking if manager exists */
-        if (managerService.getManagerById(managerId) == null) {
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
+        managerService.getManagerById(managerId)
+            ?: throw Exception.ManagerNotFoundException("Manager not found.")
 
         /* change the ticket status */
         return ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
@@ -156,16 +150,13 @@ class TicketManagerController @Autowired constructor(
         }
 
         /* retrieving the expert and checking that manager exists */
-        val expert: Expert? = expertService.getExpertById(ticketUpdateData.expertId)
+        val expert: Expert = expertService.getExpertById(ticketUpdateData.expertId)
             ?: throw Exception.ExpertNotFoundException("Expert not found.")
-        if (managerService.getManagerById(managerId) == null) {
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
+        managerService.getManagerById(managerId)
+            ?: throw Exception.ManagerNotFoundException("Manager not found.")
 
         /* assign the expert to the ticket */
-        if (expert != null) {
-            ticket.assignExpert(expert)
-        }
+        ticket.assignExpert(expert)
 
         /* change the ticket status */
         return ticketService.changeTicketStatus(ticket, TicketState.IN_PROGRESS)
@@ -179,9 +170,8 @@ class TicketManagerController @Autowired constructor(
     ): Unit {
 
         /* checking that manager exists */
-        if (managerService.getManagerById(managerId) == null) {
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
+        managerService.getManagerById(managerId)
+            ?: throw Exception.ManagerNotFoundException("Manager not found.")
 
         /* removing the ticket from the database */
         ticketService.removeTicketById(ticketId)
