@@ -40,7 +40,7 @@ class TicketManagerController @Autowired constructor(
         return ticketService.getAllTicketsWithPaging(page)
     }
 
-    @GetMapping("/API/managers/{managerId}/tickets/{ticketId}")
+    @GetMapping("/api/managers/{managerId}/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(
         @PathVariable("managerId") managerId: Long,
@@ -59,7 +59,7 @@ class TicketManagerController @Autowired constructor(
         throw TicketException.TicketNotFoundException("Ticket not found.")
     }
 
-    @PatchMapping("/API/managers/{managerId}/tickets/{ticketId}/assign")
+    @PatchMapping("/api/managers/{managerId}/tickets/{ticketId}/assign")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun assignTicket (
         @PathVariable("managerId") managerId: Long,
@@ -91,7 +91,7 @@ class TicketManagerController @Autowired constructor(
 
     }
 
-    @PatchMapping("/API/managers/{managerId}/tickets/{ticketId}/relieveExpert")
+    @PatchMapping("/api/managers/{managerId}/tickets/{ticketId}/relieveExpert")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun relieveExpert (
         @PathVariable("managerId") managerId: Long,
@@ -117,7 +117,7 @@ class TicketManagerController @Autowired constructor(
         return ticketService.changeTicketStatus(ticket, TicketState.OPEN)
     }
 
-    @PatchMapping("/API/managers/{managerId}/tickets/{ticketId}/close")
+    @PatchMapping("/api/managers/{managerId}/tickets/{ticketId}/close")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun closeTicket (
         @PathVariable("managerId") managerId: Long,
@@ -140,7 +140,7 @@ class TicketManagerController @Autowired constructor(
         return ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
     }
 
-    @PatchMapping("/API/managers/{managerId}/tickets/{ticketId}/resumeProgress")
+    @PatchMapping("/api/managers/{managerId}/tickets/{ticketId}/resumeProgress")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun resumeTicketProgress (
         @PathVariable("managerId") managerId: Long,
@@ -171,7 +171,7 @@ class TicketManagerController @Autowired constructor(
         return ticketService.changeTicketStatus(ticket, TicketState.IN_PROGRESS)
     }
 
-    @DeleteMapping("/API/managers/{managerId}/tickets/{ticketId}/remove")
+    @DeleteMapping("/api/managers/{managerId}/tickets/{ticketId}/remove")
     @ResponseStatus(HttpStatus.OK)
     fun removeTicket(
         @PathVariable("managerId") managerId: Long,

@@ -26,7 +26,7 @@ class TicketCustomerController @Autowired constructor(
     val productService: ProductService
 ) {
 
-    @PostMapping("/API/customers/{customerId}/tickets")
+    @PostMapping("/api/customers/{customerId}/tickets")
     @ResponseStatus(HttpStatus.CREATED)
     fun createTicket(@PathVariable("customerId") customerId:Long,
                      @RequestBody @Valid ticket: TicketCreationData,
@@ -60,7 +60,7 @@ class TicketCustomerController @Autowired constructor(
         return ticketService.getAllTicketsWithPagingByCustomerId(customerId, page)
     }
 
-    @GetMapping("/API/customers/{customerId}/tickets/{ticketId}")
+    @GetMapping("/api/customers/{customerId}/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(@PathVariable("customerId") customerId:Long,
                         @PathVariable("ticketId") ticketId:Long): TicketDTO?{
@@ -75,7 +75,7 @@ class TicketCustomerController @Autowired constructor(
         }
     }
 
-    @PatchMapping("/API/customers/{customerId}/tickets/{ticketId}/reopen")
+    @PatchMapping("/api/customers/{customerId}/tickets/{ticketId}/reopen")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun reopenTicket(@PathVariable("customerId") customerId:Long,
                      @PathVariable("ticketId") ticketId:Long):TicketDTO? {
@@ -92,7 +92,7 @@ class TicketCustomerController @Autowired constructor(
         }
     }
 
-    @PatchMapping("/API/customers/{customerId}/tickets/{ticketId}/compileSurvey")
+    @PatchMapping("/api/customers/{customerId}/tickets/{ticketId}/compileSurvey")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun compileTicketSurvey(@PathVariable("customerId") customerId:Long,
                      @PathVariable("ticketId") ticketId:Long):TicketDTO?{

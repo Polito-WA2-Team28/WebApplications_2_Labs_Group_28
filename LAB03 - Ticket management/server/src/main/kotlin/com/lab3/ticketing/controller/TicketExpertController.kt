@@ -32,17 +32,17 @@ class TicketExpertController @Autowired constructor(
         /* computing page and retrieving all the tickets corresponding to this expert */
         var page: Pageable = PageRequest.of(pageNo, 3)
         return ticketService.getAllTicketsWithPagingByExpertId(expertId, page)
-        
+
     }
 
-    @GetMapping("/API/experts/{expertId}/tickets/{ticketId}")
+    @GetMapping("/api/experts/{expertId}/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(@PathVariable("expertId") expertId:Long,
                         @PathVariable("ticketId") ticketId:Long): TicketDTO?{
         return ticketService.getTicketDTOById(ticketId) //Add exception handling like in product controller
     }
 
-    @PatchMapping("/API/experts/{expertId}/tickets/{ticketId}/resolve")
+    @PatchMapping("/api/experts/{expertId}/tickets/{ticketId}/resolve")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun resolveTicket(@PathVariable("expertId") expertId:Long,
                      @PathVariable("ticketId") ticketId:Long){
@@ -63,7 +63,7 @@ class TicketExpertController @Autowired constructor(
 
     }
 
-    @PatchMapping("/API/experts/{expertId}/tickets/{ticketId}/close")
+    @PatchMapping("/api/experts/{expertId}/tickets/{ticketId}/close")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun closeTicket(@PathVariable("expertId") expertId:Long,
                      @PathVariable("ticketId") ticketId:Long){
