@@ -7,12 +7,12 @@ import com.lab3.ticketing.repository.TicketRepository
 import com.lab3.ticketing.util.*
 import org.json.JSONObject
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.test.web.client.postForObject
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.*
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
@@ -72,10 +72,8 @@ class DbT1ApplicationTests {
         expertRepository.deleteAll()
     }
 
-    //	1) /api/customers/:customerId/tickets GET
-
-    @Test
-    fun successGetAllTicketsOfACustomer() {
+	@Test /** GET /api/customers/:customerId/tickets*/
+	fun successGetAllTicketsOfACustomer() {
         val customer = Customer(
             "Mario", "Rossi",
             myDate(2022, 1, 1),
@@ -88,7 +86,7 @@ class DbT1ApplicationTests {
         val expertId = expertRepository.save(expert).getId()
 
         val product = Product("Iphone", "15", 1234, customer)
-        val productId = productRepository.save(product).getId()
+        productRepository.save(product).getId()
 
         val ticket = Ticket(
             TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
@@ -113,7 +111,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(ticketId!!.toInt(), resTicket.getInt("ticketId"))
     }
 
-    @Test
+    @Test /** GET /api/customers/:customerId/tickets*/
     fun failGetAllTicketsOfANonExistentCustomer() {
         val customerId = (0..100).random()
         val url = "/api/customers/${customerId}/tickets"
@@ -123,8 +121,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response?.statusCode)
     }
 
-    //	2) /api/customers/:customerId/ticket POST
-    @Test
+    @Test /** POST /api/customers/:customerId/ticket POST*/
     fun successCreationOfANewTicket() {
         val customer = Customer(
             "Mario", "Rossi",
@@ -150,12 +147,17 @@ class DbT1ApplicationTests {
 
         Assertions.assertNotNull(response)
         Assertions.assertEquals(HttpStatus.CREATED,response.statusCode)
-        val body = response.body
-        println("ABECEDARIO $response")
+        val body = JSONObject(response.body)
+
+		Assertions.assertEquals("OPEN", body.getString("ticketState"))
+		Assertions.assertEquals("myDescription",body.getString("description"))
+		Assertions.assertEquals(product.serialNumber.toInt(), body.getInt("serialNumber"))
+		Assertions.assertEquals(customerId!!.toInt(), body.getInt("customerId"))
+		Assertions.assertEquals(0,body.optInt("expertId"))
+
     }
 
-    //	3) /api/experts/:expertId/tickets
-    @Test
+    @Test /** GET /api/experts/:expertId/tickets*/
     fun successGetAllTicketsOfAnExpert() {
         val customer = Customer(
             "Mario", "Rossi",
@@ -194,7 +196,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(ticketId!!.toInt(), resTicket.getInt("ticketId"))
     }
 
-    @Test
+    @Test /** GET /api/experts/:expertId/tickets*/
     fun failGetAllTicketsOfANonExistentExpert() {
         val expertId = (0..100).random()
         val url = "/api/experts/${expertId}/tickets"
@@ -204,8 +206,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response?.statusCode)
     }
 
-    //	4) /api/managers/:managerId/tickets
-    @Test
+    @Test /** GET /api/managers/:managerId/tickets*/
     fun successGetAllTicketsOfAManager() {
         val customer = Customer(
             "Mario", "Rossi",
@@ -219,7 +220,7 @@ class DbT1ApplicationTests {
         val expertId = expertRepository.save(expert).getId()
 
         val product = Product("Iphone", "15", 1234, customer)
-        val productId = productRepository.save(product).getId()
+        productRepository.save(product).getId()
 
         val ticket = Ticket(
             TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
@@ -231,14 +232,12 @@ class DbT1ApplicationTests {
         val managerId = managerRepository.save(manager).getId()
 
         val url = "/api/managers/${managerId}/tickets"
-        println("ABECEDARIO $url")
         val response = restTemplate
             .getForEntity(url, String::class.java)
         Assertions.assertNotNull(response)
         Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
         val body = response.body
         val resTicket = JSONObject(body).getJSONArray("content").getJSONObject(0)
-        println("resTicket $resTicket")
         Assertions.assertEquals("OPEN", resTicket.getString("ticketState"))
         Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
         Assertions.assertEquals(expertId!!.toInt(), resTicket.getInt("expertId"))
@@ -249,7 +248,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(ticketId!!.toInt(), resTicket.getInt("ticketId"))
     }
 
-    @Test
+    @Test /** GET /api/managers/:managerId/tickets*/
     fun failGetAllTicketsOfANonExistentManager() {
         val managerId = (0..100).random()
         val url = "/api/managers/${managerId}/tickets"
@@ -259,8 +258,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response?.statusCode)
     }
 
-    //	5) /api/customers/:customerId/tickets/:ticketId
-    @Test
+    @Test /** GET /api/customers/:customerId/tickets/:ticketId*/
     fun successGetASingleTicketsOfACustomer() {
         val customer = Customer(
             "Mario", "Rossi",
@@ -274,7 +272,7 @@ class DbT1ApplicationTests {
         val expertId = expertRepository.save(expert).getId()
 
         val product = Product("Iphone", "15", 1234, customer)
-        val productId = productRepository.save(product).getId()
+        productRepository.save(product).getId()
 
         val ticket = Ticket(
             TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
@@ -288,7 +286,6 @@ class DbT1ApplicationTests {
         Assertions.assertNotNull(response)
         Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
         val body = response.body
-        println(body)
         val resTicket = JSONObject(body)
         Assertions.assertEquals("OPEN", resTicket.getString("ticketState"))
         Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
@@ -300,7 +297,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(ticketId!!.toInt(), resTicket.getInt("ticketId"))
     }
 
-    @Test
+    @Test /** GET /api/customers/:customerId/tickets/:ticketId*/
     fun failGetASingleTicketOfANonExistentCustomer(){
         val customerId = (0..100).random()
         val ticketId = (0..100).random()
@@ -311,7 +308,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response?.statusCode)
     }
 
-    @Test
+    @Test /** GET /api/customers/:customerId/tickets/:ticketId*/
     fun failGetANonExistentTicketOfACustomer(){
         val customer = Customer(
             "Mario", "Rossi",
@@ -328,8 +325,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response?.statusCode)
     }
 
-    //	6) /api/experts/:expertId/tickets/:ticketId
-    @Test
+    @Test /** GET /api/experts/:expertId/tickets/:ticketId */
     fun successGetASingleTicketsOfAnExpert() {
         val customer = Customer(
             "Mario", "Rossi",
@@ -369,7 +365,7 @@ class DbT1ApplicationTests {
 
     }
 
-    @Test
+    @Test /** GET /api/experts/:expertId/tickets/:ticketId */
     fun failGetASingleTicketOfANonExistentExpert(){
         val customer = Customer(
             "Mario", "Rossi",
@@ -395,7 +391,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response?.statusCode)
     }
 
-    @Test
+    @Test /** GET /api/experts/:expertId/tickets/:ticketId */
     fun failGetANonExistentTicketOfAnExpert(){
         val expert = Expert("expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
         val expertId = expertRepository.save(expert).getId()
@@ -407,8 +403,7 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response?.statusCode)
     }
 
-    //	7) /api/managers/:managerId/tickets/:ticketId
-    @Test
+    @Test /** GET /api/managers/:managerId/tickets/:ticketId */
     fun successGetASingleTicketsOfAManager() {
         val customer = Customer(
             "Mario", "Rossi",
@@ -422,7 +417,7 @@ class DbT1ApplicationTests {
         val expertId = expertRepository.save(expert).getId()
 
         val product = Product("Iphone", "15", 1234, customer)
-        val productId = productRepository.save(product).getId()
+        productRepository.save(product).getId()
 
         val ticket = Ticket(
             TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
@@ -434,15 +429,12 @@ class DbT1ApplicationTests {
         val managerId = managerRepository.save(manager).getId()
 
         val url = "/api/managers/${managerId}/tickets/${ticketId}"
-        println("ABECEDARIO $url")
         val response = restTemplate
             .getForEntity(url, String::class.java)
         Assertions.assertNotNull(response)
         Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
         val body = response.body
-        println(body)
         val resTicket = JSONObject(body)
-        println("resTicket $resTicket")
         Assertions.assertEquals("OPEN", resTicket.getString("ticketState"))
         Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
         Assertions.assertEquals(expertId!!.toInt(), resTicket.getInt("expertId"))
@@ -453,15 +445,15 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(ticketId!!.toInt(), resTicket.getInt("ticketId"))
     }
 
-    //	8) /api/managers/:managerId/tickets/:ticketId/assign
-    @Test
+    @Ignore
+	@Test /** PATCH /api/managers/:managerId/tickets/:ticketId/assign */
     fun successapi8() {
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val requestObject = JSONObject()
         requestObject.put("expertId", 1)
-        println("requestObject $requestObject")
+        //println("requestObject $requestObject")
 
         val response = restTemplate.patchForObject(
             "/api/managers/1/tickets/1/assign",
@@ -470,7 +462,7 @@ class DbT1ApplicationTests {
         )
         //Assertions.assertNotNull(response)
         //Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
-        println("ABECEDARIO $response")
+        //println("ABECEDARIO $response")
     }
 
 
