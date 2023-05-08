@@ -1,7 +1,6 @@
 package com.lab3.server.model
 
 
-import com.lab3.server.dto.CustomerDTO
 import com.lab3.server.dto.CustomerFormModification
 import com.lab3.server.dto.CustomerFormRegistration
 import jakarta.persistence.*
@@ -14,7 +13,7 @@ class Customer (
     var surname:String,
 
     @Temporal(value=TemporalType.DATE)
-    var registrationDate:Date,
+    var registrationDate: Date,
 
     @Temporal(value=TemporalType.DATE)
     var birthDate:Date,

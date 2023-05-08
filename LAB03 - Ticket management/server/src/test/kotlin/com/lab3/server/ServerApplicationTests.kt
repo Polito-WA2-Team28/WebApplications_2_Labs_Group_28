@@ -1,32 +1,25 @@
 package com.lab3.server
 
-import com.lab3.server.model.Customer
-import com.lab3.server.model.Expert
-import com.lab3.server.model.Product
-import com.lab3.server.repository.CustomerRepository
-import com.lab3.server.repository.ExpertRepository
-import com.lab3.server.repository.ProductRepository
+import com.lab3.server.model.*
+import com.lab3.server.repository.*
 import com.lab3.ticketing.model.Ticket
 import com.lab3.ticketing.repository.TicketRepository
-import com.lab3.ticketing.util.ExpertiseFieldEnum
-import com.lab3.ticketing.util.TicketState
+import com.lab3.ticketing.util.*
 import org.json.JSONObject
 import org.junit.BeforeClass
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.http.*
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.test.context.*
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.*
-import java.util.Date
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @Testcontainers
@@ -55,56 +48,58 @@ class DbT1ApplicationTests{
 		restTemplate.restTemplate.requestFactory = HttpComponentsClientHttpRequestFactory()
 	}
 
+	@Autowired lateinit var ticketRepository: TicketRepository
+	@Autowired lateinit var customerRepository: CustomerRepository
+	@Autowired lateinit var productRepository: ProductRepository
+	@Autowired lateinit var expertRepository: ExpertRepository
+	@Autowired lateinit var managerRepository: ManagerRepository
 
-
-	@Autowired
-	lateinit var ticketRepository: TicketRepository
-	@Autowired
-	lateinit var customerRepository: CustomerRepository
-	@Autowired
-	lateinit var productRepository: ProductRepository
-	@Autowired
-	lateinit var expertRepository: ExpertRepository
-
-	@AfterEach
+	@BeforeEach
 	fun repositoryClean(){
 		ticketRepository.deleteAll()
-		customerRepository.deleteAll()
 		productRepository.deleteAll()
+		customerRepository.deleteAll()
+		managerRepository.deleteAll()
 		expertRepository.deleteAll()
-		println("Clean")
 	}
 
 	//	1) /api/customers/:customerId/tickets GET
 
 	@Test
 	fun successGetAllTicketsOfACustomer(){
-		val customer = Customer("Mario", "Rossi", Date(2020,1,1),  Date(1990,1,1),"mario.rossi@mail.com","0123456789")
-		customerRepository.save(customer)
+		val customer = Customer("Mario", "Rossi",
+			myDate(2022,1,1),
+			myDate(1990,1,1),
+			"mario.rossi@mail.com","0123456789")
+		val customerId = customerRepository.save(customer).getId()
 
 		val expert= Expert("expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
-		expertRepository.save(expert)
+		val expertId = expertRepository.save(expert).getId()
 
 		val product = Product("Iphone", "15", 1234, customer)
-		productRepository.save(product)
+		val productId = productRepository.save(product).getId()
 
-		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(), Date(2020,1,1), Date(2020,1,1))
-		ticketRepository.save(ticket)
-		val response = restTemplate.getForEntity("/api/customers/1/tickets", String::class.java)
+		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
+			myDate(2020,1,1), myDate(2020,1,1))
+		val ticketId = ticketRepository.save(ticket).getId()
+
+		val url = "/api/customers/${customerId}/tickets"
+		println("ABECEDARIO $url")
+		val response = restTemplate
+			.getForEntity(url, String::class.java)
 		Assertions.assertNotNull(response)
 		Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
 		val body = response.body
 		val resTicket = JSONObject(body).getJSONArray("content").getJSONObject(0)
 		println("resTicket $resTicket")
-		Assertions.assertEquals(resTicket.getString("ticketState"), "OPEN")
-		Assertions.assertEquals(resTicket.getInt("serialNumber"), 1234)
-		Assertions.assertEquals(resTicket.getInt("expertId"), 1)
-		Assertions.assertEquals(resTicket.getInt("expertId"),1)
-		Assertions.assertEquals(resTicket.getInt("customerId"),1)
-		Assertions.assertEquals(resTicket.getString("description"), "Description")
-		Assertions.assertEquals(resTicket.getString("lastModified"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getString("creationDate"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getInt("ticketId"),1)
+		Assertions.assertEquals( "OPEN",resTicket.getString("ticketState"),)
+		Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
+		Assertions.assertEquals(expertId!!.toInt(),resTicket.getInt("expertId"))
+		Assertions.assertEquals(customerId!!.toInt(),resTicket.getInt("customerId"))
+		Assertions.assertEquals( ticket.description,resTicket.getString("description"))
+		Assertions.assertEquals(ticket.lastModified.formatDate(),resTicket.getString("lastModified"))
+		Assertions.assertEquals( ticket.creationDate.formatDate(),resTicket.getString("creationDate"))
+		Assertions.assertEquals(ticketId!!.toInt(),resTicket.getInt("ticketId"))
 	}
 
 	//	2) /api/customers/:customerId/ticket POST
@@ -116,160 +111,201 @@ class DbT1ApplicationTests{
 	//	3) /api/experts/:expertId/tickets
 	@Test
 	fun successGetAllTicketsOfAnExpert(){
-		val customer = Customer("Mario", "Rossi", Date(2020,1,1),  Date(1990,1,1),"mario.rossi@mail.com","0123456789")
-		customerRepository.save(customer)
+		val customer = Customer("Mario", "Rossi",
+			myDate(2022,1,1),
+			myDate(1990,1,1),
+			"mario.rossi@mail.com","0123456789")
+		val customerId = customerRepository.save(customer).getId()
 
 		val expert= Expert("expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
-		expertRepository.save(expert)
+		val expertId = expertRepository.save(expert).getId()
 
 		val product = Product("Iphone", "15", 1234, customer)
-		productRepository.save(product)
+		val productId = productRepository.save(product).getId()
 
-		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(), Date(2020,1,1), Date(2020,1,1))
-		ticketRepository.save(ticket)
-		val response = restTemplate.getForEntity("/api/experts/1/tickets", String::class.java)
+		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
+			myDate(2020,1,1), myDate(2020,1,1))
+		val ticketId = ticketRepository.save(ticket).getId()
+
+		val url = "/api/experts/${expertId}/tickets"
+		println("ABECEDARIO $url")
+		val response = restTemplate
+			.getForEntity(url, String::class.java)
 		Assertions.assertNotNull(response)
 		Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
 		val body = response.body
 		val resTicket = JSONObject(body).getJSONArray("content").getJSONObject(0)
 		println("resTicket $resTicket")
-		Assertions.assertEquals(resTicket.getString("ticketState"), "OPEN")
-		Assertions.assertEquals(resTicket.getInt("serialNumber"), 1234)
-		Assertions.assertEquals(resTicket.getInt("expertId"), 1)
-		Assertions.assertEquals(resTicket.getInt("expertId"),1)
-		Assertions.assertEquals(resTicket.getInt("customerId"),1)
-		Assertions.assertEquals(resTicket.getString("description"), "Description")
-		Assertions.assertEquals(resTicket.getString("lastModified"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getString("creationDate"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getInt("ticketId"),1)
+		Assertions.assertEquals( "OPEN",resTicket.getString("ticketState"),)
+		Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
+		Assertions.assertEquals(expertId!!.toInt(),resTicket.getInt("expertId"))
+		Assertions.assertEquals(customerId!!.toInt(),resTicket.getInt("customerId"))
+		Assertions.assertEquals( ticket.description,resTicket.getString("description"))
+		Assertions.assertEquals(ticket.lastModified.formatDate(),resTicket.getString("lastModified"))
+		Assertions.assertEquals( ticket.creationDate.formatDate(),resTicket.getString("creationDate"))
+		Assertions.assertEquals(ticketId!!.toInt(),resTicket.getInt("ticketId"))
 	}
 
 	//	4) /api/managers/:managerId/tickets
 	@Test
 	fun successGetAllTicketsOfAManager(){
-		val customer = Customer("Mario", "Rossi", Date(2020,1,1),  Date(1990,1,1),"mario.rossi@mail.com","0123456789")
-		customerRepository.save(customer)
+		val customer = Customer("Mario", "Rossi",
+			myDate(2022,1,1),
+			myDate(1990,1,1),
+			"mario.rossi@mail.com","0123456789")
+		val customerId = customerRepository.save(customer).getId()
 
 		val expert= Expert("expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
-		expertRepository.save(expert)
+		val expertId = expertRepository.save(expert).getId()
 
 		val product = Product("Iphone", "15", 1234, customer)
-		productRepository.save(product)
+		val productId = productRepository.save(product).getId()
 
-		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(), Date(2020,1,1), Date(2020,1,1))
-		ticketRepository.save(ticket)
+		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
+			myDate(2020,1,1), myDate(2020,1,1))
+		val ticketId = ticketRepository.save(ticket).getId()
 
-		val response = restTemplate.getForEntity("/api/managers/1/tickets", String::class.java)
+		val manager = Manager("manager@mail.com")
+		val managerId = managerRepository.save(manager).getId()
+
+		val url = "/api/managers/${managerId}/tickets"
+		println("ABECEDARIO $url")
+		val response = restTemplate
+			.getForEntity(url, String::class.java)
 		Assertions.assertNotNull(response)
 		Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
 		val body = response.body
 		val resTicket = JSONObject(body).getJSONArray("content").getJSONObject(0)
 		println("resTicket $resTicket")
-		Assertions.assertEquals(resTicket.getString("ticketState"), "OPEN")
-		Assertions.assertEquals(resTicket.getInt("serialNumber"), 1234)
-		Assertions.assertEquals(resTicket.getInt("expertId"), 1)
-		Assertions.assertEquals(resTicket.getInt("expertId"),1)
-		Assertions.assertEquals(resTicket.getInt("customerId"),1)
-		Assertions.assertEquals(resTicket.getString("description"), "Description")
-		Assertions.assertEquals(resTicket.getString("lastModified"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getString("creationDate"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getInt("ticketId"),1)
+		Assertions.assertEquals( "OPEN",resTicket.getString("ticketState"),)
+		Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
+		Assertions.assertEquals(expertId!!.toInt(),resTicket.getInt("expertId"))
+		Assertions.assertEquals(customerId!!.toInt(),resTicket.getInt("customerId"))
+		Assertions.assertEquals( ticket.description,resTicket.getString("description"))
+		Assertions.assertEquals(ticket.lastModified.formatDate(),resTicket.getString("lastModified"))
+		Assertions.assertEquals( ticket.creationDate.formatDate(),resTicket.getString("creationDate"))
+		Assertions.assertEquals(ticketId!!.toInt(),resTicket.getInt("ticketId"))
 	}
 
 	//	5) /api/customers/:customerId/tickets/:ticketId
 	@Test
 	fun successGetASingleTicketsOfACustomer(){
-		val customer = Customer("Mario", "Rossi", Date(2020,1,1),  Date(1990,1,1),"mario.rossi@mail.com","0123456789")
-		customerRepository.save(customer)
+		val customer = Customer("Mario", "Rossi",
+			myDate(2022,1,1),
+			myDate(1990,1,1),
+			"mario.rossi@mail.com","0123456789")
+		val customerId = customerRepository.save(customer).getId()
 
 		val expert= Expert("expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
-		expertRepository.save(expert)
+		val expertId = expertRepository.save(expert).getId()
 
 		val product = Product("Iphone", "15", 1234, customer)
-		productRepository.save(product)
+		val productId = productRepository.save(product).getId()
 
-		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(), Date(2020,1,1), Date(2020,1,1))
-		ticketRepository.save(ticket)
+		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
+			myDate(2020,1,1), myDate(2020,1,1))
+		val ticketId = ticketRepository.save(ticket).getId()
 
-		val response = restTemplate.getForEntity("/api/customer/1/tickets/1", String::class.java)
+		val url = "/api/customers/${customerId}/tickets/${ticketId}"
+		println("ABECEDARIO $url")
+		val response = restTemplate
+			.getForEntity(url, String::class.java)
 		Assertions.assertNotNull(response)
 		Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
 		val body = response.body
-		val resTicket = JSONObject(body).getJSONArray("content").getJSONObject(0)
+		println(body)
+		val resTicket = JSONObject(body)
 		println("resTicket $resTicket")
-		Assertions.assertEquals(resTicket.getString("ticketState"), "OPEN")
-		Assertions.assertEquals(resTicket.getInt("serialNumber"), 1234)
-		Assertions.assertEquals(resTicket.getInt("expertId"), 1)
-		Assertions.assertEquals(resTicket.getInt("expertId"),1)
-		Assertions.assertEquals(resTicket.getInt("customerId"),1)
-		Assertions.assertEquals(resTicket.getString("description"), "Description")
-		Assertions.assertEquals(resTicket.getString("lastModified"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getString("creationDate"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getInt("ticketId"),1)
+		Assertions.assertEquals( "OPEN",resTicket.getString("ticketState"),)
+		Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
+		Assertions.assertEquals(expertId!!.toInt(),resTicket.getInt("expertId"))
+		Assertions.assertEquals(customerId!!.toInt(),resTicket.getInt("customerId"))
+		Assertions.assertEquals( ticket.description,resTicket.getString("description"))
+		Assertions.assertEquals(ticket.lastModified.formatDate(),resTicket.getString("lastModified"))
+		Assertions.assertEquals( ticket.creationDate.formatDate(),resTicket.getString("creationDate"))
+		Assertions.assertEquals(ticketId!!.toInt(),resTicket.getInt("ticketId"))
 	}
 
 	//	6) /api/experts/:expertId/tickets/:ticketId
 	@Test
 	fun successGetASingleTicketsOfAnExpert(){
-		val customer = Customer("Mario", "Rossi", Date(2020,1,1),  Date(1990,1,1),"mario.rossi@mail.com","0123456789")
-		customerRepository.save(customer)
+		val customer = Customer("Mario", "Rossi",
+			myDate(2022,1,1),
+			myDate(1990,1,1),
+			"mario.rossi@mail.com","0123456789")
+		val customerId = customerRepository.save(customer).getId()
 
 		val expert= Expert("expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
-		expertRepository.save(expert)
+		val expertId = expertRepository.save(expert).getId()
 
 		val product = Product("Iphone", "15", 1234, customer)
-		productRepository.save(product)
+		val productId = productRepository.save(product).getId()
 
-		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(), Date(2020,1,1), Date(2020,1,1))
-		ticketRepository.save(ticket)
+		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
+			myDate(2020,1,1), myDate(2020,1,1))
+		val ticketId = ticketRepository.save(ticket).getId()
 
-		val response = restTemplate.getForEntity("/api/expert/1/tickets/1", String::class.java)
+		val url = "/api/experts/${expertId}/tickets/${ticketId}"
+		println("ABECEDARIO $url")
+		val response = restTemplate
+			.getForEntity(url, String::class.java)
 		Assertions.assertNotNull(response)
 		Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
 		val body = response.body
-		val resTicket = JSONObject(body).getJSONArray("content").getJSONObject(0)
+		println(body)
+		val resTicket = JSONObject(body)
 		println("resTicket $resTicket")
-		Assertions.assertEquals(resTicket.getString("ticketState"), "OPEN")
-		Assertions.assertEquals(resTicket.getInt("serialNumber"), 1234)
-		Assertions.assertEquals(resTicket.getInt("expertId"), 1)
-		Assertions.assertEquals(resTicket.getInt("expertId"),1)
-		Assertions.assertEquals(resTicket.getInt("customerId"),1)
-		Assertions.assertEquals(resTicket.getString("description"), "Description")
-		Assertions.assertEquals(resTicket.getString("lastModified"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getString("creationDate"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getInt("ticketId"),1)
+		Assertions.assertEquals( "OPEN",resTicket.getString("ticketState"),)
+		Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
+		Assertions.assertEquals(expertId!!.toInt(),resTicket.getInt("expertId"))
+		Assertions.assertEquals(customerId!!.toInt(),resTicket.getInt("customerId"))
+		Assertions.assertEquals( ticket.description,resTicket.getString("description"))
+		Assertions.assertEquals(ticket.lastModified.formatDate(),resTicket.getString("lastModified"))
+		Assertions.assertEquals( ticket.creationDate.formatDate(),resTicket.getString("creationDate"))
+		Assertions.assertEquals(ticketId!!.toInt(),resTicket.getInt("ticketId"))
+
 	}
 
 	//	7) /api/managers/:managerId/tickets/:ticketId
 	@Test
 	fun successGetASingleTicketsOfAManager(){
-		val customer = Customer("Mario", "Rossi", Date(2020,1,1),  Date(1990,1,1),"mario.rossi@mail.com","0123456789")
-		customerRepository.save(customer)
+		val customer = Customer("Mario", "Rossi",
+			myDate(2022,1,1),
+			myDate(1990,1,1),
+			"mario.rossi@mail.com","0123456789")
+		val customerId = customerRepository.save(customer).getId()
 
 		val expert= Expert("expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
-		expertRepository.save(expert)
+		val expertId = expertRepository.save(expert).getId()
 
 		val product = Product("Iphone", "15", 1234, customer)
-		productRepository.save(product)
+		val productId = productRepository.save(product).getId()
 
-		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(), Date(2020,1,1), Date(2020,1,1))
-		ticketRepository.save(ticket)
+		val ticket = Ticket(TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
+			myDate(2020,1,1), myDate(2020,1,1))
+		val ticketId = ticketRepository.save(ticket).getId()
 
-		val response = restTemplate.getForEntity("/api/managers/1/tickets/1", String::class.java)
+		val manager = Manager("manager@mail.com")
+		val managerId = managerRepository.save(manager).getId()
+
+		val url = "/api/managers/${managerId}/tickets/${ticketId}"
+		println("ABECEDARIO $url")
+		val response = restTemplate
+			.getForEntity(url, String::class.java)
 		Assertions.assertNotNull(response)
 		Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
 		val body = response.body
-		val resTicket = JSONObject(body).getJSONArray("content").getJSONObject(0)
+		println(body)
+		val resTicket = JSONObject(body)
 		println("resTicket $resTicket")
-		Assertions.assertEquals(resTicket.getString("ticketState"), "OPEN")
-		Assertions.assertEquals(resTicket.getInt("serialNumber"), 1234)
-		Assertions.assertEquals(resTicket.getInt("expertId"), 1)
-		Assertions.assertEquals(resTicket.getInt("expertId"),1)
-		Assertions.assertEquals(resTicket.getInt("customerId"),1)
-		Assertions.assertEquals(resTicket.getString("description"), "Description")
-		Assertions.assertEquals(resTicket.getString("lastModified"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getString("creationDate"), "2020-01-01")
-		Assertions.assertEquals(resTicket.getInt("ticketId"),1)
+		Assertions.assertEquals( "OPEN",resTicket.getString("ticketState"),)
+		Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
+		Assertions.assertEquals(expertId!!.toInt(),resTicket.getInt("expertId"))
+		Assertions.assertEquals(customerId!!.toInt(),resTicket.getInt("customerId"))
+		Assertions.assertEquals( ticket.description,resTicket.getString("description"))
+		Assertions.assertEquals(ticket.lastModified.formatDate(),resTicket.getString("lastModified"))
+		Assertions.assertEquals( ticket.creationDate.formatDate(),resTicket.getString("creationDate"))
+		Assertions.assertEquals(ticketId!!.toInt(),resTicket.getInt("ticketId"))
 	}
 
 	//	8) /api/managers/:managerId/tickets/:ticketId/assign
@@ -287,4 +323,14 @@ class DbT1ApplicationTests{
 		//Assertions.assertEquals(HttpStatus.OK, response?.statusCode)
 		println("ABECEDARIO $response")
 	}
+
+
+	private fun myDate(year: Int, month: Int, day:Int): Date {
+		return Date(year-1900, month-1, day)
+	}
+
+	private fun Date.formatDate():String{
+		return SimpleDateFormat("yyyy-MM-dd").format(this)
+	}
+
 }
