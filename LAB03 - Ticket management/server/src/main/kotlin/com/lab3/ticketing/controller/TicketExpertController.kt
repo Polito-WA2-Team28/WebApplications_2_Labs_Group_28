@@ -1,8 +1,11 @@
 package com.lab3.ticketing.controller
 
 import com.lab3.server.exception.Exception
+import com.lab3.server.model.Expert
 import com.lab3.server.service.ExpertService
 import com.lab3.ticketing.dto.TicketDTO
+import com.lab3.ticketing.exception.TicketException
+import com.lab3.ticketing.model.Ticket
 import com.lab3.ticketing.service.TicketService
 import com.lab3.ticketing.util.TicketState
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +14,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+
 
 @RestController
 class TicketExpertController @Autowired constructor(
@@ -37,30 +41,33 @@ class TicketExpertController @Autowired constructor(
 
     @GetMapping("/api/experts/{expertId}/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun getSingleTicket(@PathVariable("expertId") expertId:Long,
-                        @PathVariable("ticketId") ticketId:Long): TicketDTO?{
-        return ticketService.getTicketDTOById(ticketId) //Add exception handling like in product controller
+    fun getSingleTicket(
+        @PathVariable("expertId") expertId: Long,
+        @PathVariable("ticketId") ticketId: Long
+    ): TicketDTO? {
+        return ticketService.getTicketDTOById(ticketId)
+            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
     }
 
     @PatchMapping("/api/experts/{expertId}/tickets/{ticketId}/resolve")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun resolveTicket(@PathVariable("expertId") expertId:Long,
-                     @PathVariable("ticketId") ticketId:Long){
+    fun resolveTicket(
+        @PathVariable("expertId") expertId: Long,
+        @PathVariable("ticketId") ticketId: Long
+    ) {
 
-        var ticket = ticketService.getTicketModelById(ticketId)
-        var expert = ticket?.expert
+        var ticket: Ticket = ticketService.getTicketModelById(ticketId)
+            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
+        var expert: Expert = ticket.expert
+            ?: throw Exception.ExpertNotFoundException("Expert not found.")
         var allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED, TicketState.IN_PROGRESS)
 
-        if(ticket != null &&
-           expert != null &&
-           expert.getId() == expertId &&
-           allowedStates.contains(ticket.state)){
-
-            ticketService.changeTicketStatus(ticket, TicketState.RESOLVED)
+        if (expert.getId() != expertId) {
+            throw Exception.ExpertNotFoundException("Expert not found.")
+        } else if (allowedStates.contains(ticket.state)) {
+            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
-
-
-
+        ticketService.changeTicketStatus(ticket, TicketState.RESOLVED)
     }
 
     @PatchMapping("/api/experts/{expertId}/tickets/{ticketId}/close")
@@ -68,16 +75,17 @@ class TicketExpertController @Autowired constructor(
     fun closeTicket(@PathVariable("expertId") expertId:Long,
                      @PathVariable("ticketId") ticketId:Long){
 
-        var ticket = ticketService.getTicketModelById(ticketId)
-        var expert = ticket?.expert
+        var ticket: Ticket = ticketService.getTicketModelById(ticketId)
+            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
+        var expert: Expert = ticket.expert
+            ?: throw Exception.ExpertNotFoundException("Expert not found.")
         var allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED)
 
-        if(ticket != null &&
-           expert != null &&
-           expert.getId() == expertId &&
-           allowedStates.contains(ticket.state)){
-
-            ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
+        if (expert.getId() != expertId) {
+            throw Exception.ExpertNotFoundException("Expert not found.")
+        } else if (allowedStates.contains(ticket.state)) {
+            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
+        ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
     }
 }

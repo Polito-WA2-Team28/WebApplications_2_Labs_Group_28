@@ -41,6 +41,24 @@ class TicketAdvice {
     }
 
     @ResponseBody
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(TicketException.TicketCreationException::class)
+    fun ticketInvalidOperationError(e: TicketException.TicketCreationException): TicketErrorDetails {
+        return TicketErrorDetails(
+            e.error()
+        )
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(TicketException.TicketForbiddenException::class)
+    fun ticketInvalidOperationError(e: TicketException.TicketForbiddenException): TicketErrorDetails {
+        return TicketErrorDetails(
+            e.error()
+        )
+    }
+
+    @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(Exception.ExpertNotFoundException::class)
     fun expertNotFoundError(e: Exception.ExpertNotFoundException): ErrorDetails {
@@ -57,6 +75,4 @@ class TicketAdvice {
             e.error()
         )
     }
-
-
 }

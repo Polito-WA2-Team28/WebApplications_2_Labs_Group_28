@@ -18,4 +18,13 @@ class ProductAdvice {
             e.error()
         )
     }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(Exception.CustomerNotOwnerException::class)
+    fun productNotFoundError(e: Exception.CustomerNotOwnerException): ErrorDetails {
+        return ErrorDetails(
+            e.error()
+        )
+    }
 }

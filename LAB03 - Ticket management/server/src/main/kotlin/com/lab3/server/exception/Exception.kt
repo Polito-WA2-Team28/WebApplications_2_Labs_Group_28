@@ -23,10 +23,5 @@ open class Exception(override val message:String) : Throwable() {
     class ExpertNotFoundException(message: String): Exception(message)
     class ManagerNotFoundException(message: String): Exception(message)
 
-    /**
-     * Used to throw exceptions related to the unconsistent behaviour of the database. As an example,
-     * if the save() JpaRepository method returns an object different from the original one, it is
-     * necessary to throw this exception.
-     */
-    class DatabaseError(message:String) : Exception(message)
+    class CustomerNotOwnerException(message: String): Exception(message)
 }
