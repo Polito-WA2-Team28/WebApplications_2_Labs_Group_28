@@ -45,6 +45,11 @@ class TicketExpertController @Autowired constructor(
         @PathVariable("expertId") expertId: Long,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+        
+        /* checking that the expert exists */
+        expertService.getExpertById(expertId)
+            ?: throw Exception.ExpertNotFoundException("Expert not found.")
+
         return ticketService.getTicketDTOById(ticketId)
             ?: throw TicketException.TicketNotFoundException("Ticket not found.")
     }
