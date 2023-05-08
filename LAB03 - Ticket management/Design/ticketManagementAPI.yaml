@@ -1270,6 +1270,7 @@ paths:
   # Compile survey [Customer] Resolved => Closed  PATCH /api/customer/tickets/:ticketId/compileSurvey
 
 
+
 # Send message 
   # Body => customerId, ticketId, text, attachments
   # Customer: /api/message/customer POST

@@ -2,6 +2,7 @@ package com.lab3.server.service
 
 import com.lab3.server.dto.ProductDTO
 import com.lab3.server.dto.toDTO
+import com.lab3.server.model.Product
 import org.springframework.stereotype.Service
 import com.lab3.server.repository.ProductRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +16,11 @@ class ProductServiceImpl @Autowired constructor(private val productRepository: P
         return productRepository.findAll().map{it.toDTO()}
     }
 
-    override fun getProductById(id: Int): ProductDTO? {
+    override fun getProductBySerialNumber(serialNumber: Long): Product? {
+        return productRepository.findBySerialNumber(serialNumber)
+    }
+
+    override fun getProductById(id: Long): ProductDTO? {
         return productRepository.findByIdOrNull(id)?.toDTO()
     }
 }

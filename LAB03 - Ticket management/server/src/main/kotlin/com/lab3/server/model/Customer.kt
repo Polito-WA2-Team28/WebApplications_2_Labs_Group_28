@@ -1,6 +1,7 @@
 package com.lab3.server.model
 
 
+import com.lab3.server.dto.CustomerDTO
 import com.lab3.server.dto.CustomerFormModification
 import com.lab3.server.dto.CustomerFormRegistration
 import jakarta.persistence.*
@@ -49,3 +50,8 @@ fun CustomerFormRegistration.toModel(): Customer{
 fun CustomerFormModification.toModel(id:Long?, registrationDate: Date, email: String): Customer {
     return Customer(name, surname, registrationDate, birthDate, email, phoneNumber)
 }
+
+
+/*fun CustomerDTO.toModel():Customer{
+    return Customer(name, surname, registrationDate, birthDate, email, phoneNumber)
+}*/

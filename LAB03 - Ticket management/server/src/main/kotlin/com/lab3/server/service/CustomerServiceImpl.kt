@@ -8,6 +8,7 @@ import com.lab3.server.model.Customer
 import com.lab3.server.model.toModel
 import com.lab3.server.repository.CustomerRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
@@ -16,6 +17,10 @@ class CustomerServiceImpl @Autowired constructor(val customerRepository: Custome
 
     override fun getProfileByEmail(email: String): CustomerDTO? {
         return customerRepository.findByEmail(email)?.toDTO()
+    }
+
+    override fun getCustomerById(id: Long): Customer? {
+        return customerRepository.findByIdOrNull(id)
     }
 
 

@@ -11,9 +11,15 @@ properties:
   attachmentId:
     type: integer
     description: Unique identifier of the attachment inside the specific message.
-  multiPartFile:
+  file_name:
+    type: string
+    description: Name of the stored file
+  content_type:
+    type: string
+    description: Describes the type of content of the file
+  file_data:
     type: string
     format: binary
-    description: The binary contents of the uploaded file.
+    description: Binary content of the file
 required:
   - multiPartFile
