@@ -69,7 +69,7 @@ class TicketExpertController @Autowired constructor(
 
         if (expert.getId() != expertId) {
             throw Exception.ExpertNotFoundException("Expert not found.")
-        } else if (allowedStates.contains(ticket.state)) {
+        } else if (!allowedStates.contains(ticket.state)) {
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
         ticketService.changeTicketStatus(ticket, TicketState.RESOLVED)
@@ -88,7 +88,7 @@ class TicketExpertController @Autowired constructor(
 
         if (expert.getId() != expertId) {
             throw Exception.ExpertNotFoundException("Expert not found.")
-        } else if (allowedStates.contains(ticket.state)) {
+        } else if (!allowedStates.contains(ticket.state)) {
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
         ticketService.changeTicketStatus(ticket, TicketState.CLOSED)

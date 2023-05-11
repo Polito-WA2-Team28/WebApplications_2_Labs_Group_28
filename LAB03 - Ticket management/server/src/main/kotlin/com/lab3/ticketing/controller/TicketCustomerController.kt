@@ -89,10 +89,11 @@ class TicketCustomerController @Autowired constructor(
             ?: throw TicketException.TicketNotFoundException("Ticket not found.")
         var allowedStates = mutableSetOf(TicketState.CLOSED, TicketState.RESOLVED)
 
-        if(ticket.customer.getId() == customerId && allowedStates.contains(ticket.state)) {
-            ticketService.changeTicketStatus(ticket, TicketState.REOPENED)
+        if(ticket.customer.getId() != customerId || !allowedStates.contains(ticket.state)) {
+            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
-        throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
+
+        return ticketService.changeTicketStatus(ticket, TicketState.REOPENED)
     }
 
     @PatchMapping("/api/customers/{customerId}/tickets/{ticketId}/compileSurvey")
@@ -107,7 +108,7 @@ class TicketCustomerController @Autowired constructor(
 
         if (ticket.customer.getId() != customerId) {
             throw TicketException.TicketForbiddenException("Forbidden.")
-        } else if (ticket.state == TicketState.RESOLVED) {
+        } else if (ticket.state != TicketState.RESOLVED) {
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
         return ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
