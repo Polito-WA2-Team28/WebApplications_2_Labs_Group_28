@@ -6,7 +6,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.web.SecurityFilterChain
 
 
@@ -24,7 +28,7 @@ class SecurityConfig {
             .requestMatchers("/api/managers/**").hasRole("MANAGER")
             .anyRequest().authenticated()
             .and().logout().permitAll()
-            .and().formLogin()
+            .and().formLogin().disable()
 
 
         http.oauth2ResourceServer().jwt()
@@ -33,5 +37,19 @@ class SecurityConfig {
 
         return http.build()
     }
+
+
+    @Bean
+    fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
+        val converter = JwtAuthenticationConverter()
+        converter.setJwtGrantedAuthoritiesConverter{
+                jwt: Jwt -> jwt
+            .getClaim<String>("roles")
+            .split(",")
+            .map{ GrantedAuthority{it} }
+        }
+        return converter
+    }
+
 
 }
