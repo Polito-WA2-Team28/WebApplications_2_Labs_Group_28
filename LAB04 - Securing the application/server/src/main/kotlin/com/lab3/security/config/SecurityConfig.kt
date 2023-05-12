@@ -19,6 +19,7 @@ class SecurityConfig {
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.authorizeHttpRequests()
             .requestMatchers("/api/auth/login").permitAll()
+            .requestMatchers("/api/customers/**").hasRole("CUSTOMER")
             .requestMatchers("/api/experts/**").hasRole("EXPERT")
             .requestMatchers("/api/managers/**").hasRole("MANAGER")
             .anyRequest().authenticated()
