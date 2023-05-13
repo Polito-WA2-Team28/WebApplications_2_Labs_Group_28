@@ -1,4 +1,4 @@
-/*
+
 package com.lab4.security.config
 
 import org.springframework.core.convert.converter.Converter
@@ -35,6 +35,7 @@ class JwtAuthConverter(private val properties: JwtAuthConverterProperties) : Con
         val resourceAccess = jwt.getClaim<Map<String, Any>>("resource_access")
         val resource = resourceAccess?.get(properties.resourceId) as? Map<String, Any>
         val resourceRoles = resource?.get("roles") as? Collection<String>
+        println(resourceRoles)
         return resourceRoles ?: emptyList()
     }
-}*/
+}

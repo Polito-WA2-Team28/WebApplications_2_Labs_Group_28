@@ -1,4 +1,4 @@
-/*
+
 package com.lab4.security.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -11,4 +11,4 @@ import org.springframework.validation.annotation.Validated
 data class JwtAuthConverterProperties (
     var resourceId: String? = null,
     var principalAttribute: String? = null
-)*/
+)
