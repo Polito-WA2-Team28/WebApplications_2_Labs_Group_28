@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.ResponseStatus
 @RestController
 class ProductController @Autowired constructor(val productService: ProductServiceImpl){
 
-    @GetMapping("/API/products")
+    @GetMapping("/api/products")
     @ResponseStatus(HttpStatus.OK)
     fun getProducts() : List<ProductDTO>{
         return productService.getAllProducts()
     }
 
-    @GetMapping("/API/products/{productId}")
+    @GetMapping("/api/products/{productId}")
     @ResponseStatus(HttpStatus.OK)
     fun getProductById(@PathVariable("productId") productId: Long): ProductDTO? {
         return productService.getProductById(productId)

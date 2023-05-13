@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 class CustomerController @Autowired constructor(val profileService: CustomerServiceImpl) {
 
 
-    @GetMapping("/API/profiles/{email}")
+    @GetMapping("/api/profiles/{email}")
     @ResponseStatus(HttpStatus.OK)
     fun getCustomerById(@PathVariable("email") email:String): CustomerDTO?{
         var profile: CustomerDTO? = profileService.getProfileByEmail(email)
@@ -32,7 +32,7 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
     }
 
 
-    @PostMapping("/API/profiles")
+    @PostMapping("/api/profiles")
     @ResponseStatus(HttpStatus.CREATED)
     fun addProfile(@RequestBody @Valid profile:CustomerFormRegistration, br:BindingResult){
         if(br.hasErrors()){
@@ -55,7 +55,7 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
      * @param email the email of the user whose profile needs to be updated.
      * @param profile the updated profile of the user
      */
-    @PutMapping("/API/profiles/{email}")
+    @PutMapping("/api/profiles/{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun editProfile(
         @PathVariable("email") email: String,

@@ -30,6 +30,9 @@ dependencies {
 	implementation("org.springframework.security:spring-security-oauth2-resource-server")
 	implementation("org.springframework.security:spring-security-oauth2-jose")
 
+	implementation("javax.json:javax.json-api:1.1.4")
+	implementation("org.glassfish:javax.json:1.1.4")
+
 
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

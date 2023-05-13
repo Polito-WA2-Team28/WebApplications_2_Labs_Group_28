@@ -20,33 +20,26 @@ class SecurityConfig {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http.authorizeHttpRequests()
-            .requestMatchers("/api/auth/login").permitAll()
-            .requestMatchers("/api/customers/**").hasRole("CUSTOMER")
-            .requestMatchers("/api/experts/**").hasRole("EXPERT")
-            .requestMatchers("/api/managers/**").hasRole("MANAGER")
-            .and().logout().permitAll()
-            .and().formLogin().disable()
+            .requestMatchers(("/api/**")).permitAll()
+            //.requestMatchers("/api/auth/login").permitAll()
+            //.requestMatchers("/api/customers/**").hasRole("CUSTOMER")
+            //.requestMatchers("/api/experts/**").hasRole("EXPERT")
+            //.requestMatchers("/api/managers/**").hasRole("MANAGER")
+            //.requestMatchers("/api/profiles").permitAll()
+            //.and().logout().permitAll()
+            //.and().formLogin().disable()
+
+        //http.csrf().disable()
 
 
-        http.oauth2ResourceServer().jwt()
+        //http.oauth2ResourceServer().jwt()
 
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        //http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         return http.build()
     }
 
 
-    @Bean
-    fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
-        val converter = JwtAuthenticationConverter()
-        converter.setJwtGrantedAuthoritiesConverter{
-                jwt: Jwt -> jwt
-            .getClaim<String>("roles")
-            .split(",")
-            .map{ GrantedAuthority{it} }
-        }
-        return converter
-    }
 
 
 }
