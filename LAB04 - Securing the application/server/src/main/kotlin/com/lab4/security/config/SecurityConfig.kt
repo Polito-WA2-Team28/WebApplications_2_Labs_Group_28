@@ -23,6 +23,7 @@ class SecurityConfig(val jwtAuthConverter:JwtAuthConverter) {
             .requestMatchers("/api/experts/**").hasRole("EXPERT")
             .requestMatchers("/api/managers/**").hasRole("MANAGER")
             .requestMatchers("/api/profiles").permitAll()
+            .requestMatchers("/api/auth/register").permitAll()
             .anyRequest().authenticated()
             .and().logout().permitAll()
             .and().formLogin().disable()

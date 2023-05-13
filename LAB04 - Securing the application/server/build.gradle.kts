@@ -32,6 +32,8 @@ dependencies {
 
 	implementation("javax.json:javax.json-api:1.1.4")
 	implementation("org.glassfish:javax.json:1.1.4")
+	implementation("org.keycloak:keycloak-spring-boot-starter:21.1.1")
+	implementation("org.keycloak:keycloak-admin-client:21.1.1")
 
 
 	runtimeOnly("org.postgresql:postgresql")
