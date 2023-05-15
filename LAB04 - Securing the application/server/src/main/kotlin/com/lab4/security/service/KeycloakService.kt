@@ -13,14 +13,17 @@ import java.net.URI
 import java.util.*
 import javax.ws.rs.core.Response
 
+
 @Service
 class KeycloakService(private val keycloak: Keycloak,
                       private val keycloakProperties: KeycloakProperties,
                       private val customerService: CustomerServiceImpl) {
-    fun createUser(customer: CustomerFormRegistration) {
-        //get CustomerFormRegistration and insert fields
+    fun createUser(customer: CustomerFormRegistration): Response {
+        val role = keycloak.realm(keycloakProperties.realm).roles()["CUSTOMER"].toRepresentation()
+
         val user = UserRepresentation()
         user.isEnabled = true
+        user.isEmailVerified = true
         user.username = customer.name
         user.email = customer.email
         user.credentials = listOf(
@@ -28,24 +31,27 @@ class KeycloakService(private val keycloak: Keycloak,
                 this.isTemporary = false
                 this.type = CredentialRepresentation.PASSWORD
                 this.value = "test"
-                // Doon't use hardcoded password
+                // Don't use hardcoded password, modify DTO to accept password from customer
             }
         )
 
         val response = keycloak.realm(keycloakProperties.realm).users().create(user)
 
         if(response.status == Response.Status.CREATED.statusCode){
+            //Retrieve newly generated User ID
             val uri: URI = response.location
             val path: String = uri.getPath()
             val segments = path.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             val userId = segments[segments.size - 1]
 
+            //Assign Customer Role
+            keycloak.realm(keycloakProperties.realm).users().get(userId).roles().realmLevel().add(listOf(role))
+
+            //Propagate User creation to Postgres DB
             val completeProfile:CustomerCompleteRegistration = customer.toCompleteCustomer(UUID.fromString(userId), customer)
             customerService.addProfile(completeProfile)
         }
-        else {
-            println(response.location)
-            println(response.status)
-        }
+
+        return response
     }
 }

@@ -8,17 +8,16 @@ import com.lab4.server.exception.Exception
 import jakarta.validation.Valid
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
 import java.io.StringReader
 import javax.json.Json
+import javax.ws.rs.core.Response
 
 @RestController
 class UserController(private val keycloakService: KeycloakService) {
@@ -30,7 +29,6 @@ class UserController(private val keycloakService: KeycloakService) {
 
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
-        val map: MutableMap<String, String> = mutableMapOf()
         val body:String = "grant_type=password&client_id=ticketing-service-client&username="+userCredentials.username+"&password="+userCredentials.password
 
 
@@ -47,6 +45,7 @@ class UserController(private val keycloakService: KeycloakService) {
     }
 
     @PostMapping("/api/auth/register")
+    @ResponseStatus(HttpStatus.CREATED)
     fun registerUser(@RequestBody @Valid profile: CustomerFormRegistration, br: BindingResult){
         if(br.hasErrors()){
             val invalidFields = br.fieldErrors.map { it.field }
@@ -54,6 +53,10 @@ class UserController(private val keycloakService: KeycloakService) {
         }
 
         val response = keycloakService.createUser(profile)
-        println(response)
+
+        if(response.status != Response.Status.CREATED.statusCode){
+            throw Exception.CouldNotRegisterCustomer("It was not possible to register the customer")
+        }
+
     }
 }

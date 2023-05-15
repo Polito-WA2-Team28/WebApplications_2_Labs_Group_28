@@ -24,4 +24,6 @@ open class Exception(override val message:String) : Throwable() {
     class ManagerNotFoundException(message: String): Exception(message)
 
     class CustomerNotOwnerException(message: String): Exception(message)
+
+    class CouldNotRegisterCustomer(message: String): Exception(message)
 }

@@ -16,9 +16,13 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
-import java.util.UUID
+import java.util.*
 
 
 @RestController
@@ -49,20 +53,36 @@ class TicketCustomerController @Autowired constructor(
         throw Exception.CustomerNotOwnerException("Customer is not the owner of this product.")
     }
 
-    @GetMapping("/api/customers/{customerId}/tickets")
+    @GetMapping("/api/customers/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(
-        @PathVariable("customerId") customerId: UUID,
+        //@PathVariable("customerId") customerId: UUID,
         @RequestParam("pageNo", defaultValue = "0") pageNo: Int
     ): Page<TicketDTO> {
 
+        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+        var sub:String? = null
+
+        println(authentication.javaClass)
+        if (authentication is JwtAuthenticationToken) {
+            val jwt: Jwt = authentication.token
+            val subObject: Any? = jwt.claims["sub"]
+            if (subObject != null) {
+                sub = subObject.toString()
+            }
+        }
+
+        println("***SUB***")
+        println(sub)
+
+
         /* checking that customer exists */
-        customerService.getCustomerById(customerId)
+        customerService.getCustomerById(UUID.fromString(sub))
             ?: throw Exception.CustomerNotFoundException("Customer not found.")
 
         /* computing page and retrieving all the tickets corresponding to this customer */
         var page: Pageable = PageRequest.of(pageNo, 3)
-        return ticketService.getAllTicketsWithPagingByCustomerId(customerId, page)
+        return ticketService.getAllTicketsWithPagingByCustomerId(UUID.fromString(sub), page)
     }
 
     @GetMapping("/api/customers/{customerId}/tickets/{ticketId}")

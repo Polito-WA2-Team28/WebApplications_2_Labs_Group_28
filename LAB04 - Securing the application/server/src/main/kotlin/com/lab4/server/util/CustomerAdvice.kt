@@ -57,5 +57,14 @@ class CustomerAdvice {
         )
     }
 
+    @ResponseBody
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(Exception.CouldNotRegisterCustomer::class)
+    fun couldNotRegisterCustomer(e: Exception.CouldNotRegisterCustomer): ErrorDetails {
+        return ErrorDetails(
+            e.error()
+        )
+    }
+
 
 }
