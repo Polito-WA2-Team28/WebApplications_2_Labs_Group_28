@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 @RestController
 class TicketManagerController @Autowired constructor(
@@ -27,7 +28,7 @@ class TicketManagerController @Autowired constructor(
     @GetMapping("/api/managers/{managerId}/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(
-        @PathVariable("managerId") managerId: Long,
+        @PathVariable("managerId") managerId: UUID,
         @RequestParam("pageNo", defaultValue = "0") pageNo: Int
     ): Page<TicketDTO> {
 
@@ -43,7 +44,7 @@ class TicketManagerController @Autowired constructor(
     @GetMapping("/api/managers/{managerId}/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(
-        @PathVariable("managerId") managerId: Long,
+        @PathVariable("managerId") managerId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
 
@@ -61,7 +62,7 @@ class TicketManagerController @Autowired constructor(
     @PatchMapping("/api/managers/{managerId}/tickets/{ticketId}/assign")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun assignTicket (
-        @PathVariable("managerId") managerId: Long,
+        @PathVariable("managerId") managerId: UUID,
         @PathVariable("ticketId") ticketId: Long,
         @RequestBody @Valid ticketUpdateData: TicketUpdateData
     ): TicketDTO? {
@@ -90,7 +91,7 @@ class TicketManagerController @Autowired constructor(
     @PatchMapping("/api/managers/{managerId}/tickets/{ticketId}/relieveExpert")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun relieveExpert (
-        @PathVariable("managerId") managerId: Long,
+        @PathVariable("managerId") managerId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
 
@@ -115,7 +116,7 @@ class TicketManagerController @Autowired constructor(
     @PatchMapping("/api/managers/{managerId}/tickets/{ticketId}/close")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun closeTicket (
-        @PathVariable("managerId") managerId: Long,
+        @PathVariable("managerId") managerId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
 
@@ -137,7 +138,7 @@ class TicketManagerController @Autowired constructor(
     @PatchMapping("/api/managers/{managerId}/tickets/{ticketId}/resumeProgress")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun resumeTicketProgress (
-        @PathVariable("managerId") managerId: Long,
+        @PathVariable("managerId") managerId: UUID,
         @PathVariable("ticketId") ticketId: Long,
         @RequestBody @Valid ticketUpdateData: TicketUpdateData
     ): TicketDTO? {
@@ -165,7 +166,7 @@ class TicketManagerController @Autowired constructor(
     @DeleteMapping("/api/managers/{managerId}/tickets/{ticketId}/remove")
     @ResponseStatus(HttpStatus.OK)
     fun removeTicket(
-        @PathVariable("managerId") managerId: Long,
+        @PathVariable("managerId") managerId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): Unit {
 

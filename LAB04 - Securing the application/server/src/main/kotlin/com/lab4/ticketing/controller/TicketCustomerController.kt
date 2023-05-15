@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 
 @RestController
@@ -30,7 +31,7 @@ class TicketCustomerController @Autowired constructor(
     @PostMapping("/api/customers/{customerId}/tickets")
     @ResponseStatus(HttpStatus.CREATED)
     fun createTicket(
-        @PathVariable("customerId") customerId: Long,
+        @PathVariable("customerId") customerId: UUID,
         @RequestBody @Valid ticket: TicketCreationData,
         br: BindingResult
     ): TicketDTO {
@@ -51,7 +52,7 @@ class TicketCustomerController @Autowired constructor(
     @GetMapping("/api/customers/{customerId}/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(
-        @PathVariable("customerId") customerId: Long,
+        @PathVariable("customerId") customerId: UUID,
         @RequestParam("pageNo", defaultValue = "0") pageNo: Int
     ): Page<TicketDTO> {
 
@@ -67,7 +68,7 @@ class TicketCustomerController @Autowired constructor(
     @GetMapping("/api/customers/{customerId}/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(
-        @PathVariable("customerId") customerId: Long,
+        @PathVariable("customerId") customerId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
         var ticket = ticketService.getTicketDTOById(ticketId)
@@ -82,7 +83,7 @@ class TicketCustomerController @Autowired constructor(
     @PatchMapping("/api/customers/{customerId}/tickets/{ticketId}/reopen")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun reopenTicket(
-        @PathVariable("customerId") customerId: Long,
+        @PathVariable("customerId") customerId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
         var ticket = ticketService.getTicketModelById(ticketId)
@@ -99,7 +100,7 @@ class TicketCustomerController @Autowired constructor(
     @PatchMapping("/api/customers/{customerId}/tickets/{ticketId}/compileSurvey")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun compileTicketSurvey(
-        @PathVariable("customerId") customerId: Long,
+        @PathVariable("customerId") customerId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
 

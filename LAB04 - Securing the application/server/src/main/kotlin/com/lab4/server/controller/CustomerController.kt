@@ -32,19 +32,19 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
     }
 
 
-    @PostMapping("/api/profiles")
-    @ResponseStatus(HttpStatus.CREATED)
-    fun addProfile(@RequestBody @Valid profile:CustomerFormRegistration, br:BindingResult){
-        if(br.hasErrors()){
-            val invalidFields = br.fieldErrors.map { it.field }
-            throw Exception.ValidationException("", invalidFields)
-        }
-        else if(profileService.getProfileByEmail(profile.email) != null) {
-            throw Exception.ProfileAlreadyExistingException("A profile with this email already exists")
-        }
-
-        profileService.addProfile(profile)
-    }
+//    @PostMapping("/api/profiles")
+//    @ResponseStatus(HttpStatus.CREATED)
+//    fun addProfile(@RequestBody @Valid profile:CustomerFormRegistration, br:BindingResult){
+//        if(br.hasErrors()){
+//            val invalidFields = br.fieldErrors.map { it.field }
+//            throw Exception.ValidationException("", invalidFields)
+//        }
+//        else if(profileService.getProfileByEmail(profile.email) != null) {
+//            throw Exception.ProfileAlreadyExistingException("A profile with this email already exists")
+//        }
+//
+//        profileService.addProfile(profile)
+//    }
 
 
     /**

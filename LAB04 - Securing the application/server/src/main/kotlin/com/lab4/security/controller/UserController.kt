@@ -2,7 +2,7 @@ package com.lab4.security.controller
 
 import com.lab4.security.dto.TokenDTO
 import com.lab4.security.dto.UserCredentialsDTO
-//import com.lab4.security.service.KeycloakService
+import com.lab4.security.service.KeycloakService
 import com.lab4.server.dto.CustomerFormRegistration
 import com.lab4.server.exception.Exception
 import jakarta.validation.Valid
@@ -21,7 +21,7 @@ import java.io.StringReader
 import javax.json.Json
 
 @RestController
-class UserController(/*private val keycloakService: KeycloakService*/) {
+class UserController(private val keycloakService: KeycloakService) {
 
     @PostMapping("/api/auth/login")
     fun authenticateUser(@RequestBody @Valid userCredentials: UserCredentialsDTO):TokenDTO?{
@@ -46,14 +46,14 @@ class UserController(/*private val keycloakService: KeycloakService*/) {
         return TokenDTO(jsonResponse.getString("access_token"))
     }
 
-//    @PostMapping("/api/auth/register")
-//    fun registerUser(@RequestBody @Valid profile: CustomerFormRegistration, br: BindingResult){
-//        if(br.hasErrors()){
-//            val invalidFields = br.fieldErrors.map { it.field }
-//            throw Exception.ValidationException("", invalidFields)
-//        }
-//
-//        val response = keycloakService.createUser(profile)
-//        println(response)
-//    }
+    @PostMapping("/api/auth/register")
+    fun registerUser(@RequestBody @Valid profile: CustomerFormRegistration, br: BindingResult){
+        if(br.hasErrors()){
+            val invalidFields = br.fieldErrors.map { it.field }
+            throw Exception.ValidationException("", invalidFields)
+        }
+
+        val response = keycloakService.createUser(profile)
+        println(response)
+    }
 }

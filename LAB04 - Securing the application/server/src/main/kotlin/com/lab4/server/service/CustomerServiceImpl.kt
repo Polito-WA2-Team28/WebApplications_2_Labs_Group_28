@@ -1,15 +1,13 @@
 package com.lab4.server.service
 
-import com.lab4.server.dto.CustomerDTO
-import com.lab4.server.dto.CustomerFormModification
-import com.lab4.server.dto.CustomerFormRegistration
-import com.lab4.server.dto.toDTO
+import com.lab4.server.dto.*
 import com.lab4.server.model.Customer
 import com.lab4.server.model.toModel
 import com.lab4.server.repository.CustomerRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class CustomerServiceImpl @Autowired constructor(val customerRepository: CustomerRepository) : CustomerService {
@@ -19,12 +17,12 @@ class CustomerServiceImpl @Autowired constructor(val customerRepository: Custome
         return customerRepository.findByEmail(email)?.toDTO()
     }
 
-    override fun getCustomerById(id: Long): Customer? {
+    override fun getCustomerById(id: UUID): Customer? {
         return customerRepository.findByIdOrNull(id)
     }
 
 
-    override fun addProfile(profile: CustomerFormRegistration):CustomerDTO? {
+    override fun addProfile(profile: CustomerCompleteRegistration):CustomerDTO? {
         return customerRepository.save(profile.toModel()).toDTO()
     }
 

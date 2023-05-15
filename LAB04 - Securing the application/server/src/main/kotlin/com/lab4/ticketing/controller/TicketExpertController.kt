@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 
 @RestController
@@ -25,7 +26,7 @@ class TicketExpertController @Autowired constructor(
     @GetMapping("/api/experts/{expertId}/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(
-        @PathVariable("expertId") expertId: Long,
+        @PathVariable("expertId") expertId: UUID,
         @RequestParam("pageNo", defaultValue = "0") pageNo: Int
     ): Page<TicketDTO> {
 
@@ -42,7 +43,7 @@ class TicketExpertController @Autowired constructor(
     @GetMapping("/api/experts/{expertId}/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(
-        @PathVariable("expertId") expertId: Long,
+        @PathVariable("expertId") expertId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
         
@@ -57,7 +58,7 @@ class TicketExpertController @Autowired constructor(
     @PatchMapping("/api/experts/{expertId}/tickets/{ticketId}/resolve")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun resolveTicket(
-        @PathVariable("expertId") expertId: Long,
+        @PathVariable("expertId") expertId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ) {
 
@@ -77,7 +78,7 @@ class TicketExpertController @Autowired constructor(
 
     @PatchMapping("/api/experts/{expertId}/tickets/{ticketId}/close")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun closeTicket(@PathVariable("expertId") expertId:Long,
+    fun closeTicket(@PathVariable("expertId") expertId:UUID,
                      @PathVariable("ticketId") ticketId:Long){
 
         var ticket: Ticket = ticketService.getTicketModelById(ticketId)

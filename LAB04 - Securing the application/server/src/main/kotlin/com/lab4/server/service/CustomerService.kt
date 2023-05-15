@@ -1,18 +1,20 @@
 package com.lab4.server.service
 
+import com.lab4.server.dto.CustomerCompleteRegistration
 import com.lab4.server.dto.CustomerDTO
 import com.lab4.server.dto.CustomerFormModification
 import com.lab4.server.dto.CustomerFormRegistration
 import com.lab4.server.model.Customer
+import java.util.UUID
 
 interface CustomerService {
 
 
     fun getProfileByEmail(email:String) : CustomerDTO?
 
-    fun getCustomerById(id: Long): Customer?
+    fun getCustomerById(id: UUID): Customer?
 
-    fun addProfile(profile:CustomerFormRegistration):CustomerDTO?
+    fun addProfile(profile:CustomerCompleteRegistration):CustomerDTO?
 
     /**
      * Edit an existing profile in the database.

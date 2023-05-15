@@ -13,7 +13,6 @@ abstract class EntityBase<T: Serializable> {
     }
 
     @Id
-    @GeneratedValue
     private var id:T?  = null
     fun getId(): T? = id
     override fun toString(): String {

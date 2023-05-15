@@ -1,6 +1,7 @@
 package com.lab4.server.model
 
 
+import com.lab4.server.dto.CustomerCompleteRegistration
 import com.lab4.server.dto.CustomerFormModification
 import com.lab4.server.dto.CustomerFormRegistration
 import jakarta.persistence.*
@@ -9,6 +10,7 @@ import java.util.*
 @Entity
 @Table
 class Customer (
+    var id:UUID,
     var name:String,
     var surname:String,
 
@@ -21,7 +23,7 @@ class Customer (
     var phoneNumber:String
 
 
-):EntityBase<Long>() {
+):EntityBase<UUID>() {
 
 
 
@@ -33,8 +35,8 @@ class Customer (
  *
  * @return a Customer object.
  */
-fun CustomerFormRegistration.toModel(): Customer{
-    return Customer(name, surname, registrationDate, birthDate, email, phoneNumber)
+fun CustomerCompleteRegistration.toModel(): Customer{
+    return Customer(id, name, surname, registrationDate, birthDate, email, phoneNumber)
 }
 
 /**
@@ -46,8 +48,8 @@ fun CustomerFormRegistration.toModel(): Customer{
  * @param email the email of the user retrieved from the database.
  * @return a Customer object.
  */
-fun CustomerFormModification.toModel(id:Long?, registrationDate: Date, email: String): Customer {
-    return Customer(name, surname, registrationDate, birthDate, email, phoneNumber)
+fun CustomerFormModification.toModel(id: UUID, registrationDate: Date, email: String): Customer {
+    return Customer(id, name, surname, registrationDate, birthDate, email, phoneNumber)
 }
 
 

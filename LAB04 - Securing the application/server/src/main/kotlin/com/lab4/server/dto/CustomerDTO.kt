@@ -3,7 +3,7 @@ package com.lab4.server.dto
 import com.lab4.server.model.Customer
 import java.util.*
 
-data class CustomerDTO(val id:Long?, val name:String, val surname:String, val registrationDate: Date, val birthDate: Date,
+data class CustomerDTO(val id:UUID?, val name:String, val surname:String, val registrationDate: Date, val birthDate: Date,
                        val email:String, val phoneNumber:String){
 
 }

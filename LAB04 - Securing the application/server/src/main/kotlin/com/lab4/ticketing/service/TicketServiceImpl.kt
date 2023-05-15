@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class TicketServiceImpl @Autowired constructor(private val ticketRepository: TicketRepository) : TicketService{
@@ -36,7 +37,7 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
         return ticketRepository.findAll().map{it.toDTO()}
     }
 
-    override fun getAllExpertTickets(expertId: Long): List<TicketDTO> {
+    override fun getAllExpertTickets(expertId: UUID): List<TicketDTO> {
         return ticketRepository.findByExpertId(expertId).map{it.toDTO()}
     }
 
@@ -56,14 +57,14 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             }
     }
 
-    override fun getAllTicketsWithPagingByCustomerId(customerId: Long, pageable: Pageable): Page<TicketDTO> {
+    override fun getAllTicketsWithPagingByCustomerId(customerId: UUID, pageable: Pageable): Page<TicketDTO> {
         return ticketRepository.findAllByCustomerId(customerId, pageable)
             .map {
                 it.toDTO()
             }
     }
 
-    override fun getAllTicketsWithPagingByExpertId(expertId: Long, pageable: Pageable): Page<TicketDTO> {
+    override fun getAllTicketsWithPagingByExpertId(expertId: UUID, pageable: Pageable): Page<TicketDTO> {
         return ticketRepository.findAllByExpertId(expertId, pageable)
             .map {
                 it.toDTO()
