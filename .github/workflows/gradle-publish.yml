@@ -11,8 +11,9 @@ on:
   push:
     branches:
       - main
+      - lab4
     paths:
-      - 'LAB03 - Ticket management/**'
+      - 'LAB04 - Securing the application/**'
       - '.github/**'
 
 env:
@@ -38,7 +39,7 @@ jobs:
         
       
     - name: Build with Gradle
-      working-directory: './LAB03 - Ticket management/server'
+      working-directory: './LAB04 - Securing the application/server'
       run: gradle build --dry-run
 
     - name: Configure Docker credentials
@@ -49,7 +50,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_RUNCOR3_TOKEN }}
 
     - name: Build and push Docker image with JIB
-      working-directory: './LAB03 - Ticket management/server'
+      working-directory: './LAB04 - Securing the application/server'
       run: |
         gradle jib --image=$IMAGE_NAME:$IMAGE_VERSION
 
@@ -61,10 +62,11 @@ jobs:
     - uses: actions/checkout@v3
     - uses: isbang/compose-action@v1.4.1
       with:
-        compose-file: "./LAB03 - Ticket management/Postgres/docker-compose.yml"
+        compose-file: "./LAB04 - Securing the application/Docker/docker-compose.yml"
         down-flags: "--volumes"
         services: |
           postgres
+          keycloak
           ticketing-service
 
       
