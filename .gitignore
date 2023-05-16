@@ -3,4 +3,5 @@
 
 # MacOS filesystem related
 .DS_Store
+**/bin
 
