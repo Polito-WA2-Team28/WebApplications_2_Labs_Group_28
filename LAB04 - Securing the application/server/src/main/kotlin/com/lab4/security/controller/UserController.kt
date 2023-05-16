@@ -32,7 +32,7 @@ class UserController(private val keycloakService: KeycloakService) {
         val body:String = "grant_type=password&client_id=ticketing-service-client&username="+userCredentials.username+"&password="+userCredentials.password
 
 
-        val tokenEndpoint = "http://localhost:8888/realms/TicketingServiceRealm/protocol/openid-connect/token"
+        val tokenEndpoint = "http://localhost:8080/realms/TicketingServiceRealm/protocol/openid-connect/token"
         val entity = HttpEntity(body, headers)
 
         val response = restTemplate.postForEntity(tokenEndpoint, entity, String::class.java)

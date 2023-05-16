@@ -59,7 +59,7 @@ class KeycloakAdminClientConfig(
 @Configuration
 @ConfigurationProperties(prefix = "keycloak")
 class KeycloakProperties {
-    var serverUrl = "http://localhost:8888/"
+    var serverUrl = "http://localhost:8080/"
     var realm = "TicketingServiceRealm"
     var clientId = "ticketing-service-client"
     val username: String = "admin"
