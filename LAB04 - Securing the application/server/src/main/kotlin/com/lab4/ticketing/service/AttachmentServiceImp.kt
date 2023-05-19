@@ -20,7 +20,6 @@ class AttachmentServiceImp @Autowired constructor(private val attachmentReposito
             attachmentRepository.save(attachment)
             return true
         }catch(error: Error) {
-            println(error)
             return false
         }
     }

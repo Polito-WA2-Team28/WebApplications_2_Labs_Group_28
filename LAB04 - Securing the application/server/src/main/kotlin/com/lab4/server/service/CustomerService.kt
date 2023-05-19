@@ -23,5 +23,5 @@ interface CustomerService {
      * @param profile the profile modified by the user in the front-end
      * @return possibly, the new profile updated in the database
      */
-    fun editProfile(email: String, profile: CustomerFormModification): CustomerDTO?
+    fun editProfile(customerId: UUID, profile: CustomerFormModification): CustomerDTO?
 }

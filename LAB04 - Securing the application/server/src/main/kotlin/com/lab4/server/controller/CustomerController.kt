@@ -1,50 +1,41 @@
 package com.lab4.server.controller
 
 
+import com.lab4.security.config.SecurityConfig
 import com.lab4.server.dto.CustomerDTO
 import com.lab4.server.dto.CustomerFormModification
-import com.lab4.server.dto.CustomerFormRegistration
+import com.lab4.server.dto.toDTO
 import com.lab4.server.exception.Exception
 import com.lab4.server.service.CustomerServiceImpl
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.ResponseStatus
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
-class CustomerController @Autowired constructor(val profileService: CustomerServiceImpl) {
+class CustomerController @Autowired constructor(val profileService: CustomerServiceImpl,
+                                                val securityConfig: SecurityConfig) {
 
 
-    @GetMapping("/api/profiles/{email}")
+    @GetMapping("/api/customers/getProfile")
     @ResponseStatus(HttpStatus.OK)
-    fun getCustomerById(@PathVariable("email") email:String): CustomerDTO?{
-        var profile: CustomerDTO? = profileService.getProfileByEmail(email)
-            ?: throw Exception.ProfileNotFoundException("This profile couldn't be found")
+    fun getCustomerById(): CustomerDTO? {
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val profile = profileService.getCustomerById(customerId)
+        if (profile != null) {
+            return profile.toDTO()
+        }
+        else {
+            throw Exception.ProfileNotFoundException("This profile couldn't be found")
+        }
 
-        return profile
+
+
     }
 
 
-//    @PostMapping("/api/profiles")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    fun addProfile(@RequestBody @Valid profile:CustomerFormRegistration, br:BindingResult){
-//        if(br.hasErrors()){
-//            val invalidFields = br.fieldErrors.map { it.field }
-//            throw Exception.ValidationException("", invalidFields)
-//        }
-//        else if(profileService.getProfileByEmail(profile.email) != null) {
-//            throw Exception.ProfileAlreadyExistingException("A profile with this email already exists")
-//        }
-//
-//        profileService.addProfile(profile)
-//    }
 
 
     /**
@@ -55,24 +46,24 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
      * @param email the email of the user whose profile needs to be updated.
      * @param profile the updated profile of the user
      */
-    @PutMapping("/api/profiles/{email}")
+    @PatchMapping("/api/customers/editProfile")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun editProfile(
-        @PathVariable("email") email: String,
         @RequestBody @Valid profile: CustomerFormModification,
         br: BindingResult
     ) {
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
 
         /* Checking errors */
         if (br.hasErrors()) {
             val invalidFields = br.fieldErrors.map { it.field }
             throw Exception.ValidationException("", invalidFields)
-        } else if (profileService.getProfileByEmail(email) == null) {
+        } else if (profileService.getCustomerById(customerId) == null) {
             throw Exception.ProfileNotFoundException("This profile couldn't be found")
         }
 
         /* Updating... */
-        profileService.editProfile(email, profile)
+        profileService.editProfile(customerId, profile)
 
     }
 

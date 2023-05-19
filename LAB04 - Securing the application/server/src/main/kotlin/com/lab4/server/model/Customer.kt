@@ -13,6 +13,7 @@ class Customer (
     var id:UUID,
     var name:String,
     var surname:String,
+    var username:String,
 
     @Temporal(value=TemporalType.DATE)
     var registrationDate: Date,
@@ -36,7 +37,7 @@ class Customer (
  * @return a Customer object.
  */
 fun CustomerCompleteRegistration.toModel(): Customer{
-    return Customer(id, name, surname, registrationDate, birthDate, email, phoneNumber)
+    return Customer(id, name, surname, username, registrationDate, birthDate, email, phoneNumber)
 }
 
 /**
@@ -48,8 +49,8 @@ fun CustomerCompleteRegistration.toModel(): Customer{
  * @param email the email of the user retrieved from the database.
  * @return a Customer object.
  */
-fun CustomerFormModification.toModel(id: UUID, registrationDate: Date, email: String): Customer {
-    return Customer(id, name, surname, registrationDate, birthDate, email, phoneNumber)
+fun CustomerFormModification.toModel(id: UUID, username:String, registrationDate: Date, email: String): Customer {
+    return Customer(id, name, surname, username, registrationDate, birthDate, email, phoneNumber)
 }
 
 

@@ -36,13 +36,11 @@ class KeycloakService(private val keycloak: Keycloak,
             .toRepresentation()
 
 
-        println("test")
-
 
         val user = UserRepresentation()
         user.isEnabled = true
         user.isEmailVerified = true
-        user.username = customer.name
+        user.username = customer.username
         user.email = customer.email
         user.credentials = listOf(
             CredentialRepresentation().apply {

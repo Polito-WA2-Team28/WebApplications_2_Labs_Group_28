@@ -1,5 +1,8 @@
 package com.lab4.ticketing.controller
 
+import com.lab4.security.config.SecurityConfig
+import com.lab4.server.dto.CustomerDTO
+import com.lab4.server.dto.toDTO
 import com.lab4.server.exception.Exception
 import com.lab4.server.model.Customer
 import com.lab4.server.model.Product
@@ -29,20 +32,21 @@ import java.util.*
 class TicketCustomerController @Autowired constructor(
     val ticketService: TicketService,
     val customerService: CustomerService,
-    val productService: ProductService
+    val productService: ProductService,
+    val securityConfig: SecurityConfig
 ) {
 
-    @PostMapping("/api/customers/{customerId}/tickets")
+    @PostMapping("/api/customers/tickets")
     @ResponseStatus(HttpStatus.CREATED)
     fun createTicket(
-        @PathVariable("customerId") customerId: UUID,
         @RequestBody @Valid ticket: TicketCreationData,
         br: BindingResult
     ): TicketDTO {
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
 
-        var customer: Customer = customerService.getCustomerById(customerId)
+        val customer: Customer = customerService.getCustomerById(customerId)
             ?: throw Exception.CustomerNotFoundException("Customer not found.")
-        var product: Product = productService.getProductBySerialNumber(ticket.serialNumber)
+        val product: Product = productService.getProductBySerialNumber(ticket.serialNumber)
             ?: throw Exception.ProductNotFoundException("Product not found.")
 
 
@@ -56,41 +60,27 @@ class TicketCustomerController @Autowired constructor(
     @GetMapping("/api/customers/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(
-        //@PathVariable("customerId") customerId: UUID,
         @RequestParam("pageNo", defaultValue = "0") pageNo: Int
     ): Page<TicketDTO> {
 
-        val authentication: Authentication = SecurityContextHolder.getContext().authentication
-        var sub:String? = null
-
-        println(authentication.javaClass)
-        if (authentication is JwtAuthenticationToken) {
-            val jwt: Jwt = authentication.token
-            val subObject: Any? = jwt.claims["sub"]
-            if (subObject != null) {
-                sub = subObject.toString()
-            }
-        }
-
-        println("***SUB***")
-        println(sub)
-
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
 
         /* checking that customer exists */
-        customerService.getCustomerById(UUID.fromString(sub))
+        customerService.getCustomerById(customerId)
             ?: throw Exception.CustomerNotFoundException("Customer not found.")
 
         /* computing page and retrieving all the tickets corresponding to this customer */
         var page: Pageable = PageRequest.of(pageNo, 3)
-        return ticketService.getAllTicketsWithPagingByCustomerId(UUID.fromString(sub), page)
+        return ticketService.getAllTicketsWithPagingByCustomerId(customerId, page)
     }
 
-    @GetMapping("/api/customers/{customerId}/tickets/{ticketId}")
+    @GetMapping("/api/customers/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(
-        @PathVariable("customerId") customerId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
+
         var ticket = ticketService.getTicketDTOById(ticketId)
             ?: throw TicketException.TicketNotFoundException("Ticket not found.")
 
@@ -100,12 +90,13 @@ class TicketCustomerController @Autowired constructor(
         throw TicketException.TicketForbiddenException("Forbidden.")
     }
 
-    @PatchMapping("/api/customers/{customerId}/tickets/{ticketId}/reopen")
+    @PatchMapping("/api/customers/tickets/{ticketId}/reopen")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun reopenTicket(
-        @PathVariable("customerId") customerId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
+
         var ticket = ticketService.getTicketModelById(ticketId)
             ?: throw TicketException.TicketNotFoundException("Ticket not found.")
         var allowedStates = mutableSetOf(TicketState.CLOSED, TicketState.RESOLVED)
@@ -117,12 +108,12 @@ class TicketCustomerController @Autowired constructor(
         return ticketService.changeTicketStatus(ticket, TicketState.REOPENED)
     }
 
-    @PatchMapping("/api/customers/{customerId}/tickets/{ticketId}/compileSurvey")
+    @PatchMapping("/api/customers/tickets/{ticketId}/compileSurvey")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun compileTicketSurvey(
-        @PathVariable("customerId") customerId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
 
         var ticket = ticketService.getTicketModelById(ticketId)
             ?: throw TicketException.TicketNotFoundException("Ticket not found.")

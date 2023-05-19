@@ -7,6 +7,10 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.web.SecurityFilterChain
 
 
@@ -41,6 +45,20 @@ class SecurityConfig(val jwtAuthConverter:JwtAuthConverter) {
     }
 
 
+    fun retrieveUserClaim(): String?{
+        val authentication: Authentication = SecurityContextHolder.getContext().authentication
+        var sub:String? = null
+
+        if (authentication is JwtAuthenticationToken) {
+            val jwt: Jwt = authentication.token
+            val subObject: Any? = jwt.claims["sub"]
+            if (subObject != null) {
+                sub = subObject.toString()
+            }
+        }
+
+        return sub
+    }
 
 
 }

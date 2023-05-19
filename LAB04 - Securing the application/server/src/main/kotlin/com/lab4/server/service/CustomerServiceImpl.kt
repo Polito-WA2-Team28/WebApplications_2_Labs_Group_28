@@ -34,14 +34,14 @@ class CustomerServiceImpl @Autowired constructor(val customerRepository: Custome
      * @return possibly, the new profile updated in the database. Null otherwise.
      */
     override fun editProfile(
-        email: String,
+        customerId: UUID,
         profile: CustomerFormModification
     ): CustomerDTO? {
 
-        /* Note: originalProfile must be non-null because email is checked in the controller. */
-        val originalCustomer: Customer? = customerRepository.findByEmail(email)
+        val originalCustomer: Customer? = customerRepository.findByIdOrNull(customerId)
         val updatedCustomer: Customer = profile.toModel(
-            id = originalCustomer?.getId() ?: return null,
+            id = originalCustomer?.id ?: return null,
+            username = originalCustomer.username,
             registrationDate = originalCustomer.registrationDate,
             email = originalCustomer.email
         )

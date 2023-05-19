@@ -13,6 +13,7 @@ class CustomerCompleteRegistration(
     var id:UUID,
     var name:String,
     val surname:String,
+    val username:String,
     val registrationDate: Date,
     val birthDate: Date,
     val email:String,
@@ -23,6 +24,6 @@ class CustomerCompleteRegistration(
 
 
 fun CustomerFormRegistration.toCompleteCustomer(id: UUID, profile:CustomerFormRegistration): CustomerCompleteRegistration {
-    return CustomerCompleteRegistration(id, profile.name, profile.surname, profile.registrationDate,
+    return CustomerCompleteRegistration(id, profile.name, profile.surname, profile.username, profile.registrationDate,
                                         profile.birthDate, profile.email, profile.phoneNumber)
 }

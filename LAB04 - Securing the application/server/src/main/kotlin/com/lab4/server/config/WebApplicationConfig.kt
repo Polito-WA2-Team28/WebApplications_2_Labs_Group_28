@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
-public class WebApplicationConfig : WebMvcConfigurer {
+class WebApplicationConfig : WebMvcConfigurer {
 
     override fun addViewControllers(registry: ViewControllerRegistry) {
         registry.addViewController("/notFound").setViewName("forward:/index.html")

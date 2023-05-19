@@ -1,5 +1,6 @@
 package com.lab4.ticketing.controller
 
+import com.lab4.security.config.SecurityConfig
 import com.lab4.server.exception.Exception
 import com.lab4.server.model.Expert
 import com.lab4.server.service.ExpertService
@@ -20,15 +21,15 @@ import java.util.UUID
 @RestController
 class TicketExpertController @Autowired constructor(
     val ticketService: TicketService,
-    val expertService: ExpertService
+    val expertService: ExpertService,
+    val securityConfig: SecurityConfig
 ) {
 
-    @GetMapping("/api/experts/{expertId}/tickets")
+    @GetMapping("/api/experts/tickets")
     @ResponseStatus(HttpStatus.OK)
-    fun getTickets(
-        @PathVariable("expertId") expertId: UUID,
-        @RequestParam("pageNo", defaultValue = "0") pageNo: Int
+    fun getTickets(@RequestParam("pageNo", defaultValue = "0") pageNo: Int
     ): Page<TicketDTO> {
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim())
 
         /* checking that the expert exists */
         expertService.getExpertById(expertId)
@@ -40,12 +41,11 @@ class TicketExpertController @Autowired constructor(
 
     }
 
-    @GetMapping("/api/experts/{expertId}/tickets/{ticketId}")
+    @GetMapping("/api/experts/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun getSingleTicket(
-        @PathVariable("expertId") expertId: UUID,
-        @PathVariable("ticketId") ticketId: Long
+    fun getSingleTicket(@PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim())
         
         /* checking that the expert exists */
         expertService.getExpertById(expertId)
@@ -55,12 +55,12 @@ class TicketExpertController @Autowired constructor(
             ?: throw TicketException.TicketNotFoundException("Ticket not found.")
     }
 
-    @PatchMapping("/api/experts/{expertId}/tickets/{ticketId}/resolve")
+    @PatchMapping("/api/experts/tickets/{ticketId}/resolve")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun resolveTicket(
-        @PathVariable("expertId") expertId: UUID,
         @PathVariable("ticketId") ticketId: Long
     ) {
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim())
 
         var ticket: Ticket = ticketService.getTicketModelById(ticketId)
             ?: throw TicketException.TicketNotFoundException("Ticket not found.")
@@ -76,10 +76,10 @@ class TicketExpertController @Autowired constructor(
         ticketService.changeTicketStatus(ticket, TicketState.RESOLVED)
     }
 
-    @PatchMapping("/api/experts/{expertId}/tickets/{ticketId}/close")
+    @PatchMapping("/api/experts/tickets/{ticketId}/close")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun closeTicket(@PathVariable("expertId") expertId:UUID,
-                     @PathVariable("ticketId") ticketId:Long){
+    fun closeTicket(@PathVariable("ticketId") ticketId:Long){
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim())
 
         var ticket: Ticket = ticketService.getTicketModelById(ticketId)
             ?: throw TicketException.TicketNotFoundException("Ticket not found.")

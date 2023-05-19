@@ -3,6 +3,7 @@ package com.lab4.security.controller
 import com.lab4.security.dto.TokenDTO
 import com.lab4.security.dto.UserCredentialsDTO
 import com.lab4.security.service.KeycloakService
+import com.lab4.server.config.GlobalConfig
 import com.lab4.server.dto.CustomerFormRegistration
 import com.lab4.server.exception.Exception
 import jakarta.validation.Valid
@@ -20,7 +21,8 @@ import javax.json.Json
 import javax.ws.rs.core.Response
 
 @RestController
-class UserController(private val keycloakService: KeycloakService) {
+class UserController(private val keycloakService: KeycloakService,
+                     private val globalConfig: GlobalConfig) {
 
     @PostMapping("/api/auth/login")
     fun authenticateUser(@RequestBody @Valid userCredentials: UserCredentialsDTO):TokenDTO?{
@@ -32,7 +34,7 @@ class UserController(private val keycloakService: KeycloakService) {
         val body:String = "grant_type=password&client_id=ticketing-service-client&username="+userCredentials.username+"&password="+userCredentials.password
 
 
-        val tokenEndpoint = "http://localhost:8080/realms/TicketingServiceRealm/protocol/openid-connect/token"
+        val tokenEndpoint = "http://"+globalConfig.keycloakURL+":"+globalConfig.keycloakPort+"/realms/"+globalConfig.keycloakRealm+"/protocol/openid-connect/token"
         val entity = HttpEntity(body, headers)
 
         val response = restTemplate.postForEntity(tokenEndpoint, entity, String::class.java)
