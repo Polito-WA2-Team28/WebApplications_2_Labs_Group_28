@@ -3,8 +3,6 @@ version: '3'
 services:
   postgres:
     image: runcor3/webapp2_postgres:latest
-    volumes:
-      - postgres_volume:/var/lib/postgresql/data
     container_name: postgres
     environment:
     - PGDATA=/mypostgresdata
@@ -31,7 +29,3 @@ services:
       - "8080:8080"
     command: start-dev
 
-
-volumes:
-  postgres_volume: {}
-  keycloak_volume: {}
