@@ -41,7 +41,7 @@ jobs:
         
       
     - name: Build with Gradle
-      working-directory: './LAB05 - Signup and Observability'
+      working-directory: './LAB05 - Signup and Observability/server'
       run: gradle build --dry-run
 
     - name: Configure Docker credentials
@@ -52,7 +52,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_RUNCOR3_TOKEN }}
 
     - name: Build and push Docker image with JIB
-      working-directory: './LAB05 - Signup and Observability'
+      working-directory: './LAB05 - Signup and Observability/server'
       run: |
         gradle jib --image=$IMAGE_NAME:$IMAGE_VERSION
 
