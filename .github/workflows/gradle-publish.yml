@@ -11,7 +11,7 @@ on:
   push:
     branches:
       - main
-      - lab4
+      - lab5
     paths:
       - 'LAB04 - Securing the application/**'
       - '.github/**'
