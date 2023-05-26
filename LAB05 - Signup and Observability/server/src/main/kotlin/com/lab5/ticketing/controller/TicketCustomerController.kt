@@ -95,7 +95,7 @@ class TicketCustomerController @Autowired constructor(
             ?: throw TicketException.TicketNotFoundException("Ticket not found.")
         var allowedStates = mutableSetOf(TicketState.CLOSED, TicketState.RESOLVED)
 
-        if(ticket.customer.getId() != customerId || !allowedStates.contains(ticket.state)) {
+        if(ticket.customer.id != customerId || !allowedStates.contains(ticket.state)) {
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
@@ -112,7 +112,7 @@ class TicketCustomerController @Autowired constructor(
         var ticket = ticketService.getTicketModelById(ticketId)
             ?: throw TicketException.TicketNotFoundException("Ticket not found.")
 
-        if (ticket.customer.getId() != customerId) {
+        if (ticket.customer.id != customerId) {
             throw TicketException.TicketForbiddenException("Forbidden.")
         } else if (ticket.state != TicketState.RESOLVED) {
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")

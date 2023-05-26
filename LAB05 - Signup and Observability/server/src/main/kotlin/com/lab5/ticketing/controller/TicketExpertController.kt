@@ -68,7 +68,7 @@ class TicketExpertController @Autowired constructor(
             ?: throw Exception.ExpertNotFoundException("Expert not found.")
         var allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED, TicketState.IN_PROGRESS)
 
-        if (expert.getId() != expertId) {
+        if (expert.id != expertId) {
             throw Exception.ExpertNotFoundException("Expert not found.")
         } else if (!allowedStates.contains(ticket.state)) {
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
@@ -87,7 +87,7 @@ class TicketExpertController @Autowired constructor(
             ?: throw Exception.ExpertNotFoundException("Expert not found.")
         var allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED)
 
-        if (expert.getId() != expertId) {
+        if (expert.id != expertId) {
             throw Exception.ExpertNotFoundException("Expert not found.")
         } else if (!allowedStates.contains(ticket.state)) {
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")

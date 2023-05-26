@@ -9,5 +9,5 @@ data class ProductDTO(val id:Long?, val serialNumber:Long, val deviceType:String
 }
 
 fun Product.toDTO(): ProductDTO{
-    return ProductDTO(this.getId(), serialNumber, deviceType, model, owner.getId())
+    return ProductDTO(this.getId(), serialNumber, deviceType, model, owner.id)
 }

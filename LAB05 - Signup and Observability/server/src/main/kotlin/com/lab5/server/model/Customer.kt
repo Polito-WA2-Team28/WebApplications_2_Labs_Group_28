@@ -21,8 +21,6 @@ class Customer (
     var birthDate:Date,
     var email:String,
     var phoneNumber:String
-
-
 )
 
 

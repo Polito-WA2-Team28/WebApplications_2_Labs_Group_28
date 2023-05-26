@@ -13,5 +13,5 @@ data class TicketDTO(
 
 fun Ticket.toDTO() : TicketDTO {
     return TicketDTO(this.getId(), state, description, this.product.serialNumber,
-                     this.customer.getId(), this.expert?.getId(), this.creationDate, this.lastModified)
+                     this.customer.id, this.expert?.id, this.creationDate, this.lastModified)
 }

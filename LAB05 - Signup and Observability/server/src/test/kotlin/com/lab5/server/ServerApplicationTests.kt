@@ -117,16 +117,16 @@ class DbT1ApplicationTests {
     fun `Customer retrieve all the tickets`() {
         /* adding data to database */
         val expert = createTestExpert()
-        expertRepository.save(expert)
+        val expertId = expertRepository.save(expert).id
 
         val customer = createTestCustomer()
-        customerRepository.save(customer)
+        val customerId = customerRepository.save(customer).id
 
         val product = createTestProduct(customer)
-        productRepository.save(product).getId()
+        val productId = productRepository.save(product).getId()
 
         val ticket = createTestTicket(customer, product, expert)
-        ticketRepository.save(ticket).getId()
+        val ticketId = ticketRepository.save(ticket).getId()
 
         /* customer login */
         val accessToken = login("customer-test-1", "test")
@@ -143,8 +143,18 @@ class DbT1ApplicationTests {
             HttpEntity(null, headers),
             String::class.java
         )
-        println(response.body)
+        val body = response.body
+        println(body)
+        val resTicket = JSONObject(body).getJSONArray("content").getJSONObject(0)
         Assertions.assertEquals(HttpStatus.OK, response.statusCode)
+        Assertions.assertEquals("OPEN", resTicket.getString("ticketState"))
+        Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
+        Assertions.assertEquals(expertId.toString(), resTicket.getString("expertId"))
+        Assertions.assertEquals(customerId.toString(), resTicket.getString("customerId"))
+        Assertions.assertEquals(ticket.description, resTicket.getString("description"))
+        Assertions.assertEquals(ticket.lastModified.formatDate(), resTicket.getString("lastModified"))
+        Assertions.assertEquals(ticket.creationDate.formatDate(), resTicket.getString("creationDate"))
+        Assertions.assertEquals(ticketId!!.toInt(), resTicket.getInt("ticketId"))
     }
 
     @Test /** GET /api/customers/tickets*/
@@ -159,7 +169,7 @@ class DbT1ApplicationTests {
     @Test /** POST /api/customers/ticket POST*/
     fun `Successful creation of a new ticket`() {
         val customer = createTestCustomer()
-        val customerId = customerRepository.save(customer).getId()
+        val customerId = customerRepository.save(customer).id
 
         val product = createTestProduct(customer)
         productRepository.save(product).getId()
@@ -190,10 +200,10 @@ class DbT1ApplicationTests {
     @Test /** GET /api/experts/:expertId/tickets*/
     fun successGetAllTicketsOfAnExpert() {
         val customer = createTestCustomer()
-        val customerId = customerRepository.save(customer).getId()
+        val customerId = customerRepository.save(customer).id
 
         val expert = createTestExpert()
-        val expertId = expertRepository.save(expert).getId()
+        val expertId = expertRepository.save(expert).id
 
         val product = createTestProduct(customer)
         val productId = productRepository.save(product).getId()
@@ -1176,6 +1186,6 @@ class DbT1ApplicationTests {
         )
     }
     private fun createTestManager(): Manager{
-        return Manager("manager@mail.com")
+        return Manager(UUID.fromString("aa"),"manager@mail.com")
     }
 }
