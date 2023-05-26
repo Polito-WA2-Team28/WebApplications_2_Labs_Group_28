@@ -1,0 +1,25 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: attachmentschema.json
+title: Attachment
+description: JSON Schema representing the attachment object in the Ticket Management service application.
+type: object
+additionalProperties: false
+properties:
+  $schema:
+    type: string
+    description: Path to the JSON Schema to use for the validation of the JSON data structure.
+  attachmentId:
+    type: integer
+    description: Unique identifier of the attachment inside the specific message.
+  file_name:
+    type: string
+    description: Name of the stored file
+  content_type:
+    type: string
+    description: Describes the type of content of the file
+  file_data:
+    type: string
+    format: binary
+    description: Binary content of the file
+required:
+  - multiPartFile

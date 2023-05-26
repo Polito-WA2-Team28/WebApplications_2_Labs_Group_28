@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="ReactTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2023-03-24T14:06:03" hostname="Davides-MacBook-Pro.local" time="0.005">
+  <properties/>
+  <testcase name="computeCellsCalculateInitialValue" classname="ReactTest" time="0.001"/>
+  <testcase name="callbacksShouldNotBeCalledIfDependenciesChangeButOutputValueDoesntChange" classname="ReactTest" time="0.001"/>
+  <testcase name="inputCellsValueCanBeSet" classname="ReactTest" time="0.0"/>
+  <testcase name="removingACallbackMultipleTimesDoesntInterfereWithOtherCallbacks" classname="ReactTest" time="0.0"/>
+  <testcase name="computeCellsFireCallbacks" classname="ReactTest" time="0.001"/>
+  <testcase name="computeCellsTakeInputsInTheRightOrder" classname="ReactTest" time="0.0"/>
+  <testcase name="computeCellsCanDependOnOtherComputeCells" classname="ReactTest" time="0.0"/>
+  <testcase name="callbacksCanBeAddedAndRemoved" classname="ReactTest" time="0.001"/>
+  <testcase name="inputCellsHaveValue" classname="ReactTest" time="0.0"/>
+  <testcase name="callbacksShouldOnlyBeCalledOnceEvenIfMultipleDependenciesChange" classname="ReactTest" time="0.001"/>
+  <testcase name="computeCellsUpdateValueWhenDependenciesAreChanged" classname="ReactTest" time="0.0"/>
+  <testcase name="callbacksOnlyFireOnChange" classname="ReactTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

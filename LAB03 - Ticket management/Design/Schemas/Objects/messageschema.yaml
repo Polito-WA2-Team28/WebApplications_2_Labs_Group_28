@@ -1,0 +1,36 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: messageschema.yaml
+title: Message
+description: JSON Schema representing the message object in the Ticket Management service application.
+type: object
+additionalProperties: false
+properties:
+  $schema:
+    type: string
+    description: Path to the JSON Schema to use for the validation of the JSON data structure.
+  messageId:
+    type: integer
+    description: Unique identifier of the message inside the specific ticket.
+  ticketId:
+    type: integer
+    $ref: "./ticketschema.yaml#/properties/ticketId"
+    description: Unique identifier of the parent ticket.
+  text:
+    type: string
+    description: Additional information about about the motivation behind the ticket.
+  date:
+    type: date
+    description: When the message was created.
+  sender:
+    type: integer
+    $ref: "./profileschema.yaml#/properties/profileId"
+    description: Identifier of the sender of the message.
+  attachmentList:
+    type: array
+    items:
+      $ref: "./attachmentschema.yaml"
+required:
+  - text
+  - sender
+  - date
+

@@ -1,0 +1,28 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: productschema.json
+title: Product
+description: JSON Schema representing the product object in the Ticket Management service application.
+type: object
+additionalProperties: false
+properties:
+  $schema:
+    type: string
+    description: Path to the JSON Schema to use for the validation of the JSON data structure.
+  serialNumber:
+    type: integer
+    description: Unique identifier of the product.
+  deviceType:
+    type: string
+    description: Type of the product.
+  model:
+    type: string
+    description: Model of the product.
+  ownerId:
+    type: integer
+    $ref: "./profileschema.yaml#/properties/profileId"
+    description: The identifier of the user who bought the product.
+required:
+- serialNumber
+- deviceType
+- model
+- ownerId

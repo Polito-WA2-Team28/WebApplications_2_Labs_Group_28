@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  postgres:
+    image: runcor3/webapp2_postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+
+  ticketing-service:
+    depends_on:
+    - postgres
+
+    image: runcor3/ticketing-service:latest
+    container_name: ticketing-service
+    ports:
+      - "8080:8080"
+

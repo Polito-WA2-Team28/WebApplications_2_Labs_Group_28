@@ -1,0 +1,40 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: profileschema.json
+title: Profile
+description: JSON Schema representing the profile object in the Ticket Management service application.
+type: object
+additionalProperties: false
+properties:
+  $schema:
+    type: string
+    description: Path to the JSON Schema to use for the validation of the JSON data structure.
+  profileId:
+    type: integer
+    description: Unique identifier of the user.
+  name:
+    type: string
+    description: Name of the user.
+  surname:
+    type: string
+    description: Surname of the user.
+  registrationDate:
+    type: date
+    description: When the profile corresponding to the user has been created in the system.
+  birthDate:
+    type: date
+    description: Birthday of the user.
+  email:
+    type: string
+    format: email
+    description: The user email (used for authentication in the service application).
+  phoneNumber:
+    type: string
+    description: The phone number of the user.
+required:
+- profileId
+- name
+- surname
+- registrationDate
+- birthDate
+- email
+- phoneNumber
