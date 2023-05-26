@@ -9,27 +9,20 @@ import com.lab5.ticketing.repository.TicketRepository
 import com.lab5.ticketing.util.*
 import dasniko.testcontainers.keycloak.KeycloakContainer
 import org.json.JSONObject
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-
+import org.junit.jupiter.api.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.boot.test.web.client.*
 import org.springframework.http.*
 import org.springframework.security.oauth2.jwt.JwtDecoder
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
+import org.springframework.test.context.*
 import org.testcontainers.containers.PostgreSQLContainer
 import org.springframework.boot.test.web.server.LocalServerPort
-import org.testcontainers.junit.jupiter.Container
-import org.testcontainers.junit.jupiter.Testcontainers
+import org.testcontainers.junit.jupiter.*
 import org.springframework.util.MultiValueMap
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -59,32 +52,25 @@ class DbT1ApplicationTests {
         }
     }
 
-    @Autowired
-    private lateinit var globalConfig: GlobalConfig
-
-    @Autowired
-    lateinit var restTemplate: TestRestTemplate
-
-    @Autowired
-    lateinit var jwtDecoder: JwtDecoder
-
-    @LocalServerPort
-    protected var port: Int = 8080
-
+    @Autowired private lateinit var globalConfig: GlobalConfig
+    @Autowired lateinit var restTemplate: TestRestTemplate
+    @Autowired lateinit var jwtDecoder: JwtDecoder
+    @LocalServerPort protected var port: Int = 8080
     @Autowired lateinit var ticketRepository: TicketRepository
     @Autowired lateinit var customerRepository: CustomerRepository
     @Autowired lateinit var productRepository: ProductRepository
     @Autowired lateinit var expertRepository: ExpertRepository
     @Autowired lateinit var managerRepository: ManagerRepository
 
-
-    private fun myDate(year: Int, month: Int, day: Int): Date {
-        return Date(year - 1900, month - 1, day)
+    @BeforeEach
+    fun repositoryClean() {
+        ticketRepository.deleteAll()
+        productRepository.deleteAll()
+        customerRepository.deleteAll()
+        managerRepository.deleteAll()
+        expertRepository.deleteAll()
     }
 
-    private fun Date.formatDate(): String {
-        return SimpleDateFormat("yyyy-MM-dd").format(this)
-    }
     @BeforeEach
     fun setUp() {
         val allocatedPort = keycloak.getMappedPort(8080)
@@ -92,11 +78,10 @@ class DbT1ApplicationTests {
         globalConfig.keycloakURL = keycloak.host
     }
 
-
     private fun login(username: String, password: String): String {
 
         /* crafting the request */
-        val credentials: UserCredentialsDTO = UserCredentialsDTO(username, password)
+        val credentials = UserCredentialsDTO(username, password)
         val body = HttpEntity(credentials)
 
         /* login */
@@ -111,7 +96,7 @@ class DbT1ApplicationTests {
     }
 
     @Test /** POST /api/auth/login */
-    fun `Successfull login`() {
+    fun `Successful login`() {
 
         /* crafting the request */
         val credentials = UserCredentialsDTO("customer-test-1", "test")
@@ -128,31 +113,19 @@ class DbT1ApplicationTests {
 
 
 
-	@Test /** GET /api/customers/tickets */
-	fun `Customer retrieve all the tickets`() {
-
-
-
+    @Test /** GET /api/customers/tickets */
+    fun `Customer retrieve all the tickets`() {
         /* adding data to database */
-        val expert = Expert(UUID.fromString("6e2f3411-1f7b-4da4-9128-2bac562b3687"),
-            "expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
+        val expert = createTestExpert()
         expertRepository.save(expert)
 
-        val customer = Customer(
-            UUID.fromString("0ae24126-7590-4e62-9f05-199f61824ed6"),
-            "Mario", "Rossi", "mariorossi",
-            myDate(2022, 1, 1), myDate(1990, 1, 1),
-            "mario.rossi@mail.com", "0123456789"
-        )
+        val customer = createTestCustomer()
         customerRepository.save(customer)
 
-        val product = Product(1,1234,"Iphone", "15", customer)
+        val product = createTestProduct(customer)
         productRepository.save(product).getId()
 
-        val ticket = Ticket(
-            TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
-            myDate(2020, 1, 1), myDate(2020, 1, 1)
-        )
+        val ticket = createTestTicket(customer, product, expert)
         ticketRepository.save(ticket).getId()
 
         /* customer login */
@@ -170,37 +143,25 @@ class DbT1ApplicationTests {
             HttpEntity(null, headers),
             String::class.java
         )
-
-        //Bearer error="invalid_token", error_description="An error occurred while attempting to decode the Jwt: The iss claim is not valid", error_uri="https://tools.ietf.org/html/rfc6750#section-3.1"
         println(response.body)
         Assertions.assertEquals(HttpStatus.OK, response.statusCode)
     }
 
-    /*@Test */
-/** GET /api/customers/:customerId/tickets*//*
-
-    fun failGetAllTicketsOfANonExistentCustomer() {
-        val customerId = (0..100).random()
-        val url = "/api/customers/${customerId}/tickets"
-        val response = restTemplate
-            .getForEntity(url, String::class.java)
+    @Test /** GET /api/customers/tickets*/
+    fun `Fail get all tickets without login`() {
+        val url = "/api/customers/tickets"
+        val response = restTemplate.getForEntity(url, String::class.java)
         Assertions.assertNotNull(response)
-        Assertions.assertEquals(HttpStatus.NOT_FOUND, response?.statusCode)
+        Assertions.assertEquals(HttpStatus.UNAUTHORIZED, response?.statusCode)
     }
 
-    @Test */
-/** POST /api/customers/:customerId/ticket POST*//*
 
-    fun successCreationOfANewTicket() {
-        val customer = Customer(
-            "Mario", "Rossi",
-            myDate(2022, 1, 1),
-            myDate(1990, 1, 1),
-            "mario.rossi@mail.com", "0123456789"
-        )
+    @Test /** POST /api/customers/ticket POST*/
+    fun `Successful creation of a new ticket`() {
+        val customer = createTestCustomer()
         val customerId = customerRepository.save(customer).getId()
 
-        val product = Product("Iphone", "15", 1234, customer)
+        val product = createTestProduct(customer)
         productRepository.save(product).getId()
 
         val headers = HttpHeaders()
@@ -210,7 +171,7 @@ class DbT1ApplicationTests {
         jsonRequest.put("serialNumber", product.serialNumber)
 
         val response = restTemplate.postForEntity(
-            "/api/customers/${customerId}/tickets",
+            "/api/customers/tickets",
             HttpEntity(jsonRequest.toString(), headers),
             String::class.java)
 
@@ -218,36 +179,26 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(HttpStatus.CREATED,response.statusCode)
         val body = JSONObject(response.body)
 
-		Assertions.assertEquals("OPEN", body.getString("ticketState"))
-		Assertions.assertEquals("myDescription",body.getString("description"))
-		Assertions.assertEquals(product.serialNumber.toInt(), body.getInt("serialNumber"))
-		Assertions.assertEquals(customerId!!.toInt(), body.getInt("customerId"))
-		Assertions.assertEquals(0,body.optInt("expertId"))
+        Assertions.assertEquals("OPEN", body.getString("ticketState"))
+        Assertions.assertEquals("myDescription",body.getString("description"))
+        Assertions.assertEquals(product.serialNumber.toInt(), body.getInt("serialNumber"))
+        Assertions.assertEquals(customerId.toString(), body.getString("customerId"))
+        Assertions.assertEquals(0,body.optInt("expertId"))
 
     }
 
-    @Test */
-/** GET /api/experts/:expertId/tickets*//*
-
+    @Test /** GET /api/experts/:expertId/tickets*/
     fun successGetAllTicketsOfAnExpert() {
-        val customer = Customer(
-            "Mario", "Rossi",
-            myDate(2022, 1, 1),
-            myDate(1990, 1, 1),
-            "mario.rossi@mail.com", "0123456789"
-        )
+        val customer = createTestCustomer()
         val customerId = customerRepository.save(customer).getId()
 
-        val expert = Expert("expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
+        val expert = createTestExpert()
         val expertId = expertRepository.save(expert).getId()
 
-        val product = Product("Iphone", "15", 1234, customer)
+        val product = createTestProduct(customer)
         val productId = productRepository.save(product).getId()
 
-        val ticket = Ticket(
-            TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
-            myDate(2020, 1, 1), myDate(2020, 1, 1)
-        )
+        val ticket =createTestTicket(customer, product, expert)
         val ticketId = ticketRepository.save(ticket).getId()
 
         val url = "/api/experts/${expertId}/tickets"
@@ -259,17 +210,15 @@ class DbT1ApplicationTests {
         val resTicket = JSONObject(body).getJSONArray("content").getJSONObject(0)
         Assertions.assertEquals("OPEN", resTicket.getString("ticketState"))
         Assertions.assertEquals(product.serialNumber.toInt(), resTicket.getInt("serialNumber"))
-        Assertions.assertEquals(expertId!!.toInt(), resTicket.getInt("expertId"))
-        Assertions.assertEquals(customerId!!.toInt(), resTicket.getInt("customerId"))
+        Assertions.assertEquals(expertId.toString(), resTicket.getString("expertId"))
+        Assertions.assertEquals(customerId.toString(), resTicket.getString("customerId"))
         Assertions.assertEquals(ticket.description, resTicket.getString("description"))
         Assertions.assertEquals(ticket.lastModified.formatDate(), resTicket.getString("lastModified"))
         Assertions.assertEquals(ticket.creationDate.formatDate(), resTicket.getString("creationDate"))
         Assertions.assertEquals(ticketId!!.toInt(), resTicket.getInt("ticketId"))
     }
 
-    @Test */
-/** GET /api/experts/:expertId/tickets*//*
-
+    @Test /** GET /api/experts/:expertId/tickets*/
     fun failGetAllTicketsOfANonExistentExpert() {
         val expertId = (0..100).random()
         val url = "/api/experts/${expertId}/tickets"
@@ -279,31 +228,23 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response?.statusCode)
     }
 
-    @Test */
-/** GET /api/managers/:managerId/tickets*//*
+    /*@Test
+/** GET /api/managers/:managerId/tickets*/
 
     fun successGetAllTicketsOfAManager() {
-        val customer = Customer(
-            "Mario", "Rossi",
-            myDate(2022, 1, 1),
-            myDate(1990, 1, 1),
-            "mario.rossi@mail.com", "0123456789"
-        )
+        val customer = createTestCustomer()
         val customerId = customerRepository.save(customer).getId()
 
-        val expert = Expert("expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
+        val expert = createTestExpert()
         val expertId = expertRepository.save(expert).getId()
 
-        val product = Product("Iphone", "15", 1234, customer)
-        productRepository.save(product).getId()
+        val product = createTestProduct(customer)
+        val productId = productRepository.save(product).getId()
 
-        val ticket = Ticket(
-            TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
-            myDate(2020, 1, 1), myDate(2020, 1, 1)
-        )
+        val ticket =createTestTicket(customer, product, expert)
         val ticketId = ticketRepository.save(ticket).getId()
 
-        val manager = Manager("manager@mail.com")
+        val manager = createTestManager()
         val managerId = managerRepository.save(manager).getId()
 
         val url = "/api/managers/${managerId}/tickets"
@@ -324,7 +265,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** GET /api/managers/:managerId/tickets*//*
+    /** GET /api/managers/:managerId/tickets*//*
 
     fun failGetAllTicketsOfANonExistentManager() {
         val managerId = (0..100).random()
@@ -336,7 +277,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** GET /api/customers/:customerId/tickets/:ticketId*//*
+    /** GET /api/customers/:customerId/tickets/:ticketId*//*
 
     fun successGetASingleTicketsOfACustomer() {
         val customer = Customer(
@@ -377,7 +318,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** GET /api/customers/:customerId/tickets/:ticketId*//*
+    /** GET /api/customers/:customerId/tickets/:ticketId*//*
 
     fun failGetASingleTicketOfANonExistentCustomer(){
         val customerId = (0..100).random()
@@ -390,7 +331,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** GET /api/customers/:customerId/tickets/:ticketId*//*
+    /** GET /api/customers/:customerId/tickets/:ticketId*//*
 
     fun failGetANonExistentTicketOfACustomer(){
         val customer = Customer(
@@ -409,7 +350,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** GET /api/experts/:expertId/tickets/:ticketId *//*
+    /** GET /api/experts/:expertId/tickets/:ticketId *//*
 
     fun successGetASingleTicketsOfAnExpert() {
         val customer = Customer(
@@ -451,7 +392,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** GET /api/experts/:expertId/tickets/:ticketId *//*
+    /** GET /api/experts/:expertId/tickets/:ticketId *//*
 
     fun failGetASingleTicketOfANonExistentExpert(){
         val customer = Customer(
@@ -479,7 +420,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** GET /api/experts/:expertId/tickets/:ticketId *//*
+    /** GET /api/experts/:expertId/tickets/:ticketId *//*
 
     fun failGetANonExistentTicketOfAnExpert(){
         val expert = Expert("expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
@@ -493,7 +434,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** GET /api/managers/:managerId/tickets/:ticketId *//*
+    /** GET /api/managers/:managerId/tickets/:ticketId *//*
 
     fun successGetASingleTicketsOfAManager() {
         val customer = Customer(
@@ -538,7 +479,7 @@ class DbT1ApplicationTests {
 
     @Ignore
 	@Test */
-/** PATCH /api/managers/:managerId/tickets/:ticketId/assign *//*
+    /** PATCH /api/managers/:managerId/tickets/:ticketId/assign *//*
 
     fun successAssignmentOfATicket() {
 
@@ -589,7 +530,7 @@ class DbT1ApplicationTests {
     //  /////////////// ESTOS SON MIS TESTS //////////////////////////
 
     @Test */
-/** PATCH /api/managers/:managerId/tickets/:ticketId/relieveExpert *//*
+    /** PATCH /api/managers/:managerId/tickets/:ticketId/relieveExpert *//*
 
     fun successRelieveExpert(){
         val customer = Customer(
@@ -632,7 +573,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/managers/:managerId/tickets/:ticketId/relieveExpert *//*
+    /** PATCH /api/managers/:managerId/tickets/:ticketId/relieveExpert *//*
 
     fun failRelieveExpertWithNonExistentIds(){
         val manager = Manager("manager@mail.com")
@@ -650,7 +591,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/customers/:customerId/tickets/:ticketId/reopen *//*
+    /** PATCH /api/customers/:customerId/tickets/:ticketId/reopen *//*
 
     fun successReopenClosedTicket(){
         val customer = Customer(
@@ -685,7 +626,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/customers/:customerId/tickets/:ticketId/reopen *//*
+    /** PATCH /api/customers/:customerId/tickets/:ticketId/reopen *//*
 
     fun successReopenResolvedTicket(){
         val customer = Customer(
@@ -720,7 +661,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/customers/:customerId/tickets/:ticketId/reopen *//*
+    /** PATCH /api/customers/:customerId/tickets/:ticketId/reopen *//*
 
     fun failReopenAlreadyOpenTicket(){
         val manager = Manager("manager@mail.com")
@@ -757,7 +698,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/experts/:expertId/tickets/:ticketId/resolve *//*
+    /** PATCH /api/experts/:expertId/tickets/:ticketId/resolve *//*
 
     fun successResolveOpenTicket(){
         val customer = Customer(
@@ -795,7 +736,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/experts/:expertId/tickets/:ticketId/resolve *//*
+    /** PATCH /api/experts/:expertId/tickets/:ticketId/resolve *//*
 
     fun failResolveClosedTicket(){
         val customer = Customer(
@@ -833,7 +774,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/managers/:managerId/tickets/:ticketId/close *//*
+    /** PATCH /api/managers/:managerId/tickets/:ticketId/close *//*
 
     fun successCloseOpenedTicketByManager(){
         val customer = Customer(
@@ -870,7 +811,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/managers/:managerId/tickets/:ticketId/close *//*
+    /** PATCH /api/managers/:managerId/tickets/:ticketId/close *//*
 
     fun failCloseAlreadyClosedTicketByManager() {
         val customer = Customer(
@@ -911,7 +852,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/managers/:managerId/tickets/:ticketId/resumeProgress *//*
+    /** PATCH /api/managers/:managerId/tickets/:ticketId/resumeProgress *//*
 
     fun succeedResumeProgress() {
         val manager = Manager("manager@mail.com")
@@ -958,7 +899,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/managers/:managerId/tickets/:ticketId/resumeProgress *//*
+    /** PATCH /api/managers/:managerId/tickets/:ticketId/resumeProgress *//*
 
     fun failResumeProgressAlreadyClosedTicket() {
         val customer = Customer(
@@ -1004,7 +945,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH '/api/experts/:expertId/tickets/:ticketId/close' *//*
+    /** PATCH '/api/experts/:expertId/tickets/:ticketId/close' *//*
 
     fun successCloseOpenedTicketByExpert(){
         val customer = Customer(
@@ -1041,7 +982,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH '/api/experts/:expertId/tickets/:ticketId/close' *//*
+    /** PATCH '/api/experts/:expertId/tickets/:ticketId/close' *//*
 
     fun failCloseAlreadyClosedTicketByExpert() {
         val customer = Customer(
@@ -1087,7 +1028,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/customers/:customerId/tickets/:ticketId/compileSurvey *//*
+    /** PATCH /api/customers/:customerId/tickets/:ticketId/compileSurvey *//*
 
     fun successCompileSurvey(){
         val customer = Customer(
@@ -1124,7 +1065,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/customers/:customerId/tickets/:ticketId/compileSurvey *//*
+    /** PATCH /api/customers/:customerId/tickets/:ticketId/compileSurvey *//*
 
     fun failCompileSurveyTicketAlreadyClosed() {
         val customer = Customer(
@@ -1170,7 +1111,7 @@ class DbT1ApplicationTests {
     }
 
     @Test */
-/** PATCH /api/managers/:managerId/tickets/:ticketId/remove*//*
+    /** PATCH /api/managers/:managerId/tickets/:ticketId/remove*//*
 
     fun successRemoveTicket(){
         val customer = Customer(
@@ -1204,5 +1145,37 @@ class DbT1ApplicationTests {
         Assertions.assertEquals(HttpStatus.OK, response.statusCode)
     }*/
 
+    private fun myDate(year: Int, month: Int, day: Int): Date {
+        return Date(year - 1900, month - 1, day)
+    }
 
+    private fun Date.formatDate(): String {
+        return SimpleDateFormat("yyyy-MM-dd").format(this)
+    }
+
+    private fun createTestCustomer(): Customer{
+        return Customer(
+            UUID.fromString("0ae24126-7590-4e62-9f05-199f61824ed6"),
+            "Mario", "Rossi", "mariorossi",
+            myDate(2022, 1, 1), myDate(1990, 1, 1),
+            "mario.rossi@mail.com", "0123456789"
+        )
+    }
+
+    private fun createTestExpert(): Expert{
+        return Expert(UUID.fromString("6e2f3411-1f7b-4da4-9128-2bac562b3687"),
+            "expert01@mail.com", mutableSetOf(ExpertiseFieldEnum.APPLIANCES))
+    }
+    private fun createTestProduct(customer: Customer): Product{
+        return Product(1,1234,"Iphone", "15", customer)
+    }
+    private fun createTestTicket(customer: Customer, product: Product, expert:Expert):Ticket{
+        return Ticket(
+            TicketState.OPEN, customer, expert, "Description", product, mutableSetOf(),
+            myDate(2020, 1, 1), myDate(2020, 1, 1)
+        )
+    }
+    private fun createTestManager(): Manager{
+        return Manager("manager@mail.com")
+    }
 }
