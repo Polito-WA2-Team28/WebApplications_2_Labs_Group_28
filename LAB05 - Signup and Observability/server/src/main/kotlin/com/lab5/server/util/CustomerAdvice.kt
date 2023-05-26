@@ -66,5 +66,16 @@ class CustomerAdvice {
         )
     }
 
+    @ResponseBody
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(Exception.CreateExpertException::class)
+    fun unauthorizedExpertCreation(e: Exception.CreateExpertException): ErrorDetails {
+        return ErrorDetails(
+            e.error()
+        )
+    }
+
+
+
 
 }

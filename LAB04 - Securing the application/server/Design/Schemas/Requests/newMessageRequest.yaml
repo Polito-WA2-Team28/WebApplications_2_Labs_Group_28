@@ -1,0 +1,19 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: newMessageRequest.yaml
+title: New message request body
+description: JSON Schema representing the body of the request to send a new message in the Ticket Management system.
+type: object
+additionalProperties: false
+properties:
+  $schema:
+    type: string
+    description: Path to the JSON Schema to use for the validation of the JSON data structure.
+  text:
+    type: string
+    description: Text of the message.
+  attachments:
+    type: array
+    items: 
+      $ref: "../Objects/attachmentschema.yaml"
+required:
+- text

@@ -1,0 +1,44 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: ticketResponse.yaml
+title: Ticket response body
+description: JSON Schema representing the body of the response returned when a ticket is retrieved in the Ticket Management system.
+type: object
+additionalProperties: false
+properties:
+  $schema:
+    type: string
+    description: Path to the JSON Schema to use for the validation of the JSON data structure.
+  ticketId:
+    type: integer
+    description: Unique identifier of the ticket.
+  state:
+    type: string
+    enum: [OPEN, CLOSED, RESOLVED, IN_PROGRESS, REOPENED]
+  description:
+    type: string
+    description: Textual description od the issue encountered by the user.
+  serialNumber:
+    type: integer
+    $ref: '../Objects/productschema.yaml#/properties/serialNumber'
+    description: The identifier of the product on which the ticket has been opened by the user.
+  userId:
+    type: integer
+    $ref: '../Objects/profileschema.yaml#/properties/profileId'
+    description: Identifier of the user who has opened the ticket.
+  expertId:
+    type: integer
+    $ref: '../Objects/profileschema.yaml#/properties/profileId'
+    description: Identifier of the expert to whom the ticket has been assigned.
+  creationDate:
+    type: date
+    description: When the ticket has been created.
+  lastModified:
+    type: date
+    description: When the ticket was last last modified.
+required:
+  - description
+  - serialNumber
+  - userId
+  - expertId
+  - creationDate
+  - lastModified

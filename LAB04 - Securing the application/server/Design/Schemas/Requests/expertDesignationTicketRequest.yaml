@@ -1,0 +1,15 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: assignTicketRequest.yaml
+title: Assign ticket request body
+description: JSON Schema representing the body of the request to assign a ticket to an Expert in the Ticket Management system.
+type: object
+additionalProperties: false
+properties:
+  $schema:
+    type: string
+    description: Path to the JSON Schema to use for the validation of the JSON data structure.
+  expertId:
+    type: integer
+    description: Id of the expert.
+required:
+- expertId
