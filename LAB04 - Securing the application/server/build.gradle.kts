@@ -11,7 +11,7 @@ plugins {
 	kotlin("plugin.jpa") version "1.7.22"
 }
 
-group = "com.lab2"
+group = "com.lab4"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -28,11 +28,20 @@ dependencies {
 	implementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server")
+	implementation("org.springframework.security:spring-security-oauth2-jose")
+
+	implementation("javax.json:javax.json-api:1.1.4")
+	implementation("org.glassfish:javax.json:1.1.4")
+	implementation("org.keycloak:keycloak-spring-boot-starter:21.1.1")
+	implementation("org.keycloak:keycloak-admin-client:21.1.1")
+
 
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation ("org.testcontainers:junit-jupiter:1.16.3")
 	testImplementation("org.testcontainers:postgresql:1.16.3")
+
+	testImplementation("com.github.dasniko:testcontainers-keycloak:2.5.0")
 }
 
 
