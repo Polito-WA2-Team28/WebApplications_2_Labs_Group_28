@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate
 import java.io.StringReader
 import javax.json.Json
 import javax.ws.rs.core.Response
+import kotlin.contracts.contract
 
 @RestController
 class UserController(private val keycloakService: KeycloakService,
@@ -32,7 +33,6 @@ class UserController(private val keycloakService: KeycloakService,
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
         val body:String = "grant_type=password&client_id=ticketing-service-client&username="+userCredentials.username+"&password="+userCredentials.password
-
 
         val tokenEndpoint = "http://"+globalConfig.keycloakURL+":"+globalConfig.keycloakPort+"/realms/"+globalConfig.keycloakRealm+"/protocol/openid-connect/token"
         val entity = HttpEntity(body, headers)
