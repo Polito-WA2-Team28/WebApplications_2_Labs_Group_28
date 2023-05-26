@@ -7,11 +7,17 @@ info:
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 externalDocs:
   description: Find out more about Swagger
   url: 'http://swagger.io'
 servers:
-  - url: 'http://localhost:8080'
+  - url: 'http://localhost:8081'
 tags:
   - name: Tickets Customers
     description: Operations on tickets by Customers
@@ -28,20 +34,16 @@ tags:
 paths:
     
   # Get and Create Tickets for Customer
-  '/api/customers/:customerId/tickets':
+  '/api/customers/tickets':
     get: 
       summary: Retrieve all the tickets for Customer.
       description: Operation performed by a Customer to retrieve all his tickets. Note that the tickets are returned by means of a pagination mechanism.
       tags:
         - Tickets Customers
       operationId: getTicketsCustomer
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: customerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the customer
         - in: query
           name: pageNo
           required: false
@@ -146,20 +148,16 @@ paths:
               example: Reason(s) for the network error.
   
   # Get Tickets for Expert
-  '/api/experts/:expertId/tickets':
+  '/api/experts/tickets':
     get:
       summary: Retrieve all the tickets for Expert.
       description: Operation performed by an Expert to retrieve all the tickets he was assigned. Note that the tickets are returned by means of a pagination mechanism.
       tags:
         - Tickets Experts
       operationId: getTicketsExpert
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: expertId
-          schema:
-            type: integer
-          required: true
-          description: Id of the expert
         - in: query
           name: pageNo
           required: false
@@ -208,20 +206,16 @@ paths:
               example: Reason(s) for the network error.
 
   # Get Tickets for Manager
-  '/api/managers/:managerId/tickets':
+  '/api/managers/tickets':
     get:
       summary: Retrieve all the tickets for Manager.
       description: Operation performed by a Manager to retrieve all tickets. Note that the tickets are returned by means of a pagination mechanism.
       tags:
         - Tickets Managers
       operationId: getTicketsManager
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: managerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the manager
         - in: query
           name: pageNo
           required: false
@@ -271,20 +265,16 @@ paths:
         
 
   # Get Single Ticket for Customer
-  '/api/customers/:customerId/tickets/:ticketId':
+  '/api/customers/tickets/:ticketId':
     get:
       summary: Retrieve a single ticket for a Customer.
       description: Operation performed by a Customer to retrieve one of his tickets.
       tags:
         - Tickets Customers
       operationId: getTicketCustomer
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: customerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the customer
         - in: path
           name: ticketId
           schema:
@@ -328,20 +318,16 @@ paths:
               example: Reason(s) for the network error.
 
   # Get Single Ticket for Expert
-  '/api/experts/:expertId/tickets/:ticketId':
+  '/api/experts/tickets/:ticketId':
     get:
       summary: Retrieve a single ticket for an Expert.
       description: Operation performed by an Expert to retrieve one of the tickets he was assigned.
       tags:
         - Tickets Experts
       operationId: getTicketExpert
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: expertId
-          schema:
-            type: integer
-          required: true
-          description: Id of the Expert
         - in: path
           name: ticketId
           schema:
@@ -385,20 +371,16 @@ paths:
               example: Reason(s) for the network error.
 
   # Get Single Ticket for Manager
-  '/api/managers/:managerId/tickets/:ticketId':
+  '/api/managers/tickets/:ticketId':
     get:
       summary: Retrieve a single ticket for a Manager.
       description: Operation performed by a Manager to retrieve one of all the tickets.
       tags:
         - Tickets Managers
-      operationId: getTicketManager
+      operationId: getTicketManagerù
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: managerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the Manager
         - in: path
           name: ticketId
           schema:
@@ -448,20 +430,16 @@ paths:
 # # Change ticket state
 
   # Assign ticket to expert [Manager]  Open => In progress
-  '/api/managers/:managerId/tickets/:ticketId/assign':
+  '/api/managers/tickets/:ticketId/assign':
     patch:
       summary: Assign a ticket
       description: Operation performed by a manager to assign a specific ticket to an expert.
       tags:
         - Tickets Managers
       operationId: assignTicket
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: managerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the Manager
         - in: path
           name: ticketId
           schema:
@@ -499,20 +477,16 @@ paths:
           content: {}
 
   # Remove Expert from Ticket [Manager] In progress => Open
-  '/api/managers/:managerId/tickets/:ticketId/relieveExpert':
+  '/api/managers/tickets/:ticketId/relieveExpert':
     patch:
       summary: Relieve Expert from ticket
       description: Operation performed by a manager to relieve an expert from a ticket
       tags:
         - Tickets Managers
       operationId: relieveTicket
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: managerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the Manager
         - in: path
           name: ticketId
           schema:
@@ -550,20 +524,16 @@ paths:
           content: {}
 
   # Reopen a ticket [Customer] Closed => Reopened | Resolved => Reopened
-  '/api/customers/:customerId/tickets/:ticketId/reopen':
+  '/api/customers/tickets/:ticketId/reopen':
     patch:
       summary: Reopen ticket
       description: Operation performed by a customer to open a ticket that was previously closed or resolved
       tags:
         - Tickets Customers
       operationId: reopenTicket
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: customerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the Customer
         - in: path
           name: ticketId
           schema:
@@ -594,20 +564,16 @@ paths:
           content: {}
 
   # Resolve ticket [Expert] Open => Resolved | Reopened => Resolved | In Progress => Resolved
-  '/api/experts/:expertId/tickets/:ticketId/resolve':
+  '/api/experts/tickets/:ticketId/resolve':
     patch:
       summary: Resolve a ticket
       description: Operation performed by an Expert to resolve a ticket
       tags:
         - Tickets Experts
       operationId: resolveTicket
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: expertId
-          schema:
-            type: integer
-          required: true
-          description: Id of the Manager
         - in: path
           name: ticketId
           schema:
@@ -638,20 +604,16 @@ paths:
           content: {}
 
   # Close ticket [Expert, Manager] Open => Closed | Reopened => Closed
-  '/api/experts/:expertId/tickets/:ticketId/close':
+  '/api/experts/tickets/:ticketId/close':
     patch:
       summary: Close a ticket
       description: Operation performed by an expert to close a ticket
       tags:
         - Tickets Experts
       operationId: expertCloseTicket
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: expertId
-          schema:
-            type: integer
-          required: true
-          description: Id of the Expert
         - in: path
           name: ticketId
           schema:
@@ -681,20 +643,16 @@ paths:
           description: Internal Server Error
           content: {}
 
-  '/api/managers/:managerId/tickets/:ticketId/close':
+  '/api/managers/tickets/:ticketId/close':
     patch:
       summary: Close a ticket
       description: Operation performed by a manager to close a ticket
       tags:
         - Tickets Managers
       operationId: managerCloseTicket
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: managerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the Manager
         - in: path
           name: ticketId
           schema:
@@ -726,20 +684,16 @@ paths:
 
 
   # Resume progress on Reopened ticket [Manager] | Reopened => In progress
-  '/api/managers/:managerId/tickets/:ticketId/resumeProgress':
+  '/api/managers/tickets/:ticketId/resumeProgress':
     patch:
       summary: Put ticket in progress again
       description: Operation performed by a manager to put a ticket in progress again, it also assigns a new expert to this ticket.
       tags:
         - Tickets Managers
       operationId: resumeProgress
+      security:
+        - Bearer: [ ]
       parameters:
-        - in: path
-          name: managerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the Manager
         - in: path
           name: ticketId
           schema:
@@ -777,7 +731,7 @@ paths:
           content: {}
 
   # Compile survey [Customer] Resolved => Closed
-  '/api/customers/:customerId/tickets/:ticketId/compileSurvey':
+  '/api/customers/tickets/:ticketId/compileSurvey':
     patch:
       summary: Compile satisfaction survey
       description: Operation performed by a customer that closes a ticket
@@ -785,12 +739,6 @@ paths:
         - Tickets Customers
       operationId: customerCloseTicket
       parameters:
-        - in: path
-          name: customerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the Customer
         - in: path
           name: ticketId
           schema:
@@ -822,7 +770,7 @@ paths:
 
 
   # Remove a ticket from the system
-  '/api/managers/:managerId/tickets/:ticketId/remove':
+  '/api/managers/tickets/:ticketId/remove':
     delete:
       summary: Remove Ticket
       description: Operation that completely removes a ticket from the system
@@ -830,13 +778,6 @@ paths:
         - Tickets Managers
       operationId: removeTicket
       parameters:
-        - name: managerId
-          in: path
-          description: Id of the Manager
-          required: true
-          schema:
-            type: integer
-            format: int64
         - name: ticketId
           in: path
           description: Id of the Ticket
@@ -862,7 +803,7 @@ paths:
           content: {}
 
   # Customer manages message
-  '/api/customers/:customerId/tickets/:ticketId/messages':
+  '/api/customers/tickets/:ticketId/messages':
     get:
       summary: Customer retrieve messages.
       description: Operation performed by a Customer to retrieve all messages related to the specified ticket. Note that the messages are returned by means of a pagination mechanism.
@@ -870,12 +811,6 @@ paths:
         - Messages Customers
       operationId: getMessagesCustomers
       parameters:
-        - in: path
-          name: customerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the customer
         - in: query
           name: pageNo
           required: false
@@ -991,7 +926,7 @@ paths:
     
 
 # Expert manages message
-  '/api/experts/:expertId/tickets/:ticketId/messages':
+  '/api/experts/tickets/:ticketId/messages':
     get:
       summary: Expert retrieve messages.
       description: Operation performed by a Expert to retrieve all messages related to the specified ticket. Note that the messages are returned by means of a pagination mechanism.
@@ -999,12 +934,6 @@ paths:
         - Messages Experts
       operationId: getMessagesExperts
       parameters:
-        - in: path
-          name: expertId
-          schema:
-            type: integer
-          required: true
-          description: Id of the expert
         - in: query
           name: pageNo
           required: false
@@ -1118,7 +1047,7 @@ paths:
     
 
 # Expert manages message
-  '/api/managers/:managerId/tickets/:ticketId/messages':
+  '/api/managers/tickets/:ticketId/messages':
     get:
       summary: Manager retrieve messages.
       description: Operation performed by a Manager to retrieve all messages related to the specified ticket. Note that the messages are returned by means of a pagination mechanism.
@@ -1126,12 +1055,6 @@ paths:
         - Messages Managers
       operationId: getMessagesManagers
       parameters:
-        - in: path
-          name: managerId
-          schema:
-            type: integer
-          required: true
-          description: Id of the manager
         - in: query
           name: pageNo
           required: false

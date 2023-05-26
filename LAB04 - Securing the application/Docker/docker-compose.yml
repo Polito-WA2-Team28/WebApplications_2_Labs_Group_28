@@ -4,6 +4,8 @@ services:
   postgres:
     image: runcor3/webapp2_postgres:latest
     container_name: postgres
+    environment:
+    - PGDATA=/mypostgresdata
     ports:
       - "5432:5432"
 
@@ -26,3 +28,4 @@ services:
     ports:
       - "8080:8080"
     command: start-dev
+
