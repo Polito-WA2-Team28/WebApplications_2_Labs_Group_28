@@ -2,6 +2,6 @@ version: '3'
 
 services:
   postgres:
-    image: runcor3/webapp2_postgres:2.5
+    image: runcor3/webapp2_postgres:lab2
     ports:
       - "5432:5432"
