@@ -11,10 +11,12 @@ on:
   push:
     branches:
       - main
-      - lab4
+      - lab5
     paths:
       - 'LAB04 - Securing the application/**'
       - '.github/**'
+      - 'LAB05 - Signup and Observability/**'
+
 
 env:
   IMAGE_NAME: runcor3/ticketing-service
@@ -39,7 +41,7 @@ jobs:
         
       
     - name: Build with Gradle
-      working-directory: './LAB04 - Securing the application/server'
+      working-directory: './LAB05 - Signup and Observability/server'
       run: gradle build --dry-run
 
     - name: Configure Docker credentials
@@ -50,7 +52,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_RUNCOR3_TOKEN }}
 
     - name: Build and push Docker image with JIB
-      working-directory: './LAB04 - Securing the application/server'
+      working-directory: './LAB05 - Signup and Observability/server'
       run: |
         gradle jib --image=$IMAGE_NAME:$IMAGE_VERSION
 
@@ -62,7 +64,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: isbang/compose-action@v1.4.1
       with:
-        compose-file: "./LAB04 - Securing the application/Docker/docker-compose.yml"
+        compose-file: "./LAB05 - Signup and Observability/Docker/docker-compose.yml"
         down-flags: "--volumes"
         services: |
           postgres
