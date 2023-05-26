@@ -15,6 +15,8 @@ on:
     paths:
       - 'LAB04 - Securing the application/**'
       - '.github/**'
+      - 'LAB05 - Signup and Observability/**'
+
 
 env:
   IMAGE_NAME: runcor3/ticketing-service
@@ -39,7 +41,7 @@ jobs:
         
       
     - name: Build with Gradle
-      working-directory: './LAB04 - Securing the application/server'
+      working-directory: './LAB05 - Securing the application/server'
       run: gradle build --dry-run
 
     - name: Configure Docker credentials
