@@ -6,6 +6,6 @@ import java.util.UUID
 @Entity
 @Table
 class Manager(
+    @Id var id:UUID,
     var email:String
-): EntityBase<UUID>() {
-}
+)

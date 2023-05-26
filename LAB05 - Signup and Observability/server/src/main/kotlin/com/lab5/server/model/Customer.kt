@@ -9,7 +9,7 @@ import java.util.*
 @Entity
 @Table
 class Customer (
-    var id:UUID,
+    @Id var id:UUID,
     var name:String,
     var surname:String,
     var username:String,
@@ -23,11 +23,7 @@ class Customer (
     var phoneNumber:String
 
 
-):EntityBase<UUID>() {
-
-
-
-}
+)
 
 
 /**

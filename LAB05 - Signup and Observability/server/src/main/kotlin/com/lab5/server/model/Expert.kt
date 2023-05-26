@@ -7,7 +7,7 @@ import java.util.UUID
 @Entity
 @Table
 class Expert(
-    val id: UUID,
+    @Id val id: UUID,
     var email:String,
 
     @ElementCollection(targetClass = ExpertiseFieldEnum::class)
@@ -15,5 +15,4 @@ class Expert(
     @CollectionTable(name="expertise_fields")
     @Column(name="field")
     var expertiseFields:MutableSet<ExpertiseFieldEnum>
-): EntityBase<UUID>() {
-}
+)

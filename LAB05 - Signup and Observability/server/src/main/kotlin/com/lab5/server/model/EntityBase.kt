@@ -1,5 +1,6 @@
 package com.lab5.server.model
 
+import jakarta.persistence.GeneratedValue
 import jakarta.persistence.Id
 import jakarta.persistence.MappedSuperclass
 import org.springframework.data.util.ProxyUtils
@@ -12,6 +13,7 @@ abstract class EntityBase<T: Serializable> {
     }
 
     @Id
+    @GeneratedValue
     private var id:T?  = null
     fun getId(): T? = id
     override fun toString(): String {

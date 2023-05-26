@@ -20,7 +20,7 @@ on:
 
 env:
   IMAGE_NAME: runcor3/ticketing-service
-  IMAGE_VERSION: latest
+  IMAGE_VERSION: lab5
 
 jobs:
   build-gradle-project-and-push-container:
