@@ -5,6 +5,7 @@ import com.lab4.security.dto.UserCredentialsDTO
 import com.lab4.security.service.KeycloakService
 import com.lab4.server.config.GlobalConfig
 import com.lab4.server.dto.CustomerFormRegistration
+import com.lab4.server.dto.ExpertFormRegistration
 import com.lab4.server.exception.Exception
 import jakarta.validation.Valid
 import org.springframework.http.HttpEntity
@@ -58,6 +59,22 @@ class UserController(private val keycloakService: KeycloakService,
 
         if(response.status != Response.Status.CREATED.statusCode){
             throw Exception.CouldNotRegisterCustomer("It was not possible to register the customer")
+        }
+
+    }
+
+    @PostMapping("/api/auth/createExpert")
+    @ResponseStatus(HttpStatus.CREATED)
+    fun registerExpert(@RequestBody @Valid profile: ExpertFormRegistration, br: BindingResult){
+        if(br.hasErrors()){
+            val invalidFields = br.fieldErrors.map { it.field }
+            throw Exception.ValidationException("", invalidFields)
+        }
+
+        val response = keycloakService.createExpert(profile)
+
+        if(response.status != Response.Status.CREATED.statusCode){
+            throw Exception.CouldNotRegisterExpert("It was not possible to register the expert")
         }
 
     }

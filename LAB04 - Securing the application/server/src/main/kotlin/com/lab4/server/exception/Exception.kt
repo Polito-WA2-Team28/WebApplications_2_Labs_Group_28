@@ -26,4 +26,7 @@ open class Exception(override val message:String) : Throwable() {
     class CustomerNotOwnerException(message: String): Exception(message)
 
     class CouldNotRegisterCustomer(message: String): Exception(message)
+
+    class CouldNotRegisterExpert(message: String): Exception(message)
+
 }
