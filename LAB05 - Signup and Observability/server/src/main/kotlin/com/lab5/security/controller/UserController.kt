@@ -66,7 +66,7 @@ class UserController(
     }
 
 
-    @PostMapping("/api/createExpert")
+    @PostMapping("/api/auth/createExpert")
     @ResponseStatus(HttpStatus.CREATED)
     fun createExpert(
         @RequestBody @Valid expert: ExpertFormRegistration,
@@ -77,12 +77,6 @@ class UserController(
         if (br.hasErrors()) {
             val invalidFields = br.fieldErrors.map { it.field }
             throw Exception.ValidationException("", invalidFields)
-        }
-
-        /* check the user performing the request */
-        val managerId: UUID = UUID.fromString(securityConfig.retrieveUserClaim())
-        if (!securityConfig.isManager()) {
-            throw Exception.CreateExpertException("Unauthorized operation")
         }
 
         /* create the expert */

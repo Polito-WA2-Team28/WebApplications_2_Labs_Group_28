@@ -1,7 +1,6 @@
 package com.lab5.security.config
 
 
-import com.nimbusds.jose.shaded.gson.internal.LinkedTreeMap
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -26,6 +25,7 @@ class SecurityConfig(val jwtAuthConverter:JwtAuthConverter) {
             .requestMatchers("/api/customers/**").hasRole("CUSTOMER")
             .requestMatchers("/api/experts/**").hasRole("EXPERT")
             .requestMatchers("/api/managers/**").hasRole("MANAGER")
+            .requestMatchers("/api/auth/createExpert").hasRole("MANAGER")
             .requestMatchers("/api/profiles").permitAll()
             .requestMatchers("/api/auth/register").permitAll()
             .anyRequest().authenticated()
@@ -58,22 +58,6 @@ class SecurityConfig(val jwtAuthConverter:JwtAuthConverter) {
         }
 
         return sub
-    }
-
-    fun isManager(): Boolean {
-
-        /* retrieving the authentication token */
-        val authentication: Authentication = SecurityContextHolder.getContext().authentication
-        if (authentication is JwtAuthenticationToken) {
-            val jwt: Jwt = authentication.token
-
-            /* checking the role */
-            val roles: Any? = jwt.claims["realm_access"]
-            println(roles)
-
-        }
-
-        return true
     }
 
 
