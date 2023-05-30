@@ -2,7 +2,7 @@ version: '3'
 
 services:
   postgres:
-    image: runcor3/webapp2_postgres:latest
+    image: runcor3/webapp2_postgres:lab5
     container_name: postgres
     environment:
     - PGDATA=/mypostgresdata
@@ -13,14 +13,14 @@ services:
     depends_on:
     - postgres
 
-    image: runcor3/ticketing-service:latest
+    image: runcor3/ticketing-service:lab5
     container_name: ticketing-service
     ports:
       - "8081:8081"
 
   keycloak:
     #image: quay.io/keycloak/keycloak:21.1.1
-    image: runcor3/webapp2_keycloak:latest
+    image: runcor3/webapp2_keycloak:lab5
     container_name: keycloak
     environment:
     - KEYCLOAK_ADMIN=admin

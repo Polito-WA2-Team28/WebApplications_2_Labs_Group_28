@@ -11,6 +11,7 @@ import com.lab5.ticketing.exception.TicketException
 import com.lab5.ticketing.model.Ticket
 import com.lab5.ticketing.service.TicketService
 import com.lab5.ticketing.util.TicketState
+import io.micrometer.observation.annotation.Observed
 import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 @RestController
+@Observed
 class TicketManagerController @Autowired constructor(
     val ticketService: TicketService,
     val managerService: ManagerService,

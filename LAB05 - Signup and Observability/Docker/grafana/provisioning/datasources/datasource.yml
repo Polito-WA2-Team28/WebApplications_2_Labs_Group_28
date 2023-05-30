@@ -6,6 +6,7 @@ datasources:
       access: proxy
       url: http://host.docker.internal:9090
       editable: false
+      uid: prometheus
       jsonData:
         httpMethod: POST
         exemplarTraceIdDestinations:

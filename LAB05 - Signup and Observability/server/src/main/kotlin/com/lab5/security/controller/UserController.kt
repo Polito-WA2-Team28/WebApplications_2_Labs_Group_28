@@ -8,7 +8,10 @@ import com.lab5.server.config.GlobalConfig
 import com.lab5.server.dto.CustomerFormRegistration
 import com.lab5.server.dto.ExpertFormRegistration
 import com.lab5.server.exception.Exception
+import io.micrometer.observation.annotation.Observed
 import jakarta.validation.Valid
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -17,16 +20,17 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
 import java.io.StringReader
-import java.util.UUID
 import javax.json.Json
 import javax.ws.rs.core.Response
 
 @RestController
+@Observed
 class UserController(
     private val keycloakService: KeycloakService,
     private val globalConfig: GlobalConfig,
     private val securityConfig: SecurityConfig
 ) {
+    val logger: Logger = LoggerFactory.getLogger(UserController::class.java)
 
     @PostMapping("/api/auth/login")
     fun authenticateUser(@RequestBody @Valid userCredentials: UserCredentialsDTO):TokenDTO?{
@@ -45,7 +49,7 @@ class UserController(
         val jsonReader = Json.createReader(StringReader(response.body))
         val jsonResponse = jsonReader.readObject()
 
-
+        logger.info("Testing Login Endpoint Log")
         return TokenDTO(jsonResponse.getString("access_token"))
     }
 

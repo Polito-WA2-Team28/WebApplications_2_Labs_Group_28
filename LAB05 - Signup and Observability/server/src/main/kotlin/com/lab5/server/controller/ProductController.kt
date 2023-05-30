@@ -7,11 +7,13 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 import com.lab5.server.exception.Exception
+import io.micrometer.observation.annotation.Observed
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
 
 
 @RestController
+@Observed
 class ProductController @Autowired constructor(val productService: ProductServiceImpl){
 
     @GetMapping("/api/products")

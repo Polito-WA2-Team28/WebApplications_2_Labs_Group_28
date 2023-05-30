@@ -28,6 +28,7 @@ class SecurityConfig(val jwtAuthConverter:JwtAuthConverter) {
             .requestMatchers("/api/auth/createExpert").hasRole("MANAGER")
             .requestMatchers("/api/profiles").permitAll()
             .requestMatchers("/api/auth/register").permitAll()
+            .requestMatchers("/actuator/prometheus").permitAll()
             .anyRequest().authenticated()
             .and().logout().permitAll()
             .and().formLogin().disable()
