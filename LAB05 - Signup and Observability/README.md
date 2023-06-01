@@ -1,4 +1,4 @@
-# LAB02 - Team28
+# LAB05 - Team28
 
 ## The web application
 
