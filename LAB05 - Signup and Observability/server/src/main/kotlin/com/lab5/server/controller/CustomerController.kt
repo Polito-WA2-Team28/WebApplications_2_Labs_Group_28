@@ -1,17 +1,12 @@
 package com.lab5.server.controller
 
-
 import com.lab5.security.config.SecurityConfig
-import com.lab5.security.controller.UserController
-import com.lab5.server.dto.CustomerDTO
-import com.lab5.server.dto.CustomerFormModification
-import com.lab5.server.dto.toDTO
+import com.lab5.server.dto.*
 import com.lab5.server.exception.Exception
 import com.lab5.server.service.CustomerServiceImpl
 import io.micrometer.observation.annotation.Observed
 import jakarta.validation.Valid
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.slf4j.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
@@ -23,7 +18,7 @@ import java.util.*
 class CustomerController @Autowired constructor(val profileService: CustomerServiceImpl,
                                                 val securityConfig: SecurityConfig) {
 
-    val logger: Logger = LoggerFactory.getLogger(UserController::class.java)
+    val logger: Logger = LoggerFactory.getLogger(CustomerController::class.java)
 
     @GetMapping("/api/customers/getProfile")
     @ResponseStatus(HttpStatus.OK)
@@ -32,14 +27,13 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
         val profile = profileService.getCustomerById(customerId)
         logger.info("Testing Login Endpoint Log")
 
-        if (profile != null) {
+        if (profile != null)
             return profile.toDTO()
-        }
+
         else {
+            logger.error("Endpoint: /api/customers/getProfile\nError: This profile couldn't be found")
             throw Exception.ProfileNotFoundException("This profile couldn't be found")
         }
-
-
 
     }
 
@@ -60,13 +54,17 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
         @RequestBody @Valid profile: CustomerFormModification,
         br: BindingResult
     ) {
+
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
 
         /* Checking errors */
         if (br.hasErrors()) {
             val invalidFields = br.fieldErrors.map { it.field }
+            logger.error("Endpoint: /api/customers/editProfile\nError: Invalid fields: $invalidFields")
             throw Exception.ValidationException("", invalidFields)
-        } else if (profileService.getCustomerById(customerId) == null) {
+        }
+        else if (profileService.getCustomerById(customerId) == null) {
+            logger.error("Endpoint: /api/customers/editProfile\nError: This profile couldn't be found")
             throw Exception.ProfileNotFoundException("This profile couldn't be found")
         }
 

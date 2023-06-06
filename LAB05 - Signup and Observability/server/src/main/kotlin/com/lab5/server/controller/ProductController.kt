@@ -3,18 +3,19 @@ package com.lab5.server.controller
 import com.lab5.server.dto.ProductDTO
 import com.lab5.server.service.ProductServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import com.lab5.server.exception.Exception
 import io.micrometer.observation.annotation.Observed
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ResponseStatus
-
 
 @RestController
 @Observed
 class ProductController @Autowired constructor(val productService: ProductServiceImpl){
+
+    val logger: Logger = LoggerFactory.getLogger(ProductController::class.java)
 
     @GetMapping("/api/products")
     @ResponseStatus(HttpStatus.OK)
@@ -25,7 +26,11 @@ class ProductController @Autowired constructor(val productService: ProductServic
     @GetMapping("/api/products/{productId}")
     @ResponseStatus(HttpStatus.OK)
     fun getProductById(@PathVariable("productId") productId: Long): ProductDTO? {
-        return productService.getProductById(productId)
-            ?: throw Exception.ProductNotFoundException("No product matched the requested Id")
+        val products = productService.getProductById(productId)
+        if (products == null) {
+            logger.error("Endpoint: /api/products/$productId\nError: No product matched the requested Id")
+            throw Exception.ProductNotFoundException("No product matched the requested Id")
+        }
+        return products
     }
 }

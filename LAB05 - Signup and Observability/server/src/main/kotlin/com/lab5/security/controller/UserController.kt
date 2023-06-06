@@ -1,21 +1,15 @@
 package com.lab5.security.controller
 
 import com.lab5.security.config.SecurityConfig
-import com.lab5.security.dto.TokenDTO
-import com.lab5.security.dto.UserCredentialsDTO
+import com.lab5.security.dto.*
 import com.lab5.security.service.KeycloakService
 import com.lab5.server.config.GlobalConfig
-import com.lab5.server.dto.CustomerFormRegistration
-import com.lab5.server.dto.ExpertFormRegistration
+import com.lab5.server.dto.*
 import com.lab5.server.exception.Exception
 import io.micrometer.observation.annotation.Observed
 import jakarta.validation.Valid
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.slf4j.*
+import org.springframework.http.*
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
@@ -58,12 +52,14 @@ class UserController(
     fun registerUser(@RequestBody @Valid profile: CustomerFormRegistration, br: BindingResult){
         if(br.hasErrors()){
             val invalidFields = br.fieldErrors.map { it.field }
+            logger.error("Endpoint: /api/auth/register\nError: Invalid fields in the registration form")
             throw Exception.ValidationException("", invalidFields)
         }
 
         val response = keycloakService.createUser(profile)
 
         if(response.status != Response.Status.CREATED.statusCode){
+            logger.error("Endpoint: /api/auth/register\nError: It was not possible to register the customer")
             throw Exception.CouldNotRegisterCustomer("It was not possible to register the customer")
         }
 
