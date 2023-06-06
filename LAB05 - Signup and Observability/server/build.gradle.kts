@@ -97,9 +97,9 @@ jib {
 	container {
 		jvmFlags = listOf("-Xms512m", "-Xdebug")
 		args = listOf()
-		ports = listOf("8080/tcp")
+		ports = listOf("8081/tcp")
 	}
 }
 
 jib.from.image = "amazoncorretto:17-alpine"
-jib.to.image = "runcor3/ticketing-service:latest"
+jib.to.image = "runcor3/ticketing-service:lab5"
