@@ -1,0 +1,20 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: newTicketRequest.yaml
+title: New ticket request body
+description: JSON Schema representing the body of the request to open a new ticket in the Ticket Management system.
+type: object
+additionalProperties: false
+properties:
+  $schema:
+    type: string
+    description: Path to the JSON Schema to use for the validation of the JSON data structure.
+  description:
+    type: string
+    description: Textual description od the issue encountered by the user.
+  serialNumber:
+    type: integer
+    $ref: "../Objects/productschema.yaml#/properties/serialNumber"
+    description: The identifier of the product on which the ticket has been opened by the user.
+required:
+- description
+- serialNumber

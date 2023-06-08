@@ -1,0 +1,27 @@
+$schema: http://json-schema.org/draft-07/schema#
+$id: paginationschema.yaml
+title: Pagination Response Body
+description: JSON Schema representing the pagination object of any response.
+type: object
+additionalProperties: true
+properties:
+  $schema:
+    type: string
+    description: Path to the JSON Schema to use for the validation of the JSON data structure.
+  totalPages:
+    type: integer
+    description: Total number of pages in the database.
+  currentPage:
+    type: integer
+    description: Current page returned.
+  totalItems:
+    type: integer
+    description: Total number of items in the database.
+  next:
+    type: string
+    format: url
+    description: Link to the next page in the database.
+required:
+- totalPages
+- currentPage
+- totalItems
