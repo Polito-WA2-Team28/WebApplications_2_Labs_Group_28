@@ -10,8 +10,7 @@ name: Gradle Package
 on:
   push:
     branches:
-      - main
-      - lab5
+      - nopush
     paths:
       - 'LAB04 - Securing the application/**'
       - '.github/**'
