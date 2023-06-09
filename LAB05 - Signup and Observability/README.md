@@ -8,6 +8,9 @@ The web application developed in this laboratory has the following components:
 - the **PostgreSQL database** containerized and deployed with a docker-compose configuration file. The PostgreSQL instance is listening on port 5432.
 - the **SpringBoot backend** service running with Gradle and exposing the required APIs on port 8081;
 - the **Keycloak IAM** service, running on port 8080, manages user registrations and authentications.
+- the **Loki** service, used to store and index logs efficiently.
+- the **Grafana** service, running at port 3000, used to visualize the logs collected by Loki. The dashboard used is Spring Boot Observability.
+- the **Prometheus** service, used to scrape and store metrics.
 
 ## The Keycloak IAM
 
