@@ -10,11 +10,15 @@ name: Gradle Package
 on:
   push:
     branches:
-      - nopush
-    paths:
-      - 'LAB04 - Securing the application/**'
-      - '.github/**'
-      - 'LAB05 - Signup and Observability/**'
+      - none
+  # push:
+  #   branches:
+  #     - main
+  #     - lab5
+  #   paths:
+  #     - 'LAB04 - Securing the application/**'
+  #     - '.github/**'
+  #     - 'LAB05 - Signup and Observability/**'
 
 
 env:
