@@ -52,14 +52,14 @@ class UserController(
     fun registerUser(@RequestBody @Valid profile: CustomerFormRegistration, br: BindingResult){
         if(br.hasErrors()){
             val invalidFields = br.fieldErrors.map { it.field }
-            logger.error("Endpoint: /api/auth/register\nError: Invalid fields in the registration form")
+            logger.error("Endpoint: /api/auth/register Error: Invalid fields in the registration form: $invalidFields")
             throw Exception.ValidationException("", invalidFields)
         }
 
         val response = keycloakService.createUser(profile)
 
         if(response.status != Response.Status.CREATED.statusCode){
-            logger.error("Endpoint: /api/auth/register\nError: It was not possible to register the customer")
+            logger.error("Endpoint: /api/auth/register Error: It was not possible to register the customer")
             throw Exception.CouldNotRegisterCustomer("It was not possible to register the customer")
         }
 
@@ -76,6 +76,7 @@ class UserController(
         /* checking for invalid fields in the registration form */
         if (br.hasErrors()) {
             val invalidFields = br.fieldErrors.map { it.field }
+            logger.error("Endpoint: /api/auth/createExpert Error: Invalid fields in the registration form: $invalidFields")
             throw Exception.ValidationException("", invalidFields)
         }
 
@@ -83,6 +84,7 @@ class UserController(
         val response = keycloakService.createExpert(expert)
 
         if (response.status != Response.Status.CREATED.statusCode){
+            logger.error("Endpoint: /api/auth/createExpert Error: An error occurred while trying to creating an expert.")
             throw Exception.CreateExpertException("An error occurred while trying to creating an expert.")
         }
 

@@ -28,7 +28,7 @@ class ProductController @Autowired constructor(val productService: ProductServic
     fun getProductById(@PathVariable("productId") productId: Long): ProductDTO? {
         val products = productService.getProductById(productId)
         if (products == null) {
-            logger.error("Endpoint: /api/products/$productId\nError: No product matched the requested Id")
+            logger.error("Endpoint: /api/products/$productId Error: No product matched the requested Id")
             throw Exception.ProductNotFoundException("No product matched the requested Id")
         }
         return products
