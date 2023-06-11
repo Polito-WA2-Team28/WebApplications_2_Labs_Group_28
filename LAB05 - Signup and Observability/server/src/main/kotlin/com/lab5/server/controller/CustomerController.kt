@@ -30,7 +30,7 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
             return profile.toDTO()
 
         else {
-            logger.error("Endpoint: /api/customers/getProfile\nError: This profile couldn't be found")
+            logger.error("Endpoint: /api/customers/getProfile Error: This profile couldn't be found")
             throw Exception.ProfileNotFoundException("This profile couldn't be found")
         }
 
@@ -59,11 +59,11 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
         /* Checking errors */
         if (br.hasErrors()) {
             val invalidFields = br.fieldErrors.map { it.field }
-            logger.error("Endpoint: /api/customers/editProfile\nError: Invalid fields: $invalidFields")
+            logger.error("Endpoint: /api/customers/editProfile Error: Invalid fields: $invalidFields")
             throw Exception.ValidationException("", invalidFields)
         }
         else if (profileService.getCustomerById(customerId) == null) {
-            logger.error("Endpoint: /api/customers/editProfile\nError: This profile couldn't be found")
+            logger.error("Endpoint: /api/customers/editProfile Error: This profile couldn't be found")
             throw Exception.ProfileNotFoundException("This profile couldn't be found")
         }
 
