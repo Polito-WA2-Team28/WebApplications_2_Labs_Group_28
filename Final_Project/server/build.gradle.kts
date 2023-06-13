@@ -11,7 +11,7 @@ plugins {
 	kotlin("plugin.jpa") version "1.7.22"
 }
 
-group = "com.lab5"
+group = "com.final_project"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -102,4 +102,4 @@ jib {
 }
 
 jib.from.image = "amazoncorretto:17-alpine"
-jib.to.image = "runcor3/ticketing-service:lab"
+jib.to.image = "runcor3/ticketing-service:final-project"
