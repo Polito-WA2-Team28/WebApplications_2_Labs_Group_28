@@ -1,31 +1,34 @@
-import { Tab, Tabs } from 'react-bootstrap';
-import { GetProductById, GetProducts } from './components/products';
-import { CreateProfile, GetProfileByEmailAddress, UpdateProfile } from './components/profiles';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
+import LandingPage from './pages/landingPage';
+import RegisterPage from './pages/registerPage';
+import LoginPage from './pages/loginPage';
+import Dashboard from './pages/dashboard';
+import MyNavBar from './components/navbar';
 
 function App() {
   return (
-    <>
-      <Tabs>
-        <Tab eventKey="products" title="Products">
-          <GetProducts/>
-        </Tab>
-        <Tab eventKey="productById" title="ProductById">
-          <GetProductById />
-        </Tab>
-        <Tab eventKey="getProfiles" title="GetProfileByEmail">
-          <GetProfileByEmailAddress  />
-        </Tab>
-        <Tab eventKey="createProfiles" title="CreateProfiles">
-          <CreateProfile/>
-        </Tab>
-        <Tab eventKey="UpdateProfiles" title="UpdateProfiles">
-          <UpdateProfile />
-        </Tab>
-      </Tabs>
+    <div
+      style={{
+        scrollBehavior: 'smooth',
+        //backgroundColor: '#e9ecef',
+        height: '100vh',
+        width: '100vw',
+      }}
+    >
+      <BrowserRouter>
+      <MyNavBar/>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/dashboard" element={<Dashboard/>} />
+          <Route path="*" element={<h1 >Not Found</h1>} />
+        </Routes>
+      </BrowserRouter>
       <ToastContainer />
-    </>
+    </div>
   );
 }
 
