@@ -2,7 +2,7 @@ package com.final_project.server.service
 
 import com.final_project.server.model.Manager
 import com.final_project.server.repository.ManagerRepository
-import jakarta.transaction.Transactional
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service

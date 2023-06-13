@@ -4,7 +4,7 @@ import com.final_project.ticketing.dto.AttachmentDTO
 import com.final_project.ticketing.dto.toDTO
 import com.final_project.ticketing.model.Attachment
 import com.final_project.ticketing.repository.AttachmentRepository
-import jakarta.transaction.Transactional
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service

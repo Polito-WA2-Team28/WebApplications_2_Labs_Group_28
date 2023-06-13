@@ -5,7 +5,7 @@ import com.final_project.server.dto.toDTO
 import com.final_project.server.model.Product
 import org.springframework.stereotype.Service
 import com.final_project.server.repository.ProductRepository
-import jakarta.transaction.Transactional
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 

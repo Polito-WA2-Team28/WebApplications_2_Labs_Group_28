@@ -9,12 +9,12 @@ import com.final_project.ticketing.repository.AttachmentRepository
 import com.final_project.ticketing.repository.MessageRepository
 import com.final_project.ticketing.repository.TicketRepository
 import com.final_project.ticketing.util.TicketState
-import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.UUID
 
 @Service
