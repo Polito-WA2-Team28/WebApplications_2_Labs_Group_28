@@ -33,7 +33,7 @@ class TicketManagerController @Autowired constructor(
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(@RequestParam("pageNo", defaultValue = "0") pageNo: Int
     ): Page<TicketDTO> {
-        val managerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* checking that the manager exists */
         managerService.getManagerById(managerId)
@@ -48,7 +48,7 @@ class TicketManagerController @Autowired constructor(
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(@PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
-        val managerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* checking that the manager exists */
         managerService.getManagerById(managerId)
@@ -66,7 +66,7 @@ class TicketManagerController @Autowired constructor(
     fun assignTicket (@PathVariable("ticketId") ticketId: Long,
                       @RequestBody @Valid ticketUpdateData: TicketUpdateData
     ): TicketDTO? {
-        val managerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* retrieve the ticket from the database and checking the status */
         val ticket: Ticket = ticketService.getTicketModelById(ticketId)
@@ -93,7 +93,7 @@ class TicketManagerController @Autowired constructor(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun relieveExpert (@PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
-        val managerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* retrieve the ticket from the database and checking the state of the ticket */
         val ticket: Ticket = ticketService.getTicketModelById(ticketId)
@@ -117,7 +117,7 @@ class TicketManagerController @Autowired constructor(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun closeTicket (@PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
-        val managerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* retrieve the ticket from the database and checking the state of the ticket */
         val ticket: Ticket = ticketService.getTicketModelById(ticketId)
@@ -139,7 +139,7 @@ class TicketManagerController @Autowired constructor(
     fun resumeTicketProgress (@PathVariable("ticketId") ticketId: Long,
                               @RequestBody @Valid ticketUpdateData: TicketUpdateData
     ): TicketDTO? {
-        val managerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* retrieve the ticket from the database and checking the state of the ticket */
         val ticket: Ticket = ticketService.getTicketModelById(ticketId)
@@ -165,7 +165,7 @@ class TicketManagerController @Autowired constructor(
     @ResponseStatus(HttpStatus.OK)
     fun removeTicket(@PathVariable("ticketId") ticketId: Long
     ) {
-        val managerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* checking that manager exists */
         managerService.getManagerById(managerId)

@@ -31,7 +31,7 @@ class TicketExpertController @Autowired constructor(
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(@RequestParam("pageNo", defaultValue = "0") pageNo: Int
     ): Page<TicketDTO> {
-        val expertId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* checking that the expert exists */
        val expert = expertService.getExpertById(expertId)
@@ -51,7 +51,7 @@ class TicketExpertController @Autowired constructor(
     @ResponseStatus(HttpStatus.OK)
     fun getSingleTicket(@PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
-        val expertId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
         
         /* checking that the expert exists */
         val expert = expertService.getExpertById(expertId)
@@ -71,7 +71,7 @@ class TicketExpertController @Autowired constructor(
     @PatchMapping("/api/experts/tickets/{ticketId}/resolve")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun resolveTicket(@PathVariable("ticketId") ticketId: Long) {
-        val expertId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         val ticket = ticketService.getTicketModelById(ticketId)
         if(ticket == null) {
@@ -102,7 +102,7 @@ class TicketExpertController @Autowired constructor(
     @PatchMapping("/api/experts/tickets/{ticketId}/close")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun closeTicket(@PathVariable("ticketId") ticketId:Long){
-        val expertId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         val ticket = ticketService.getTicketModelById(ticketId)
         if(ticket == null){

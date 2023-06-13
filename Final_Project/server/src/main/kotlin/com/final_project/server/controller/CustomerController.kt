@@ -23,7 +23,7 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
     @GetMapping("/api/customers/getProfile")
     @ResponseStatus(HttpStatus.OK)
     fun getCustomerById(): CustomerDTO? {
-        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
         val profile = profileService.getCustomerById(customerId)
 
         if (profile != null)
@@ -54,7 +54,7 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
         br: BindingResult
     ) {
 
-        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* Checking errors */
         if (br.hasErrors()) {

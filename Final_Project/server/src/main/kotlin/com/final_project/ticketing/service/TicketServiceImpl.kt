@@ -3,6 +3,7 @@ package com.final_project.ticketing.service
 import com.final_project.server.model.Customer
 import com.final_project.server.model.Product
 import com.final_project.ticketing.dto.*
+import com.final_project.ticketing.model.Attachment
 import com.final_project.ticketing.model.Ticket
 import com.final_project.ticketing.model.toModel
 import com.final_project.ticketing.repository.AttachmentRepository
@@ -10,18 +11,24 @@ import com.final_project.ticketing.repository.MessageRepository
 import com.final_project.ticketing.repository.TicketRepository
 import com.final_project.ticketing.util.TicketState
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.UUID
+import java.io.File
+import java.util.*
+
 
 @Service
 @Transactional
 class TicketServiceImpl @Autowired constructor(private val ticketRepository: TicketRepository,
                                                private val messageRepository: MessageRepository,
                                                private val attachmentRepository: AttachmentRepository) : TicketService{
+
+    @Value("\${attachment.directory}")
+    private lateinit var attachmentDirectory: String
 
     override fun getTicketDTOById(id: Long): TicketDTO? {
         return ticketRepository.findByIdOrNull(id)?.toDTO()
@@ -74,11 +81,34 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             }
     }
 
-    override fun sendTicketMessage(message: MessageObject, ticketId: Long): MessageDTO {
-        TODO("Not yet implemented")
-        // Convert Message object to model
-        // Convert each attachment to model
-        // Save message and attachments
+    override fun sendTicketMessage(message: MessageObject, ticketId: Long, sender: String?): MessageDTO {
+        val ticket = ticketRepository.findByIdOrNull(ticketId)
+        var attachmentSet = mutableSetOf<Attachment>()
+
+        if(ticket == null){
+            // error
+            throw Exception()
+        }
+
+        for (attachment in message.attachments){
+            var uniqueFilename = UUID.randomUUID().toString() + "_" + attachment.originalFilename
+            val filePath = attachmentDirectory + File.separator + uniqueFilename
+            attachment.transferTo(File(filePath))
+
+            val attachmentUrl = "/attachments/$uniqueFilename"
+
+            if(attachment.originalFilename != null && attachment.contentType != null){
+                var attachmentEntity = attachment.toModel(attachmentUrl)
+                attachmentSet.add(attachmentEntity)
+
+                attachmentRepository.save(attachmentEntity)
+            }
+        }
+
+        messageRepository.save(message.toModel(attachmentSet, sender, ticket))
+
+
+        //Retrieve result and build message DTO
     }
 
 }

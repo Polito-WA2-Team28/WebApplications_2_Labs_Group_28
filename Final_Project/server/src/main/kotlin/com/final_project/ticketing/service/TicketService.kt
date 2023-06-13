@@ -33,6 +33,6 @@ interface TicketService {
     fun getAllTicketsWithPagingByCustomerId(customerId: UUID, pageable: Pageable): Page<TicketDTO>
     fun getAllTicketsWithPagingByExpertId(expertId: UUID, pageable: Pageable): Page<TicketDTO>
 
-    fun sendTicketMessage(message: MessageObject, ticketId: Long): MessageDTO
+    fun sendTicketMessage(message: MessageObject, ticketId: Long, sender: String?): MessageDTO
 
 }

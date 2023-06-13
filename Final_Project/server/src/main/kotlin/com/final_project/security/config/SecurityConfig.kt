@@ -46,19 +46,39 @@ class SecurityConfig(val jwtAuthConverter:JwtAuthConverter) {
     }
 
 
-    fun retrieveUserClaim(): String?{
+    fun retrieveUserClaim(claimType: ClaimType): String?{
         val authentication: Authentication = SecurityContextHolder.getContext().authentication
-        var sub:String? = null
+        var claim:String? = null
 
         if (authentication is JwtAuthenticationToken) {
             val jwt: Jwt = authentication.token
-            val subObject: Any? = jwt.claims["sub"]
-            if (subObject != null) {
-                sub = subObject.toString()
+
+            when (claimType){
+                ClaimType.SUB -> {
+                    val subObject: Any? = jwt.claims["sub"]
+
+                    if (subObject != null) {
+                        claim = subObject.toString()
+                    }
+                }
+                ClaimType.USERNAME -> {
+                    val subObject: Any? = jwt.claims["preferred-username"]
+
+                    if (subObject != null) {
+                        claim = subObject.toString()
+                    }
+                }
             }
+
+
         }
 
-        return sub
+        return claim
+    }
+
+    enum class ClaimType {
+        USERNAME,
+        SUB
     }
 
 

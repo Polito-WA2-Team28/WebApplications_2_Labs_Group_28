@@ -30,6 +30,7 @@ class UserController(
     fun authenticateUser(@RequestBody @Valid userCredentials: UserCredentialsDTO):TokenDTO?{
         val restTemplate = RestTemplate()
         val headers = HttpHeaders()
+        println("tt")
 
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 

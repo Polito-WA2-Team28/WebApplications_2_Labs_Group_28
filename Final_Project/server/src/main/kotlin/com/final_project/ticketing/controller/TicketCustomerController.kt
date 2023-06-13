@@ -19,6 +19,7 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
+
 @RestController
 @Observed
 class TicketCustomerController @Autowired constructor(
@@ -36,7 +37,7 @@ class TicketCustomerController @Autowired constructor(
         @RequestBody @Valid ticket: TicketCreationData,
         br: BindingResult
     ): TicketDTO {
-        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         val customer: Customer? = customerService.getCustomerById(customerId)
         if (customer == null) {
@@ -70,7 +71,7 @@ class TicketCustomerController @Autowired constructor(
         @RequestParam("pageNo", defaultValue = "0") pageNo: Int
     ): Page<TicketDTO> {
 
-        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* checking that customer exists */
         val customer = customerService.getCustomerById(customerId)
@@ -89,7 +90,7 @@ class TicketCustomerController @Autowired constructor(
     fun getSingleTicket(
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
-        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         val ticket = ticketService.getTicketDTOById(ticketId)
         if(ticket == null){
@@ -109,7 +110,7 @@ class TicketCustomerController @Autowired constructor(
     fun reopenTicket(
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
-        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         val ticket = ticketService.getTicketModelById(ticketId)
         if(ticket == null){
@@ -133,7 +134,7 @@ class TicketCustomerController @Autowired constructor(
     fun compileTicketSurvey(
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
-        val customerId = UUID.fromString(securityConfig.retrieveUserClaim())
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         val ticket = ticketService.getTicketModelById(ticketId)
         if(ticket==null){
@@ -156,17 +157,26 @@ class TicketCustomerController @Autowired constructor(
 
     @PostMapping("/api/customers/tickets/{ticketId}/messages")
     @ResponseStatus(HttpStatus.CREATED)
-    fun sendTicketMessage(@ModelAttribute message:MessageObject){
+    fun sendTicketMessage(@ModelAttribute message:MessageObject,
+                          @PathVariable ticketId: Long){
         val now = Date()
         val attachments = message.attachments
 
         for (attachment in attachments) {
             //retrieve file infos
+            val originalFilename = attachment.originalFilename
+            val contentType: String? = attachment.contentType
+
+
+            //println("${originalFilename}, $originalFilename")
+            //println("${message.messageText}, $ticketId")
         }
 
         // retrieve sender username
+        val sender = securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.USERNAME)
 
         // call TicketService to save message and attachments
+        ticketService.sendTicketMessage(message, ticketId, sender)
     }
 
 
