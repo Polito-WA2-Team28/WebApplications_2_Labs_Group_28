@@ -9,13 +9,14 @@ function LoginPage(props) {
 
     const navigate  = useNavigate();
 
-    const handleLogin = () => {
-        if (props.login(email, password))
+    const handleLogin = async () => {
+        try {
+            await props.handleLogin(email, password);
             navigate("/dashboard");
-
-        else {
-                alert("Invalid email or password");
-            }
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 
 
@@ -44,7 +45,7 @@ function LoginPage(props) {
                 </Form>
             </Row>
             <Row>
-                <Col><Button onClick={() => handleLogin()}>Submit</Button></Col>
+                <Col><Button onClick={handleLogin}>Submit</Button></Col>
                 <Col><Button onClick={() => navigate("/register")}>Register</Button></Col>
             </Row>
       </Container>

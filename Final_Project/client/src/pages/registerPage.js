@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Col, Container, Form, Row, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import CustomerRegistrationForm from "../model/customerRegistrationForm";
 
 function RegisterPage(props) {
 
@@ -8,8 +10,21 @@ function RegisterPage(props) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
+    const [surname, setSurname] = useState("");
+    const [phone, setPhone] = useState("");
+    const [birthDate, setBirthDate] = useState("");
+    const [username, setUsername] = useState("");
 
     const handleRegistration = () => {
+        try {
+            const profile = new CustomerRegistrationForm(name, surname, username, dayjs(), birthDate, email, phone, password);
+            props.handleRegistration(profile);
+            navigate("/dashboard");
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 
   return (
@@ -33,7 +48,28 @@ function RegisterPage(props) {
                         <Form.Label>Password</Form.Label>
                         <Form.Control type="password" placeholder="Password" onChange={e =>  setPassword(e.target.value)}/>
                         <Form.Text className="text-muted"/>
-                    </Form.Group>
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="formBasicName">
+                      <Form.Label>Name</Form.Label>
+                      <Form.Control type="name" placeholder="Name" onChange={e => setName(e.target.value)} />
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="formBasicSurname">
+                      <Form.Label>Surname</Form.Label>
+                      <Form.Control type="surname" placeholder="Surname" onChange={e => setSurname(e.target.value)} />
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="formBasicUsername">
+                      <Form.Label>Surname</Form.Label>
+                      <Form.Control type="username" placeholder="Username" onChange={e => setUsername(e.target.value)} />
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="formBasicBirthDate">
+                      <Form.Label>Birth Date</Form.Label>
+                      <Form.Control type="date" placeholder="Birth Date" onChange={e => setBirthDate(e.target.value)} />
+                  </Form.Group>
+                  <Form.Group className="mb-3" controlId="formBasicPhone">
+                      <Form.Label>Phone</Form.Label>
+                      <Form.Control type="phone" placeholder="Phone" onChange={e => setPhone(e.target.value)} />
+                  </Form.Group>
+                
                 </Form>
             </Row>
             <Row>

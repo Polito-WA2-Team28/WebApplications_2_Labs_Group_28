@@ -41,4 +41,6 @@ async function register(profile) {
     return data;
 }
 
-export const authAPI = { login, register }
+const authAPI = { login, register }
+
+export default authAPI
