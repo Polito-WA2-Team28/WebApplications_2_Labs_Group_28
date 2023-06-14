@@ -1,17 +1,14 @@
 import { useState } from "react";
-import { Col, Container, Form, Row, Button } from "react-bootstrap";
+import { Col, Container, Form, Row, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-function LoginPage(props) {
-
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+export function LoginPage(props) {
 
     const navigate  = useNavigate();
 
-    const handleLogin = async () => {
+    const handleLogin = async (credentials) => {
         try {
-            await props.handleLogin(email, password);
+            await props.handleLogin(credentials.email, credentials.password);
             navigate("/dashboard");
         }
         catch (error) {
@@ -19,37 +16,87 @@ function LoginPage(props) {
         }
     }
 
+    const handleRegistration = () => {
+        navigate("/register");
+    }
+
 
     return (
-        <Container fluid >
-            <Row>
-                <Col>
-                    <h1 style={{textAlign: "center"}}>LOGIN</h1>
-                  </Col>
-            </Row>
-            <Row style={{
-                marginTop: "5%", width: "60%", marginRight: "20%", marginLeft: "20%",
-                display: "flex", justifyContent: "center",
-                alignItems: "center"
-            }}>
-                <Form>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label>Email address</Form.Label>
-                        <Form.Control type="email" placeholder="Enter email" onChange={e =>  setEmail(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control type="password" placeholder="Password" onChange={e =>  setPassword(e.target.value)}/>
-                        <Form.Text className="text-muted"/>
-                    </Form.Group>
-                </Form>
-            </Row>
-            <Row>
-                <Col><Button onClick={handleLogin}>Submit</Button></Col>
-                <Col><Button onClick={() => navigate("/register")}>Register</Button></Col>
-            </Row>
-      </Container>
+        <Container className="login-form">
+			<Row>
+				<Col xs={3} />
+				<Col xs={6} >
+					<Row>
+						<h1>Login</h1>
+					</Row>
+					<Row>
+						<LoginForm
+							message={props.message}
+							setMessage={props.setMessage}
+							login={handleLogin}
+						/>
+					</Row>
+					<Row>
+						<p style={{ textAlign: "center", marginTop: 5 }}>Not a member?
+							{' '}<u><a onClick={handleRegistration} style={{ cursor: 'pointer' }}>Register</a></u>
+						</p>
+					</Row>
+				</Col >
+				<Col xs={3} />
+			</Row>
+		</Container>
     );
 }
 
-export default LoginPage
+function LoginForm(props) {
+	let navigate = useNavigate();
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
+
+	const handleSubmit = async (event) => {
+
+		event.preventDefault();
+		props.setMessage('');
+		const credentials = { username, password };
+
+		let invalids = [];
+		if (username === '') {
+			invalids.push(" username");
+		}
+		if (password === '') {
+			invalids.push(" password");
+		}
+		if (invalids.length === 0) {
+			const value = await props.login(credentials);
+			console.log("value", value)
+			if (value === true)
+				navigate("/");
+		} else {
+			props.setMessage(`Invalid${invalids.toString()}`);
+		}
+	};
+
+
+	return (
+		<Container>
+			<Row>
+				<Col>
+					<Form>
+						{props.message ? <Alert variant='danger' onClose={() => props.setMessage('')} dismissible>{props.message}</Alert> : ''}
+						<Form.Group controlId='username'>
+							<Form.Label>E-mail</Form.Label>
+							<Form.Control type='email' value={username} onChange={ev => setUsername(ev.target.value)} />
+						</Form.Group>
+						<Form.Group controlId='password'>
+							<Form.Label>Password</Form.Label>
+							<Form.Control type='password' value={password} onChange={ev => setPassword(ev.target.value)} />
+						</Form.Group>
+						<Row>
+							<Button style={{ marginTop: 20 }} type="submit" onClick={handleSubmit}>Login</Button>
+						</Row>
+					</Form>
+				</Col>
+			</Row>
+		</Container>
+	)
+}
