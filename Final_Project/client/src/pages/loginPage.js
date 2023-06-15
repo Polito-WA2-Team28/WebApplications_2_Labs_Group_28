@@ -7,13 +7,9 @@ export function LoginPage(props) {
     const navigate  = useNavigate();
 
     const handleLogin = async (credentials) => {
-        try {
-            await props.handleLogin(credentials);
-            navigate("/dashboard");
-        }
-        catch (error) {
-            console.error(error);
-        }
+			await props.handleLogin(credentials)
+			.then(() => { navigate("/dashboard") })
+			.catch((error) => { console.log(error) })
     }
 
     const handleRegistration = () => {

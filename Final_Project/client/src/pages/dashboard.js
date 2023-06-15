@@ -15,7 +15,7 @@ export function Dashboard(props) {
             tickets={tickets}
           />
         </Tab>
-        {props.user && props.user.type === "Customer" && <Tab eventKey="products" title="Products">
+        {props.user && props.role === "CUSTOMER" && <Tab eventKey="products" title="Products">
          </Tab>}
           </Tabs>
 					
