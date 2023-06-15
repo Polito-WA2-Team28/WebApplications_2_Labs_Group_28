@@ -1,6 +1,5 @@
 package com.final_project.server.dto
 
-
 import com.final_project.ticketing.util.ExpertiseFieldEnum
 import jakarta.validation.constraints.Pattern
 import org.jetbrains.annotations.NotNull

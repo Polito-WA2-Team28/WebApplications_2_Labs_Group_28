@@ -1,6 +1,5 @@
 package com.final_project.server.dto
 
-
 import com.final_project.server.model.Product
 import java.util.UUID
 

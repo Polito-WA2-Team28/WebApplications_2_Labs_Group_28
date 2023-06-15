@@ -8,6 +8,7 @@ import com.final_project.ticketing.dto.*
 import com.final_project.ticketing.exception.TicketException
 import com.final_project.ticketing.service.TicketService
 import com.final_project.ticketing.util.TicketState
+import com.final_project.server.controller.StaffController
 import io.micrometer.observation.annotation.Observed
 import jakarta.validation.Valid
 import org.slf4j.Logger
@@ -18,7 +19,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.util.*
-
+import kotlin.math.log
 
 @RestController
 @Observed
@@ -41,12 +42,12 @@ class TicketCustomerController @Autowired constructor(
 
         val customer: Customer? = customerService.getCustomerById(customerId)
         if (customer == null) {
-            logger.error("Endpoint: /api/customers/tickets\nError: Customer not found.")
+            logger.error("Endpoint: /api/customers/tickets Error: Customer not found.")
             throw Exception.CustomerNotFoundException("Customer not found.")
         }
         val product: Product? = productService.getProductBySerialNumber(ticket.serialNumber)
         if (product == null) {
-            logger.error("Endpoint: /api/customers/tickets\nError: Product not found.")
+            logger.error("Endpoint: /api/customers/tickets Error: Product not found.")
             throw Exception.ProductNotFoundException("Product not found.")
         }
 
@@ -54,13 +55,13 @@ class TicketCustomerController @Autowired constructor(
         if (product.owner == customer) {
             val createdTicket = ticketService.createTicket(ticket, customer, product)
             if (createdTicket == null) {
-                logger.error("Endpoint: /api/customers/tickets\nError: Ticket creation error.")
+                logger.error("Endpoint: /api/customers/tickets Error: Ticket creation error.")
                 throw TicketException.TicketCreationException("Ticket creation error.")
             }
             return createdTicket
         }
         else {
-            logger.error("Endpoint: /api/customers/tickets\nError: Customer is not the owner of this product.")
+            logger.error("Endpoint: /api/customers/tickets Error: Customer is not the owner of this product.")
             throw Exception.CustomerNotOwnerException("Customer is not the owner of this product.")
         }
     }
@@ -76,7 +77,7 @@ class TicketCustomerController @Autowired constructor(
         /* checking that customer exists */
         val customer = customerService.getCustomerById(customerId)
             if(customer == null) {
-                logger.error("Endpoint: /api/customers/tickets\nError: Customer not found.")
+                logger.error("Endpoint: /api/customers/tickets Error: Customer not found.")
                 throw Exception.CustomerNotFoundException("Customer not found.")
             }
 
@@ -94,14 +95,14 @@ class TicketCustomerController @Autowired constructor(
 
         val ticket = ticketService.getTicketDTOById(ticketId)
         if(ticket == null){
-            logger.error("Endpoint: /api/customers/tickets/$ticketId\nError: Ticket not found.")
+            logger.error("Endpoint: /api/customers/tickets/$ticketId Error: Ticket not found.")
             throw TicketException.TicketNotFoundException("Ticket not found.")
         }
 
         if (ticket.customerId == customerId)
             return ticket
 
-        logger.error("Endpoint: /api/customers/tickets/$ticketId\nError: Forbidden.")
+        logger.error("Endpoint: /api/customers/tickets/$ticketId Error: Forbidden.")
         throw TicketException.TicketForbiddenException("Forbidden.")
     }
 
@@ -114,7 +115,7 @@ class TicketCustomerController @Autowired constructor(
 
         val ticket = ticketService.getTicketModelById(ticketId)
         if(ticket == null){
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/reopen\nError: Ticket not found.")
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/reopen Error: Ticket not found.")
             throw TicketException.TicketNotFoundException("Ticket not found.")
         }
 
@@ -122,7 +123,7 @@ class TicketCustomerController @Autowired constructor(
         val allowedStates = mutableSetOf(TicketState.CLOSED, TicketState.RESOLVED)
 
         if (ticket.customer.id != customerId || !allowedStates.contains(ticket.state)) {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/reopen\nError: Forbidden.")
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/reopen Error: Forbidden.")
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
@@ -138,16 +139,16 @@ class TicketCustomerController @Autowired constructor(
 
         val ticket = ticketService.getTicketModelById(ticketId)
         if(ticket==null){
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/compileSurvey\nError: Ticket not found.")
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/compileSurvey Error: Ticket not found.")
             throw TicketException.TicketNotFoundException("Ticket not found.")
         }
 
         if (ticket.customer.id != customerId) {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/compileSurvey\nError: Forbidden.")
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/compileSurvey Error: Forbidden.")
             throw TicketException.TicketForbiddenException("Forbidden.")
         }
         else if (ticket.state != TicketState.RESOLVED) {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/compileSurvey\nError: Invalid ticket status for this operation.")
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/compileSurvey Error: Invalid ticket status for this operation.")
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 

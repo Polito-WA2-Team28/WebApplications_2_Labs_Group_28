@@ -18,9 +18,7 @@ class Message(
     @JoinColumn(name = "ticket_id")
     var ticket:Ticket
 
-): EntityBase<Long>() {
-}
-
+): EntityBase<Long>() {}
 
 
 fun MessageObject.toModel(attachments:MutableSet<Attachment>, sender:String?, ticket:Ticket): Message{

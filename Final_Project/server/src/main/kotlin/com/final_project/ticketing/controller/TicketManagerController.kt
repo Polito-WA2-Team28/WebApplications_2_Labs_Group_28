@@ -13,6 +13,8 @@ import com.final_project.ticketing.service.TicketService
 import com.final_project.ticketing.util.TicketState
 import io.micrometer.observation.annotation.Observed
 import jakarta.validation.Valid
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -29,15 +31,22 @@ class TicketManagerController @Autowired constructor(
     val expertService: ExpertService,
     val securityConfig: SecurityConfig
 ) {
-    @GetMapping("/api/managers/{managerId}/tickets")
+
+    val logger: Logger = LoggerFactory.getLogger(TicketManagerController::class.java)
+
+    @GetMapping("/api/managers/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(@RequestParam("pageNo", defaultValue = "0") pageNo: Int
     ): Page<TicketDTO> {
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* checking that the manager exists */
-        managerService.getManagerById(managerId)
-            ?: throw Exception.ManagerNotFoundException("Manager not found.")
+        val manager = managerService.getManagerById(managerId)
+        if (manager == null) {
+            logger.error("Endpoint: /api/managers/tickets Error: Manager not found.")
+            throw Exception.ManagerNotFoundException("Manager not found.")
+        }
+
 
         /* computing page and retrieving all the tickets */
         var page: Pageable = PageRequest.of(pageNo, 3)
@@ -51,13 +60,18 @@ class TicketManagerController @Autowired constructor(
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* checking that the manager exists */
-        managerService.getManagerById(managerId)
-            ?: throw Exception.ManagerNotFoundException("Manager not found.")
+        val manager = managerService.getManagerById(managerId)
+        if (manager == null) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId} Error: Manager not found.")
+            throw Exception.ManagerNotFoundException("Manager not found.")
+        }
+
 
         /* retrieving the ticket */
         ticketService.getTicketDTOById(ticketId)?.let {
             return it
         }
+        logger.error("Endpoint: /api/managers/tickets/{ticketId} Error: Ticket not found.")
         throw TicketException.TicketNotFoundException("Ticket not found.")
     }
 
@@ -69,17 +83,29 @@ class TicketManagerController @Autowired constructor(
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* retrieve the ticket from the database and checking the status */
-        val ticket: Ticket = ticketService.getTicketModelById(ticketId)
-            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
+        val ticket = ticketService.getTicketModelById(ticketId)
+        if (ticket == null) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId}/assign Error: Ticket not found.")
+            throw TicketException.TicketNotFoundException("Ticket not found.")
+        }
+
         if (ticket.state != TicketState.OPEN) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId}/assign Error: Invalid ticket status for this operation.")
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
         /* retrieving the expert and checking that manager exists */
-        val expert: Expert = expertService.getExpertById(ticketUpdateData.expertId)
-            ?: throw Exception.ExpertNotFoundException("Expert not found.")
-        managerService.getManagerById(managerId)
-            ?: throw Exception.ManagerNotFoundException("Manager not found.")
+        val expert = expertService.getExpertById(ticketUpdateData.expertId)
+        if (expert == null) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId}/assign Error: Expert not found.")
+            throw Exception.ExpertNotFoundException("Expert not found.")
+        }
+
+        val manager = managerService.getManagerById(managerId)
+        if (manager == null) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId}/assign Error: Manager not found.")
+            throw Exception.ManagerNotFoundException("Manager not found.")
+        }
 
         /* assign the expert to the ticket */
         ticket.assignExpert(expert)
@@ -96,15 +122,24 @@ class TicketManagerController @Autowired constructor(
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* retrieve the ticket from the database and checking the state of the ticket */
-        val ticket: Ticket = ticketService.getTicketModelById(ticketId)
-            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
+        val ticket = ticketService.getTicketModelById(ticketId)
+        if (ticket == null) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId}/relieveExpert Error: Ticket not found.")
+            throw TicketException.TicketNotFoundException("Ticket not found.")
+        }
+
         if (ticket.state != TicketState.IN_PROGRESS) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId}/relieveExpert Error: Invalid ticket status for this operation.")
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
         /* checking if manager exists */
-        managerService.getManagerById(managerId)
-            ?: throw Exception.ManagerNotFoundException("Manager not found.")
+        val manager = managerService.getManagerById(managerId)
+        if (manager == null) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId}/relieveExpert Error: Manager not found.")
+            throw Exception.ManagerNotFoundException("Manager not found.")
+        }
+
 
         /* relieving the expert from the ticket */
         ticket.relieveExpert()
@@ -120,15 +155,24 @@ class TicketManagerController @Autowired constructor(
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* retrieve the ticket from the database and checking the state of the ticket */
-        val ticket: Ticket = ticketService.getTicketModelById(ticketId)
-            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
+        val ticket = ticketService.getTicketModelById(ticketId)
+        if (ticket == null) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId}/close Error: Ticket not found.")
+            throw TicketException.TicketNotFoundException("Ticket not found.")
+        }
+
         if (ticket.state != TicketState.OPEN && ticket.state != TicketState.RESOLVED && ticket.state != TicketState.REOPENED) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId}/close Error: Invalid ticket status for this operation.")
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
         /* checking if manager exists */
-        managerService.getManagerById(managerId)
-            ?: throw Exception.ManagerNotFoundException("Manager not found.")
+        val manager = managerService.getManagerById(managerId)
+        if (manager == null) {
+            logger.error("Endpoint: /api/managers/tickets/{ticketId}/close Error: Manager not found.")
+            throw Exception.ManagerNotFoundException("Manager not found.")
+        }
+
 
         /* change the ticket status */
         return ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
@@ -142,17 +186,27 @@ class TicketManagerController @Autowired constructor(
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* retrieve the ticket from the database and checking the state of the ticket */
-        val ticket: Ticket = ticketService.getTicketModelById(ticketId)
-            ?: throw TicketException.TicketNotFoundException("Ticket not found.")
+        val ticket = ticketService.getTicketModelById(ticketId)
+            if(ticket == null){
+                logger.error("Endpoint:/api/managers/tickets/{ticketId}/resumeProgress Error: Ticket not found.")
+                throw TicketException.TicketNotFoundException("Ticket not found.")
+            }
         if (ticket.state != TicketState.REOPENED) {
+            logger.error("Endpoint:/api/managers/tickets/{ticketId}/resumeProgress Error: Invalid ticket status for this operation.")
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
         /* retrieving the expert and checking that manager exists */
-        val expert: Expert = expertService.getExpertById(ticketUpdateData.expertId)
-            ?: throw Exception.ExpertNotFoundException("Expert not found.")
-        managerService.getManagerById(managerId)
-            ?: throw Exception.ManagerNotFoundException("Manager not found.")
+        val expert = expertService.getExpertById(ticketUpdateData.expertId)
+            if(expert == null){
+                logger.error("Endpoint:/api/managers/tickets/{ticketId}/resumeProgress Error: Expert not found.")
+                throw Exception.ExpertNotFoundException("Expert not found.")
+            }
+        val manager = managerService.getManagerById(managerId)
+            if(manager == null){
+                logger.error("Endpoint:/api/managers/tickets/{ticketId}/resumeProgress Error: Manager not found.")
+                throw Exception.ManagerNotFoundException("Manager not found.")
+            }
 
         /* assign the expert to the ticket */
         ticket.assignExpert(expert)
@@ -168,8 +222,11 @@ class TicketManagerController @Autowired constructor(
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* checking that manager exists */
-        managerService.getManagerById(managerId)
-            ?: throw Exception.ManagerNotFoundException("Manager not found.")
+        val manager = managerService.getManagerById(managerId)
+            if(manager == null) {
+                logger.error("Endpoint:/api/managers/tickets/{ticketId}/remove Error: Manager not found.")
+                throw Exception.ManagerNotFoundException("Manager not found.")
+            }
 
         /* removing the ticket from the database */
         ticketService.removeTicketById(ticketId)

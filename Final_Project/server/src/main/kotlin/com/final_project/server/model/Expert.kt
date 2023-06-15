@@ -2,6 +2,7 @@ package com.final_project.server.model
 
 import com.final_project.server.dto.ExpertCompleteRegistration
 import com.final_project.ticketing.util.ExpertiseFieldEnum
+import com.final_project.server.dto.CustomerCompleteRegistration
 import jakarta.persistence.*
 import java.util.UUID
 

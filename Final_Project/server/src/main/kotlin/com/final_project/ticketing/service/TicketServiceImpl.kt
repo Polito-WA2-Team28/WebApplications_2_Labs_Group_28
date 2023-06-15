@@ -12,6 +12,10 @@ import com.final_project.ticketing.repository.TicketRepository
 import com.final_project.ticketing.util.TicketState
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import com.final_project.ticketing.dto.TicketCreationData
+import com.final_project.ticketing.dto.TicketDTO
+import com.final_project.ticketing.dto.toDTO
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -29,6 +33,7 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
 
     @Value("\${attachment.directory}")
     private lateinit var attachmentDirectory: String
+
 
     override fun getTicketDTOById(id: Long): TicketDTO? {
         return ticketRepository.findByIdOrNull(id)?.toDTO()

@@ -7,6 +7,10 @@ import com.final_project.ticketing.dto.TicketDTO
 import com.final_project.ticketing.exception.TicketException
 import com.final_project.ticketing.service.TicketService
 import com.final_project.ticketing.util.TicketState
+
+
+import com.final_project.server.model.Expert
+import com.final_project.ticketing.model.Ticket
 import io.micrometer.observation.annotation.Observed
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -37,7 +41,7 @@ class TicketExpertController @Autowired constructor(
        val expert = expertService.getExpertById(expertId)
         if(expert == null)
         {
-            logger.error("Endpoint: /api/experts/tickets\nError: Expert not found.")
+            logger.error("Endpoint: /api/experts/tickets Error: Expert not found.")
             throw Exception.ExpertNotFoundException("Expert not found.")
         }
 
@@ -56,13 +60,13 @@ class TicketExpertController @Autowired constructor(
         /* checking that the expert exists */
         val expert = expertService.getExpertById(expertId)
         if(expert == null){
-            logger.error("Endpoint: /api/experts/tickets/$ticketId\nError: Expert not found.")
+            logger.error("Endpoint: /api/experts/tickets/$ticketId Error: Expert not found.")
             throw Exception.ExpertNotFoundException("Expert not found.")
         }
 
         val ticket = ticketService.getTicketDTOById(ticketId)
         if(ticket == null) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId\nError: Ticket not found.")
+            logger.error("Endpoint: /api/experts/tickets/$ticketId Error: Ticket not found.")
             throw TicketException.TicketNotFoundException("Ticket not found.")
         }
         return ticket
@@ -75,24 +79,24 @@ class TicketExpertController @Autowired constructor(
 
         val ticket = ticketService.getTicketModelById(ticketId)
         if(ticket == null) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve\nError: Ticket not found.")
+            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve Error: Ticket not found.")
             throw TicketException.TicketNotFoundException("Ticket not found.")
         }
         val expert = ticket.expert
         if (expert == null) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve\nError: Expert not found.")
+            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve Error: Expert not found.")
             throw Exception.ExpertNotFoundException("Expert not found.")
         }
 
         val allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED, TicketState.IN_PROGRESS)
 
         if (expert.id != expertId){
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve\nError: Expert not found.")
+            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve Error: Expert not found.")
             throw Exception.ExpertNotFoundException("Expert not found.")
         }
 
         else if (!allowedStates.contains(ticket.state)) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve\nError: Invalid ticket status for this operation.")
+            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve Error: Invalid ticket status for this operation.")
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
@@ -106,23 +110,23 @@ class TicketExpertController @Autowired constructor(
 
         val ticket = ticketService.getTicketModelById(ticketId)
         if(ticket == null){
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/close\nError: Ticket not found.")
+            logger.error("Endpoint: /api/experts/tickets/$ticketId/close Error: Ticket not found.")
             throw TicketException.TicketNotFoundException("Ticket not found.")
         }
 
         val expert = ticket.expert
         if(expert == null){
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/close\nError: Expert not found.")
+            logger.error("Endpoint: /api/experts/tickets/$ticketId/close Error: Expert not found.")
             throw Exception.ExpertNotFoundException("Expert not found.")
         }
         val allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED)
 
         if (expert.id != expertId) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/close\nError: Expert not found.")
+            logger.error("Endpoint: /api/experts/tickets/$ticketId/close Error: Expert not found.")
             throw Exception.ExpertNotFoundException("Expert not found.")
         }
         else if (!allowedStates.contains(ticket.state)){
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/close\nError: Invalid ticket status for this operation.")
+            logger.error("Endpoint: /api/experts/tickets/$ticketId/close Error: Invalid ticket status for this operation.")
             throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
         }
 
