@@ -13,11 +13,7 @@ import org.springframework.stereotype.Service
 @Transactional
 class AttachmentServiceImp @Autowired constructor(private val attachmentRepository: AttachmentRepository) : AttachmentService {
     fun createAttachment(attachmentDTO: AttachmentDTO): Boolean{
-        val attachment = Attachment(
-            fileName = attachmentDTO.fileName,
-            contentType = attachmentDTO.contentType,
-            fileData = attachmentDTO.fileData
-        )
+        val attachment = Attachment(attachmentDTO.fileName, attachmentDTO.contentType, attachmentDTO.fileURI)
         try {
             attachmentRepository.save(attachment)
             return true

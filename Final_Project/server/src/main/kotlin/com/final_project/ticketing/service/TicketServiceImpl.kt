@@ -85,7 +85,8 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             }
     }
 
-    override fun sendTicketMessage(message: MessageObject, ticketId: Long, sender: String?): MessageDTO {
+    //RETURN MessageDTO not MessageDTO?
+    override fun sendTicketMessage(message: MessageObject, ticketId: Long, sender: String?): MessageDTO? {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
         var attachmentSet = mutableSetOf<Attachment>()
 
@@ -105,6 +106,7 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
                 var attachmentEntity = attachment.toModel(attachmentUrl)
                 attachmentSet.add(attachmentEntity)
 
+                //either use this repository or delegate the persistence to AttachmentService
                 attachmentRepository.save(attachmentEntity)
             }
         }
@@ -113,6 +115,7 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
 
 
         //Retrieve result and build message DTO
+        return null
     }
 
 }
