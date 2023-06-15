@@ -1,9 +1,9 @@
 package com.lab5.security.util
 
-import com.lab5.security.exception.SecurityErrorDetails
-import com.lab5.security.exception.SecurityException
-import com.lab5.ticketing.exception.TicketErrorDetails
-import com.lab5.ticketing.exception.TicketException
+import com.final_project.security.exception.SecurityErrorDetails
+import com.final_project.security.exception.SecurityException
+import com.final_project.ticketing.exception.TicketErrorDetails
+import com.final_project.ticketing.exception.TicketException
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler

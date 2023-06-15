@@ -1,4 +1,4 @@
-package com.lab5.security.exception
+package com.final_project.security.exception
 
 class SecurityErrorDetails(val error: String) {
 

@@ -1,6 +1,6 @@
-package com.lab5.security.exception
+package com.final_project.security.exception
 
-import com.lab5.server.exception.Exception
+import com.final_project.server.exception.Exception
 
 open class SecurityException(override val message: String): Throwable() {
 
