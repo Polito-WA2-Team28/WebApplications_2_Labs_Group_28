@@ -11,14 +11,20 @@ import authAPI from './APIs/authAPI'
 function App() {
 
   const [user, setUser] = useState(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [token, setToken] = useState(null);
 	const [message, setMessage] = useState("");
 
-  const handleLogin = async (username, password) => {
+  const handleLogin = async (credentials) => {
     console.log('login');
-    await authAPI.login(username, password)
+
+    await authAPI.login(credentials)
       .then((data) => {
-        setUser(data);
+        setToken(data);
+        setLoggedIn(true);
       })
+  
+    return true;
   };
 
   const handleRegistration = async (username, password, email) => {

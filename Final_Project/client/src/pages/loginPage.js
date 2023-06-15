@@ -8,7 +8,7 @@ export function LoginPage(props) {
 
     const handleLogin = async (credentials) => {
         try {
-            await props.handleLogin(credentials.email, credentials.password);
+            await props.handleLogin(credentials);
             navigate("/dashboard");
         }
         catch (error) {
@@ -67,7 +67,9 @@ function LoginForm(props) {
 			invalids.push(" password");
 		}
 		if (invalids.length === 0) {
-			const value = await props.login(credentials);
+			let value
+			await props.login(credentials)
+			.then(val => {value = val})
 			console.log("value", value)
 			if (value === true)
 				navigate("/");
