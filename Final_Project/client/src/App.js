@@ -17,7 +17,6 @@ function App() {
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
   const [token, setToken] = useState(null);
-  const [message, setMessage] = useState("");
   const [tickets, setTickets] = useState([]);
   const [products, setProducts] = useState([]);
   const [role, setRole] = useState(null)
@@ -32,9 +31,9 @@ function App() {
       })
     };
 
-  const handleRegistration = async (username, password, email) => {
-    console.log('register');
-    await authAPI.register(username, password, email)
+  const handleRegistration = async (credentials) => {
+    console.log('register', credentials);
+    await authAPI.register(credentials)
       .then((data) => {
         setUser(data);
       })
@@ -42,9 +41,17 @@ function App() {
 
   const handleLogout = async () => {
     console.log('logout');
-        setToken(null);
-        setLoggedIn(false);
-        setUser(null);
+    setToken(null);
+    setLoggedIn(false);
+    setUser(null);
+    setRole(null);
+  };
+
+  const handleCreateTicket = async (ticket) => {
+    await customerAPI.createTicket(token, ticket)
+      .then((data) => {
+        setTickets((prev) => [...prev, data]);
+      })
   };
 
 
@@ -55,7 +62,6 @@ function App() {
         .catch((err) => {
           if (err !== "Not authenticated") {
             console.error("error in getProfile: ", err)
-            setMessage('Loading failed', 'danger')
           }
         });
     }
@@ -67,11 +73,9 @@ function App() {
       await customerAPI.getTickets(token)
         .then(tickets => {
           setTickets(() => tickets);
-          setMessage('Loading complete', 'success')
         })
         .catch((err) => {
           console.error("error in getTickets:", err);
-          setMessage('Loading failed!', 'danger');
         });
     }
     getTickets();
@@ -83,11 +87,9 @@ function App() {
         .then(products => {
           console.log(products);
           setProducts(() => products);
-          setMessage('Loading complete', 'success')
         })
         .catch((err) => {
           console.error("error in getTickets:", err);
-          setMessage('Loading failed!', 'danger');
         });
     }
     if(role === "CUSTOMER")
@@ -102,8 +104,12 @@ function App() {
         <Routes>
           <Route path="/" element={user ? <Navigate to={"/dashboard"}/> : <LandingPage />} />
           <Route path="/register" element={<RegisterPage handleRegistration={handleRegistration} />} />
-          <Route path="/login" element={<LoginPage setMessage={setMessage} handleLogin={handleLogin}/>} />
-      <Route path="/dashboard" element={loggedIn ? <Dashboard user={user} tickets={tickets} products={products} role={role} /> : <Navigate to={"/"} />} />
+          <Route path="/login" element={<LoginPage handleLogin={handleLogin}/>} />
+      <Route path="/dashboard"
+        element={
+          loggedIn ?
+            <Dashboard user={user} tickets={tickets} products={products} role={role} handleCreate={handleCreateTicket} />
+            : <Navigate to={"/"} />} />
           <Route path="/user" element={loggedIn ?  <UserPage user={user} /> : <Navigate to={"/"} />} />
           <Route path="*" element={<h1 >Not Found</h1>} />
         </Routes>

@@ -38,6 +38,7 @@ async function register(profile) {
         const response = await res.json();
         throw response.error
     }
+    console.log(res.status)
     const data = await res.json();
     return data;
 }
