@@ -95,31 +95,29 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             throw Exception()
         }
 
-        println(System.getProperty("user.dir"))
 
         for (attachment in message.attachments){
             var uniqueFilename = UUID.randomUUID().toString() + "_" + attachment.originalFilename
             val filePath = File.separator + attachmentDirectory + File.separator + uniqueFilename
-            println(System.getProperty("user.dir") + filePath)
+
             attachment.transferTo(File(System.getProperty("user.dir") + filePath))
 
+            //modify?
             val attachmentUrl = "/attachments/$uniqueFilename"
 
             if(attachment.originalFilename != null && attachment.contentType != null){
                 var attachmentEntity = attachment.toModel(attachmentUrl)
                 attachmentSet.add(attachmentEntity)
-
-                //either use this repository or delegate the persistence to AttachmentService
-                //attachmentRepository.save(attachmentEntity)
             }
 
 
         }
 
-
-
+        // Attachments saved via Cascading
         return messageRepository.save(message.toModel(attachmentSet, sender, ticket)).toDTO()
 
+        //Does it make sense to only have the messageID inside each attachment?
+        // OneToOne in Attachment instead of OneToMany in Message?
     }
 
 }
