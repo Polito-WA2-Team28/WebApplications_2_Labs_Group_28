@@ -7,13 +7,9 @@ export function LoginPage(props) {
     const navigate  = useNavigate();
 
     const handleLogin = async (credentials) => {
-        try {
-            await props.handleLogin(credentials);
-            navigate("/dashboard");
-        }
-        catch (error) {
-            console.error(error);
-        }
+			await props.handleLogin(credentials)
+			.then(() => { navigate("/dashboard") })
+			.catch((error) => { console.log(error) })
     }
 
     const handleRegistration = () => {
@@ -32,7 +28,6 @@ export function LoginPage(props) {
 					<Row>
 						<LoginForm
 							message={props.message}
-							setMessage={props.setMessage}
 							login={handleLogin}
 						/>
 					</Row>
@@ -56,7 +51,6 @@ function LoginForm(props) {
 	const handleSubmit = async (event) => {
 
 		event.preventDefault();
-		props.setMessage('');
 		const credentials = { username, password };
 
 		let invalids = [];
@@ -74,7 +68,7 @@ function LoginForm(props) {
 			if (value === true)
 				navigate("/");
 		} else {
-			props.setMessage(`Invalid${invalids.toString()}`);
+			console.error("Invalid" + invalids);
 		}
 	};
 

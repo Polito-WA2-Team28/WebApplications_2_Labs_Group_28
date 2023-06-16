@@ -1,8 +1,7 @@
+import dayjs from "dayjs";
 import { useState } from "react";
 import { Col, Container, Form, Row, Button, Card, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import dayjs from "dayjs";
-import CustomerRegistrationForm from "../model/customerRegistrationForm";
 
 export function RegisterPage(props) {
 
@@ -12,13 +11,9 @@ export function RegisterPage(props) {
 
 
     const handleRegistration = (credentials) => {
-        try {
-            const profile = new CustomerRegistrationForm
-                (credentials.name, credentials.surname,
-                    credentials.username, dayjs(),
-                    credentials.birthDate, credentials.email,
-                    credentials.phone, credentials.password);
-            props.handleRegistration(profile);
+		try {
+			credentials = { ...credentials, registrationDate: dayjs().format("YYYY-MM-DD") };
+            props.handleRegistration(credentials);
             navigate("/dashboard");
         }
         catch (error) {
@@ -55,15 +50,14 @@ function RegistrationForm(props) {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [repeatPwd, setRepeatPwd] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
+	const [phoneNumber, setPhoneNumber] = useState('');
+	const [birthDate, setBirthDate] = useState('');
     
 	const handleSubmit = (event) => {
-		let credentials = { name, surname, username, email, phoneNumber, password };
+		let credentials = { name, surname, username, email, phoneNumber, password, birthDate };
 		let invalids = [];
 
 		event.preventDefault();
-
-		props.setMessage('');
 
 		let validateName = (text) => {
 			return !String(text).match(/[^a-zA-Z]/i);
@@ -97,9 +91,13 @@ function RegistrationForm(props) {
 		if (password === '' || password !== repeatPwd) {
 			invalids.push(" password");
 		}
+		if (birthDate === '') {
+			invalids.push(" birthDate");
+			setBirthDate('');
+		}
 
 		if (invalids.length !== 0 || !props.register(credentials)){
-			props.setMessage(`Invalid${invalids.toString()}`);
+			console.error(`Invalid${invalids.toString()}`);
 			setPassword('');
 			setRepeatPwd('');
 		}
@@ -113,7 +111,8 @@ function RegistrationForm(props) {
 	let selectPhoneNumber = function(ev){setPhoneNumber(parseInt(ev.target.value))}
 	let selectUsername=function(ev){setUsername(ev.target.value)}
 	let selectPassword = function(ev){setPassword(ev.target.value)}
-	let selectRepeatPwd = function(ev){setRepeatPwd(ev.target.value)}
+	let selectRepeatPwd = function (ev) { setRepeatPwd(ev.target.value) }
+	let selectBirthDate = function (ev) { setBirthDate(ev.target.value) }
 
 
 	return (
@@ -131,8 +130,12 @@ function RegistrationForm(props) {
 							<Form.Control type='text' value={surname} onChange={selectSurname} />
                         </Form.Group>
                         <Form.Group controlId='username'>
-							<Form.Label>Surname</Form.Label>
+							<Form.Label>Username</Form.Label>
 							<Form.Control type='text' value={username} onChange={selectUsername} />
+						</Form.Group>
+						<Form.Group controlId='email'>
+							<Form.Label>Birthdate</Form.Label>
+							<Form.Control type='date' value={birthDate} onChange={selectBirthDate} />
 						</Form.Group>
 						<Form.Group controlId='email'>
 							<Form.Label>E-mail</Form.Label>

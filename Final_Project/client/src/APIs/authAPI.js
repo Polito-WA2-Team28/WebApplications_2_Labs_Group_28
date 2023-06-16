@@ -20,7 +20,7 @@ async function login(credentials) {
     }
     const data = await res.json();
     console.log("data", data)
-    return data;
+    return data.accessToken;
 }
 
 /** 
@@ -38,6 +38,7 @@ async function register(profile) {
         const response = await res.json();
         throw response.error
     }
+    console.log(res.status)
     const data = await res.json();
     return data;
 }

@@ -54,7 +54,7 @@ export function AppNavBar(props) {
 							className="d-flex align-items-center justify-content-center"
 						>
 							{props.loggedIn ? (
-								<NavDropdown
+								<NavDropdown variant="navbar"
 									title={navDropdownTitleForUser}
 									id="collasible-nav-dropdown"
 									drop="start"

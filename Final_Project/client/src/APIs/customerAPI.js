@@ -1,17 +1,20 @@
-const url = "http://localhost:8081/api";
+const url = "http://localhost:3001/api";
 
 /** 
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function getProfile() {
-    const res = await fetch(url + "/customer/getProfile",
-        {method: "GET"})
+async function getProfile(token) {
+    const res = await fetch(url + "/customers/getProfile",
+        {method: "GET",  headers: {
+            'Authorization': 'Bearer ' + token
+        }})
     if (!res.ok) {
         const response = await res.json();
         throw response.error
     }
     const data = await res.json();
+    //console.log("user", data)
     return data;
 }
 
@@ -19,11 +22,11 @@ async function getProfile() {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function editProfile(profile) {
+async function editProfile(token, profile) {
     const res = await fetch(url + "/auth/register",
         {
             method: "PATCH",
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             body: JSON.stringify(profile)
         })
     if (!res.ok) {
@@ -39,9 +42,9 @@ async function editProfile(profile) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function createTicket(ticket) {
+async function createTicket(token, ticket) {
     const res = await fetch(url + "/customers/tickets",
-        { method: "POST", headers: {'Content-Type' : 'application/json'}, body: JSON.stringify(ticket)})
+        { method: "POST", headers: {'Content-Type' : 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(ticket)})
     if (!res.ok) {
         const response = await res.json();
         throw response.error
@@ -55,14 +58,20 @@ async function createTicket(ticket) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function getTickets() {
+async function getTickets(token) {
     const res = await fetch(url + "/customers/tickets",
-        {method: "GET"})
+        {
+            method: "GET",
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
     if (!res.ok) {
         const response = await res.json();
         throw response.error
     }
     const data = await res.json();
+    console.log("tickets", data)
     return data;
 }
 
@@ -71,9 +80,9 @@ async function getTickets() {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function getTicket(ticketId) {
+async function getTicket(token, ticketId) {
     const res = await fetch(url + "/customers/tickets/" + ticketId,
-        {method: "GET"})
+        { method: "GET", headers: { 'Authorization': 'Bearer ' + token }})
     if (!res.ok) {
         const response = await res.json();
         throw response.error
@@ -86,9 +95,9 @@ async function getTicket(ticketId) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function reopenTicket(ticketId) {
+async function reopenTicket(token,ticketId) {
     const res = await fetch(url + "/customers/tickets/" + ticketId + "/reopen",
-        {method: "PATCH"})
+        {method: "PATCH",  headers: { 'Authorization': 'Bearer ' + token }})
     if (!res.ok) {
         const response = await res.json();
         throw response.error
@@ -102,9 +111,9 @@ async function reopenTicket(ticketId) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function compileSurvey(ticketId) {
+async function compileSurvey(token,ticketId) {
     const res = await fetch(url + "/customers/tickets/" + ticketId + "/compileSurvey",
-        {method: "PATCH"})
+        { method: "PATCH", headers: { 'Authorization': 'Bearer ' + token }})
     if (!res.ok) {
         const response = await res.json();
         throw response.error
@@ -117,9 +126,9 @@ async function compileSurvey(ticketId) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function sendMessage(message, ticketId) {
+async function sendMessage(token,message, ticketId) {
     const res = await fetch(url + "/customers/tickets/" + ticketId + "/messages",
-        {method: "POST", headers: {'Content-Type' : 'application/json'}, body: JSON.stringify(message)})
+        {method: "POST", headers: {'Content-Type' : 'application/json', 'Authorization': 'Bearer ' + token}, body: JSON.stringify(message)})
     if (!res.ok) {
         const response = await res.json();
         throw response.error
@@ -133,9 +142,9 @@ async function sendMessage(message, ticketId) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function getMessages(ticketId) {
+async function getMessages(token, ticketId) {
     const res = await fetch(url + "/customers/tickets/" + ticketId + "/messages",
-        {method: "GET"})
+        {method: "GET", headers:{'Authorization': 'Bearer ' + token}})
     if (!res.ok) {
         const response = await res.json();
         throw response.error

@@ -1,12 +1,12 @@
-const url = "http://localhost:8081/api";
+const url = "http://localhost:3001/api";
 
 /** 
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function getProducts() {
+async function getProducts(token) {
     const res = await fetch(url + "/products",
-        {method: "GET"})
+        {method: "GET", headers:{'Authorization': 'Bearer ' + token}})
     if (!res.ok) {
         const response = await res.json();
         throw response.error
