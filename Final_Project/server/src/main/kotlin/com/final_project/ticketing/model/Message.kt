@@ -12,7 +12,8 @@ class Message(
     var messageText:String,
     @Temporal(value=TemporalType.TIMESTAMP) var timestamp:Date,
     var sender:String,
-    @OneToMany var attachmentSet:MutableSet<Attachment>,
+    @OneToMany(cascade = [CascadeType.ALL])
+    var attachmentSet:MutableSet<Attachment>,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id")

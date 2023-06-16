@@ -85,8 +85,8 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             }
     }
 
-    //RETURN MessageDTO not MessageDTO?
-    override fun sendTicketMessage(message: MessageObject, ticketId: Long, sender: String?): MessageDTO? {
+
+    override fun sendTicketMessage(message: MessageObject, ticketId: Long, sender: String?): MessageDTO {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
         var attachmentSet = mutableSetOf<Attachment>()
 
@@ -95,10 +95,13 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             throw Exception()
         }
 
+        println(System.getProperty("user.dir"))
+
         for (attachment in message.attachments){
             var uniqueFilename = UUID.randomUUID().toString() + "_" + attachment.originalFilename
-            val filePath = attachmentDirectory + File.separator + uniqueFilename
-            attachment.transferTo(File(filePath))
+            val filePath = File.separator + attachmentDirectory + File.separator + uniqueFilename
+            println(System.getProperty("user.dir") + filePath)
+            attachment.transferTo(File(System.getProperty("user.dir") + filePath))
 
             val attachmentUrl = "/attachments/$uniqueFilename"
 
@@ -107,15 +110,16 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
                 attachmentSet.add(attachmentEntity)
 
                 //either use this repository or delegate the persistence to AttachmentService
-                attachmentRepository.save(attachmentEntity)
+                //attachmentRepository.save(attachmentEntity)
             }
+
+
         }
 
-        messageRepository.save(message.toModel(attachmentSet, sender, ticket))
 
 
-        //Retrieve result and build message DTO
-        return null
+        return messageRepository.save(message.toModel(attachmentSet, sender, ticket)).toDTO()
+
     }
 
 }
