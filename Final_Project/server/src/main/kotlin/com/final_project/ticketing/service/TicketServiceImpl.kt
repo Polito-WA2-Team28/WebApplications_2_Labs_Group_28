@@ -85,8 +85,8 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             }
     }
 
-    //RETURN MessageDTO not MessageDTO?
-    override fun sendTicketMessage(message: MessageObject, ticketId: Long, sender: String?): MessageDTO? {
+
+    override fun sendTicketMessage(message: MessageObject, ticketId: Long, sender: String?): MessageDTO {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
         var attachmentSet = mutableSetOf<Attachment>()
 
@@ -95,27 +95,29 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             throw Exception()
         }
 
+
         for (attachment in message.attachments){
             var uniqueFilename = UUID.randomUUID().toString() + "_" + attachment.originalFilename
-            val filePath = attachmentDirectory + File.separator + uniqueFilename
-            attachment.transferTo(File(filePath))
+            val filePath = File.separator + attachmentDirectory + File.separator + uniqueFilename
 
+            attachment.transferTo(File(System.getProperty("user.dir") + filePath))
+
+            //modify?
             val attachmentUrl = "/attachments/$uniqueFilename"
 
             if(attachment.originalFilename != null && attachment.contentType != null){
                 var attachmentEntity = attachment.toModel(attachmentUrl)
                 attachmentSet.add(attachmentEntity)
-
-                //either use this repository or delegate the persistence to AttachmentService
-                attachmentRepository.save(attachmentEntity)
             }
+
+
         }
 
-        messageRepository.save(message.toModel(attachmentSet, sender, ticket))
+        // Attachments saved via Cascading
+        return messageRepository.save(message.toModel(attachmentSet, sender, ticket)).toDTO()
 
-
-        //Retrieve result and build message DTO
-        return null
+        //Does it make sense to only have the messageID inside each attachment?
+        // OneToOne in Attachment instead of OneToMany in Message?
     }
 
 }

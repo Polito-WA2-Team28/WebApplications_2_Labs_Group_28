@@ -78,7 +78,7 @@ class SecurityConfig(val jwtAuthConverter:JwtAuthConverter) {
                     }
                 }
                 ClaimType.USERNAME -> {
-                    val subObject: Any? = jwt.claims["preferred-username"]
+                    val subObject: Any? = jwt.claims["preferred_username"]
 
                     if (subObject != null) {
                         claim = subObject.toString()

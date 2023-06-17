@@ -159,31 +159,24 @@ class TicketCustomerController @Autowired constructor(
     @PostMapping("/api/customers/tickets/{ticketId}/messages")
     @ResponseStatus(HttpStatus.CREATED)
     fun sendTicketMessage(@ModelAttribute message:MessageObject,
-                          @PathVariable ticketId: Long){
-        val now = Date()
-        val attachments = message.attachments
+                          @PathVariable ticketId: Long):MessageDTO{
 
-        for (attachment in attachments) {
-            //retrieve file infos
-            val originalFilename = attachment.originalFilename
-            val contentType: String? = attachment.contentType
-
-
-            //println("${originalFilename}, $originalFilename")
-            //println("${message.messageText}, $ticketId")
-        }
+        // Add checks:
+        // if Customer => check ticket ownership
+        // if Expert => check if ticket is assigned (in TicketExpertController)
 
         // retrieve sender username
         val sender = securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.USERNAME)
 
         // call TicketService to save message and attachments
-        ticketService.sendTicketMessage(message, ticketId, sender)
+        return ticketService.sendTicketMessage(message, ticketId, sender)
+
     }
 
 
     @GetMapping("/api/customers/tickets/{ticketId}/messages")
     @ResponseStatus(HttpStatus.OK)
     fun getTicketMessages(){
-
+        TODO()
     }
 }
