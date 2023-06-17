@@ -6,18 +6,20 @@ export function ProductsTab(props) {
 
     const [show, setShow] = useState(false);
 
+    console.log(props.products);
+
     return <>
         <h1>Products</h1>
         <Button onClick={() => setShow(true)}>Create a ticket</Button>
         <CreationModal show={show} handleClose={() => setShow(false)}
-            handleCreate={() => {console.log("CREATE")}}
+            handleCreate={() => { console.log("CREATE") }}
         />
-        
+
         <CardGroup>
-            {props.products.length === 0 ?
+            {(props.products === undefined || props.products.length === 0) ?
                 <EmptySearch /> :
                 props.products.map((product) => <ProductItem key={product.serialNumber} product={product} />)
-        }
+            }
         </CardGroup>
     </>;
 }
@@ -31,7 +33,7 @@ function ProductItem(props) {
                     {props.product.model}
                 </Card.Title>
                 <p>{`Device type: ${props.product.deviceType}`}</p>
-                    <p>{`Serial Number: ${props.product.serialNumber}` }</p>
+                <p>{`Serial Number: ${props.product.serialNumber}`}</p>
             </Card.Body>
         </Card>
     </>
@@ -43,18 +45,18 @@ function CreationModal(props) {
     const [deviceType, setDeviceType] = useState("");
     const [model, setModel] = useState("");
     const [serialNumber, setSerialNumber] = useState("");
-    
+
     const handleCreate = () => {
-        const product = {deviceType, model, serialNumber}
-      props.handleCreate(product);
-      props.handleClose();
+        const product = { deviceType, model, serialNumber }
+        props.handleCreate(product);
+        props.handleClose();
     }
-  
+
     return <Modal show={props.show} onHide={props.handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>Create a ticket</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
+        <Modal.Header closeButton>
+            <Modal.Title>Create a ticket</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
             <Form>
                 <Form.Group className="mb-3" >
                     <Form.Label>Product ID</Form.Label>
@@ -72,11 +74,11 @@ function CreationModal(props) {
                     <Form.Label>Serial Number</Form.Label>
                     <Form.Control type="text" placeholder="Enter serial number" value={serialNumber} onChange={ev => setSerialNumber(ev.target.value)} />
                 </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={props.handleClose}>Close</Button>
-        <Button variant="primary" onClick={handleCreate}>Create</Button>
-      </Modal.Footer>
+            </Form>
+        </Modal.Body>
+        <Modal.Footer>
+            <Button variant="secondary" onClick={props.handleClose}>Close</Button>
+            <Button variant="primary" onClick={handleCreate}>Create</Button>
+        </Modal.Footer>
     </Modal>
-  }
+}

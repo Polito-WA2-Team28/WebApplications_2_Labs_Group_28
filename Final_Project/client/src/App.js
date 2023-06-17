@@ -8,9 +8,13 @@ import { Dashboard } from './pages/dashboard';
 import { AppNavBar } from './components/AppNavBar';
 import authAPI from './APIs/authAPI'
 import { customerAPI } from './APIs/customerAPI';
+import { expertAPI } from './APIs/expertAPI';
+import { managerAPI } from './APIs/managerAPI';
 import { UserPage } from './pages/userPage';
 import jwt_decode from "jwt-decode";
 import TicketPage from './pages/ticketPage';
+import { Roles } from './model/rolesEnum';
+import { successToast, errorToast } from './components/toastHandler';
 
 function App() {
 
@@ -25,9 +29,12 @@ function App() {
     await authAPI.login(credentials)
       .then((data) => {
         var decoded = jwt_decode(data);
-        setRole(decoded.realm_access.roles[2])
+        const newRole = decoded.realm_access.roles[2]
+        setRole(newRole)
+        console.log(newRole)
         setToken(data);
         setLoggedIn(true);
+        successToast("Logged in successfully")
       })
   };
 
@@ -43,6 +50,7 @@ function App() {
     setLoggedIn(false);
     setUser(null);
     setRole(null);
+    successToast("Logged out successfully")
   };
 
   const handleCreateTicket = async (ticket) => {
@@ -59,26 +67,45 @@ function App() {
         .then((user) => setUser(() => user))
         .catch((err) => {
           if (err !== "Not authenticated") {
-            console.error("error in getProfile: ", err)
+            errorToast(err)
           }
         });
     }
-    if (role === "CUSTOMER")
+    if (role === Roles.CUSTOMER)
       checkAut();
   }, [token, role])
 
   useEffect(() => {
-    const getTickets = async () => {
+    async function customerGetTickets() {
       await customerAPI.getTickets(token)
-        .then(tickets => {
-          setTickets(() => tickets.content);
-        })
-        .catch((err) => {
-          console.error("error in getTickets:", err);
-        });
+        .then(tickets => { setTickets(tickets.content) })
+        .catch((err) => errorToast(err));
     }
-    getTickets();
-  }, [loggedIn, token])
+    async function expertGetTickets() {
+      await expertAPI.getTickets(token)
+        .then(tickets => { setTickets(tickets.content) })
+        .catch((err) => errorToast(err));
+    }
+    async function managerGetTickets() {
+      await managerAPI.getTickets(token)
+        .then(tickets => { setTickets(tickets.content) })
+        .catch((err) => errorToast(err));
+    }
+
+    switch (role) {
+      case Roles.CUSTOMER:
+        customerGetTickets();
+        break;
+      case Roles.EXPERT:
+        expertGetTickets();
+        break;
+      case Roles.MANAGER:
+        managerGetTickets();
+        break;
+      default:
+        break;
+    }
+  }, [loggedIn, token, role])
 
   useEffect(() => {
     const getProducts = async () => {
@@ -86,11 +113,9 @@ function App() {
         .then(products => {
           setProducts(() => products);
         })
-        .catch((err) => {
-          console.error("error in getTickets:", err);
-        });
+        .catch((err) => errorToast(err));
     }
-    if (role === "CUSTOMER")
+    if (role === Roles.CUSTOMER)
       getProducts();
   }, [loggedIn, token, role])
 
@@ -109,10 +134,8 @@ function App() {
   const closeTicket = async (ticketId) => {
     ticketId = Number.parseInt(ticketId)
     await customerAPI.compileSurvey(token, ticketId)
-      .then(() => {
-        setTickets((prev) => prev.filter((ticket) => ticket.ticketId !== ticketId))})
-      .catch((err) => { console.error("error in closeTicket:", err) }
-    )
+      .then(() => setTickets((prev) => prev.filter((ticket) => ticket.ticketId !== ticketId)))
+      .catch((err) => errorToast(err))
   }
 
 

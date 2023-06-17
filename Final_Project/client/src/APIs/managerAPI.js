@@ -1,5 +1,5 @@
-import { authHeader } from "./util.js";
-const url = "http://localhost:8081/api/managers";
+import { authHeader, compositeHeader } from "./util.js";
+const url = "http://localhost:3001/api/managers";
 
 /** 
 * @throws {Error} if the data fails
@@ -32,7 +32,7 @@ async function getTicket(token, ticketId) {
 */
 async function assignTicket(token, ticketId, ticketUpdateData) {
     const res = await fetch(url + "/tickets/" + ticketId + "/assign",
-        { method: "PATCH", headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(ticketUpdateData) })
+        { method: "PATCH", headers: compositeHeader(token), body: JSON.stringify(ticketUpdateData) })
     if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
@@ -93,7 +93,7 @@ async function removeTicket(token, ticketId) {
 */
 async function sendMessage(token, message, ticketId) {
     const res = await fetch(url + "/tickets/" + ticketId + "/messages",
-        { method: "POST", headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(message) })
+        { method: "POST", headers: compositeHeader(token), body: JSON.stringify(message) })
     if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
@@ -136,7 +136,7 @@ async function getProduct(productId) {
     return data;
 }
 
-export const mangagerAPI = {
+export const managerAPI = {
     getTickets, getTicket, assignTicket,
     relieveExpert, closeTicket, resumeProgress, removeTicket,
     sendMessage, getMessages, getProducts, getProduct
