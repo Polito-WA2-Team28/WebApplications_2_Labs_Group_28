@@ -7,10 +7,7 @@ const url = "http://localhost:3001/api";
 async function getProducts(token) {
     const res = await fetch(url + "/products",
         {method: "GET", headers:{'Authorization': 'Bearer ' + token}})
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+        if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -22,10 +19,7 @@ async function getProducts(token) {
 async function getProduct(productId) {
     const res = await fetch(url + "/products/" + productId,
         {method: "GET"})
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+        if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }

@@ -5,7 +5,6 @@ const url = "http://localhost:3001/api";
 * @throws {String} if the response is not ok
 */
 async function login(credentials) {
-
     const res = await fetch(url + "/auth/login",
         {
             method: "POST",
@@ -14,12 +13,8 @@ async function login(credentials) {
             },
             body: JSON.stringify(credentials)
         })
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+    if (!res.ok) throw res.statusText
     const data = await res.json();
-    console.log("data", data)
     return data.accessToken;
 }
 
@@ -34,11 +29,7 @@ async function register(profile) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(profile)
         })
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
-    console.log(res.status)
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }

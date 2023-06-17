@@ -4,8 +4,6 @@ import { ProductsTab } from "../components/ProductsTab";
 
 export function Dashboard(props) {
 
-  console.log("DASHBOARD", props.tickets)
-
   return (
     <Container>
       <Tabs>

@@ -1,16 +1,17 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { ToastContainer } from 'react-toastify';
-import {LandingPage} from './pages/landingPage';
-import {RegisterPage} from './pages/registerPage';
-import {LoginPage} from './pages/loginPage';
-import {Dashboard} from './pages/dashboard';
-import {AppNavBar} from './components/AppNavBar';
+import { LandingPage } from './pages/landingPage';
+import { RegisterPage } from './pages/registerPage';
+import { LoginPage } from './pages/loginPage';
+import { Dashboard } from './pages/dashboard';
+import { AppNavBar } from './components/AppNavBar';
 import authAPI from './APIs/authAPI'
 import { customerAPI } from './APIs/customerAPI';
 import { UserPage } from './pages/userPage';
 import jwt_decode from "jwt-decode";
 import { productAPI } from './APIs/productAPI';
+import TicketPage from './pages/ticketPage';
 
 function App() {
 
@@ -29,10 +30,9 @@ function App() {
         setToken(data);
         setLoggedIn(true);
       })
-    };
+  };
 
   const handleRegistration = async (credentials) => {
-    console.log('register', credentials);
     await authAPI.register(credentials)
       .then((data) => {
         setUser(data);
@@ -40,7 +40,6 @@ function App() {
   };
 
   const handleLogout = async () => {
-    console.log('logout');
     setToken(null);
     setLoggedIn(false);
     setUser(null);
@@ -65,8 +64,9 @@ function App() {
           }
         });
     }
-    checkAut();
-  }, [token])
+    if (role === "CUSTOMER")
+      checkAut();
+  }, [token, role])
 
   useEffect(() => {
     const getTickets = async () => {
@@ -85,37 +85,57 @@ function App() {
     const getProducts = async () => {
       await productAPI.getProducts(token)
         .then(products => {
-          console.log(products);
           setProducts(() => products);
         })
         .catch((err) => {
           console.error("error in getTickets:", err);
         });
     }
-    if(role === "CUSTOMER")
+    if (role === "CUSTOMER")
       getProducts();
   }, [loggedIn, token, role])
 
 
+  const getTicket = (ticketId) => {
+
+    for (let ticket of tickets) {
+      if (ticket.ticketId === Number.parseInt(ticketId)) {
+        return ticket;
+      }
+    }
+    return undefined
+
+  }
+
+  const closeTicket = async (ticketId) => {
+    ticketId = Number.parseInt(ticketId)
+    await customerAPI.compileSurvey(token, ticketId)
+      .then(() => {
+        setTickets((prev) => prev.filter((ticket) => ticket.ticketId !== ticketId))})
+      .catch((err) => { console.error("error in closeTicket:", err) }
+    )
+  }
 
 
   return (<><BrowserRouter>
     <AppNavBar loggedIn={loggedIn} user={user} logout={handleLogout} />
-        <Routes>
-          <Route path="/" element={user ? <Navigate to={"/dashboard"}/> : <LandingPage />} />
-          <Route path="/register" element={<RegisterPage handleRegistration={handleRegistration} />} />
-          <Route path="/login" element={<LoginPage handleLogin={handleLogin}/>} />
+    <Routes>
+      <Route path="/" element={user ? <Navigate to={"/dashboard"} /> : <LandingPage />} />
+      <Route path="/register" element={<RegisterPage handleRegistration={handleRegistration} />} />
+      <Route path="/login" element={<LoginPage handleLogin={handleLogin} />} />
       <Route path="/dashboard"
         element={
           loggedIn ?
             <Dashboard user={user} tickets={tickets} products={products} role={role} handleCreate={handleCreateTicket} />
             : <Navigate to={"/"} />} />
-          <Route path="/user" element={loggedIn ?  <UserPage user={user} /> : <Navigate to={"/"} />} />
-          <Route path="*" element={<h1 >Not Found</h1>} />
-        </Routes>
-      </BrowserRouter>
+      <Route path="/user" element={loggedIn ? <UserPage user={user} /> : <Navigate to={"/"} />} />
+      <Route path="/ticket/:ticketId" element={loggedIn ?
+        <TicketPage getTicket={getTicket} closeTicket={closeTicket} /> : <Navigate to={"/"} />} />
+      <Route path="*" element={<h1 >Not Found</h1>} />
+    </Routes>
+  </BrowserRouter>
     <ToastContainer />
-    </>
+  </>
   );
 }
 

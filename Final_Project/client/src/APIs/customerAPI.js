@@ -6,15 +6,14 @@ const url = "http://localhost:3001/api";
 */
 async function getProfile(token) {
     const res = await fetch(url + "/customers/getProfile",
-        {method: "GET",  headers: {
-            'Authorization': 'Bearer ' + token
-        }})
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+        {
+            method: "GET",
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
-    //console.log("user", data)
     return data;
 }
 
@@ -29,10 +28,7 @@ async function editProfile(token, profile) {
             headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
             body: JSON.stringify(profile)
         })
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -44,11 +40,11 @@ async function editProfile(token, profile) {
 */
 async function createTicket(token, ticket) {
     const res = await fetch(url + "/customers/tickets",
-        { method: "POST", headers: {'Content-Type' : 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(ticket)})
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+        {
+            method: "POST", headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify(ticket)
+        })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -62,16 +58,10 @@ async function getTickets(token) {
     const res = await fetch(url + "/customers/tickets",
         {
             method: "GET",
-            headers: {
-                'Authorization': 'Bearer ' + token
-            }
+            headers: { 'Authorization': 'Bearer ' + token }
         })
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+    if (!res.ok) throw res.statusText
     const data = await res.json();
-    console.log("tickets", data)
     return data;
 }
 
@@ -82,11 +72,8 @@ async function getTickets(token) {
 */
 async function getTicket(token, ticketId) {
     const res = await fetch(url + "/customers/tickets/" + ticketId,
-        { method: "GET", headers: { 'Authorization': 'Bearer ' + token }})
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+        { method: "GET", headers: { 'Authorization': 'Bearer ' + token } })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -95,13 +82,10 @@ async function getTicket(token, ticketId) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function reopenTicket(token,ticketId) {
+async function reopenTicket(token, ticketId) {
     const res = await fetch(url + "/customers/tickets/" + ticketId + "/reopen",
-        {method: "PATCH",  headers: { 'Authorization': 'Bearer ' + token }})
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+        { method: "PATCH", headers: { 'Authorization': 'Bearer ' + token } })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -111,13 +95,10 @@ async function reopenTicket(token,ticketId) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function compileSurvey(token,ticketId) {
+async function compileSurvey(token, ticketId) {
     const res = await fetch(url + "/customers/tickets/" + ticketId + "/compileSurvey",
-        { method: "PATCH", headers: { 'Authorization': 'Bearer ' + token }})
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+        { method: "PATCH", headers: { 'Authorization': 'Bearer ' + token } })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -126,13 +107,13 @@ async function compileSurvey(token,ticketId) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function sendMessage(token,message, ticketId) {
+async function sendMessage(token, message, ticketId) {
     const res = await fetch(url + "/customers/tickets/" + ticketId + "/messages",
-        {method: "POST", headers: {'Content-Type' : 'application/json', 'Authorization': 'Bearer ' + token}, body: JSON.stringify(message)})
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+        {
+            method: "POST", headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify(message)
+        })
+        if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -144,13 +125,12 @@ async function sendMessage(token,message, ticketId) {
 */
 async function getMessages(token, ticketId) {
     const res = await fetch(url + "/customers/tickets/" + ticketId + "/messages",
-        {method: "GET", headers:{'Authorization': 'Bearer ' + token}})
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+        {
+            method: "GET", headers: { 'Authorization': 'Bearer ' + token }
+        })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
 
-export const customerAPI = { getProfile, editProfile , createTicket, getTickets, getTicket, reopenTicket, compileSurvey, sendMessage, getMessages}
+export const customerAPI = { getProfile, editProfile, createTicket, getTickets, getTicket, reopenTicket, compileSurvey, sendMessage, getMessages }

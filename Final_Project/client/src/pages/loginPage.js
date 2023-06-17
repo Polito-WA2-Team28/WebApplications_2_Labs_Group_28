@@ -9,7 +9,7 @@ export function LoginPage(props) {
     const handleLogin = async (credentials) => {
 			await props.handleLogin(credentials)
 			.then(() => { navigate("/dashboard") })
-			.catch((error) => { console.log(error) })
+			.catch((error) => { console.error(error) })
     }
 
     const handleRegistration = () => {
@@ -64,7 +64,6 @@ function LoginForm(props) {
 			let value
 			await props.login(credentials)
 			.then(val => {value = val})
-			console.log("value", value)
 			if (value === true)
 				navigate("/");
 		} else {

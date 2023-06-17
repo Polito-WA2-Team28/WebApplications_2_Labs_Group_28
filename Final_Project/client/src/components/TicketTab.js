@@ -1,15 +1,13 @@
 import { faUpRightAndDownLeftFromCenter } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
-import { Button, Card, CardGroup, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { Button, Card, CardGroup, Col, Form, Modal, Row } from "react-bootstrap";
 import EmptySearch from "./EmptySearch";
+import { useNavigate } from "react-router-dom";
 
 export function TicketTab(props) {
 
   const [showCreate, setShowCreate] = useState(false);
-
-
-  console.log("TEST", props.tickets)
 
     return <>
       <CreationModal show={showCreate} handleClose={() => setShowCreate(false)} handleCreate={props.handleCreate} products={props.products} />
@@ -39,13 +37,23 @@ function TicketListTable(props) {
   );
   }
   
-  function TicketItem(props) {
+function TicketItem(props) {
+    
+  const navigate = useNavigate();
+
     return <Col className="mt-3">
     <Card>
       <Card.Body>
-        <Card.Title>
-          {props.ticket.description}
-        </Card.Title>
+          <Card.Title>
+            <Row>
+            <Col>{props.ticket.description}</Col>
+              <Col className="text-end">
+                <Button onClick={() => navigate(`/ticket/${props.ticket.ticketId}`)}>
+                  <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} />
+                </Button></Col>
+              </Row>
+          </Card.Title>
+          <p>{props.ticket.ticketState}</p>
       </Card.Body>
     </Card>
   </Col>
@@ -55,7 +63,6 @@ function TicketListTable(props) {
     
     const handleCreate = () => {
       const ticket = { description, serialNumber }
-      console.log("TICKET", ticket)
       props.handleCreate(ticket);
       props.handleClose();
     }
