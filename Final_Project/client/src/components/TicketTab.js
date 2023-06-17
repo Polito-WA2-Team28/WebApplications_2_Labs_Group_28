@@ -1,12 +1,20 @@
 import { faUpRightAndDownLeftFromCenter } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Card, Col, Container, Modal, Row } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Card, CardGroup, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import EmptySearch from "./EmptySearch";
 
 export function TicketTab(props) {
+
+  const [showCreate, setShowCreate] = useState(false);
+
+
+  console.log("TEST", props.tickets)
+
     return <>
-        <CreationModal show={props.showCreate} handleClose={() => props.setShowCreate(false)} handleCreate={props.handleCreate} />
+      <CreationModal show={showCreate} handleClose={() => setShowCreate(false)} handleCreate={props.handleCreate} products={props.products} />
         <TicketListTable
-            handleCreate={() => props.setShowCreate(true)}
+            handleCreate={() => setShowCreate(true)}
             tickets={props.tickets}
           />
 </>
@@ -22,12 +30,10 @@ function TicketListTable(props) {
             <Button onClick={props.handleCreate}>Create a ticket</Button>
         </Row>
         <Row>
-        <Col className="mb-5">
-            <Row>
-              {props.tickets.number === 0 ? <EmptySearch /> : 
-                 props.tickets.map((ticket) =>  <Col key={ticket}><TicketItem ticket={ticket}/></Col>)}
-            </Row>
-        </Col>
+          <CardGroup>
+              {props.tickets.length === 0 ? <EmptySearch /> : 
+              props.tickets.map((ticket) => <TicketItem key={ticket.ticketID} ticket={ticket}/>)}
+        </CardGroup>
         </Row>
       </>
   );
@@ -38,51 +44,43 @@ function TicketListTable(props) {
     <Card>
       <Card.Body>
         <Card.Title>
-          <Row className="top-row">
-            <Col xs={8} sm={9}>
-              {props.ticket.title.length > 25
-                ? props.ticket.title.trim().slice(0, 24).concat("...")
-                : props.ticket.title}
-            </Col>
-            <Col className="text-end">
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => {}}
-              >
-                <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} />
-              </Button>
-            </Col>
-          </Row>
+          {props.ticket.description}
         </Card.Title>
       </Card.Body>
     </Card>
   </Col>
   }
   
-  function EmptySearch() {
-      return (
-          <Container className="mt-5">
-              <Row className="d-flex justify-content-center text-center">
-                  Sorry there are no results
-              </Row>
-          </Container>
-      );
-  }
-  
   function CreationModal(props) {
     
     const handleCreate = () => {
-      const ticket = {}
+      const ticket = { description, serialNumber }
+      console.log("TICKET", ticket)
       props.handleCreate(ticket);
       props.handleClose();
     }
+
+    const [description, setDescription] = useState("");
+    const [serialNumber, setSerialNumber] = useState("");
   
     return <Modal show={props.show} onHide={props.handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>Create a ticket</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        <Form>
+          <Form.Group>
+            <Form.Label>Description</Form.Label>
+            <Form.Control type="text" placeholder="Enter description" value={description} onChange={ev => setDescription(ev.target.value)}/>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>product</Form.Label>
+            <Form.Select value={serialNumber} onChange={ev => setSerialNumber(ev.target.value)}>
+              <option value="">Select a product</option>
+              {props.products.map((product) => <option key={product.serialNumber} value={product.serialNumber}>{`${product.model} - ${product.deviceType}` }</option>)}
+            </Form.Select>
+          </Form.Group>
+        </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={props.handleClose}>Close</Button>

@@ -72,7 +72,7 @@ function App() {
     const getTickets = async () => {
       await customerAPI.getTickets(token)
         .then(tickets => {
-          setTickets(() => tickets);
+          setTickets(() => tickets.content);
         })
         .catch((err) => {
           console.error("error in getTickets:", err);
