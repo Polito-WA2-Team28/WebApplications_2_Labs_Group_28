@@ -10,7 +10,6 @@ import authAPI from './APIs/authAPI'
 import { customerAPI } from './APIs/customerAPI';
 import { UserPage } from './pages/userPage';
 import jwt_decode from "jwt-decode";
-import { productAPI } from './APIs/productAPI';
 import TicketPage from './pages/ticketPage';
 
 function App() {
@@ -83,7 +82,7 @@ function App() {
 
   useEffect(() => {
     const getProducts = async () => {
-      await productAPI.getProducts(token)
+      await customerAPI.getProducts(token)
         .then(products => {
           setProducts(() => products);
         })

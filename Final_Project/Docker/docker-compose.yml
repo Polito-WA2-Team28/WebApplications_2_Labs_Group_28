@@ -8,10 +8,16 @@ services:
     - PGDATA=/mypostgresdata
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   ticketing-service:
     depends_on:
-    - postgres
+     postgres:
+       condition: service_healthy
 
     image: runcor3/ticketing-service:lab5
     container_name: ticketing-service

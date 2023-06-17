@@ -1,16 +1,14 @@
-const url = "http://localhost:8081/api";
+import { authHeader } from "./util.js";
+const url = "http://localhost:8081/api/managers";
 
 /** 
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
 async function getTickets(token) {
-    const res = await fetch(url + "/managers/tickets",
-        { method: "GET", headers: { 'Authorization': 'Bearer ' + token } })
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+    const res = await fetch(url + "/tickets",
+        { method: "GET", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -21,12 +19,9 @@ async function getTickets(token) {
 * @throws {String} if the response is not ok
 */
 async function getTicket(token, ticketId) {
-    const res = await fetch(url + "/managers/tickets/" + ticketId,
-        { method: "GET", headers: { 'Authorization': 'Bearer ' + token } })
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+    const res = await fetch(url + "/tickets/" + ticketId,
+        { method: "GET", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -36,12 +31,9 @@ async function getTicket(token, ticketId) {
 * @throws {String} if the response is not ok
 */
 async function assignTicket(token, ticketId, ticketUpdateData) {
-    const res = await fetch(url + "/managers/tickets/" + ticketId + "/assign",
+    const res = await fetch(url + "/tickets/" + ticketId + "/assign",
         { method: "PATCH", headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(ticketUpdateData) })
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -52,12 +44,9 @@ async function assignTicket(token, ticketId, ticketUpdateData) {
 * @throws {String} if the response is not ok
 */
 async function relieveExpert(token, ticketId) {
-    const res = await fetch(url + "/managers/tickets/" + ticketId + "/relieveExpert",
-        { method: "PATCH", headers: { 'Authorization': 'Bearer ' + token } })
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+    const res = await fetch(url + "/tickets/" + ticketId + "/relieveExpert",
+        { method: "PATCH", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -67,12 +56,9 @@ async function relieveExpert(token, ticketId) {
 * @throws {String} if the response is not ok
 */
 async function closeTicket(token, ticketId) {
-    const res = await fetch(url + "/managers/tickets/" + ticketId + "/close",
-        { method: "PATCH", headers: { 'Authorization': 'Bearer ' + token } })
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+    const res = await fetch(url + "/tickets/" + ticketId + "/close",
+        { method: "PATCH", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -82,12 +68,9 @@ async function closeTicket(token, ticketId) {
 * @throws {String} if the response is not ok
 */
 async function resumeProgress(token, ticketId, ticketUpdateData) {
-    const res = await fetch(url + "/managers/tickets/" + ticketId + "/resumeProgress",
-        { method: "PATCH", headers: { 'Authorization': 'Bearer ' + token } })
-    if (!res.ok) {
-        const response = await res.json();
-        throw response.error
-    }
+    const res = await fetch(url + "/tickets/" + ticketId + "/resumeProgress",
+        { method: "PATCH", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -97,10 +80,9 @@ async function resumeProgress(token, ticketId, ticketUpdateData) {
 * @throws {String} if the response is not ok
 */
 async function removeTicket(token, ticketId) {
-    const res = await fetch(url + "/managers/tickets/" + ticketId + "/remove",
-        { method: "DELETE", headers: { 'Authorization': 'Bearer ' + token } })
+    const res = await fetch(url + "/tickets/" + ticketId + "/remove",
+        { method: "DELETE", headers: authHeader(token) })
     if (!res.ok) throw res.statusText
-
     const data = await res.json();
     return data;
 }
@@ -110,10 +92,9 @@ async function removeTicket(token, ticketId) {
 * @throws {String} if the response is not ok
 */
 async function sendMessage(token, message, ticketId) {
-    const res = await fetch(url + "/experts/tickets/" + ticketId + "/messages",
+    const res = await fetch(url + "/tickets/" + ticketId + "/messages",
         { method: "POST", headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(message) })
     if (!res.ok) throw res.statusText
-
     const data = await res.json();
     return data;
 }
@@ -124,11 +105,39 @@ async function sendMessage(token, message, ticketId) {
 * @throws {String} if the response is not ok
 */
 async function getMessages(token, ticketId) {
-    const res = await fetch(url + "/experts/tickets/" + ticketId + "/messages",
-        { method: "GET", headers: { 'Authorization': 'Bearer ' + token } })
+    const res = await fetch(url + "/tickets/" + ticketId + "/messages",
+        { method: "GET", headers: authHeader(token) })
     if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
 
-export const mangagerAPI = { getTickets, getTicket, assignTicket, relieveExpert, closeTicket, resumeProgress, removeTicket, sendMessage, getMessages };
+/** 
+* @throws {Error} if the data fails
+* @throws {String} if the response is not ok
+*/
+async function getProducts(token) {
+    const res = await fetch(url + "/products",
+        { method: "GET", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
+    const data = await res.json();
+    return data;
+}
+
+/** 
+* @throws {Error} if the data fails
+* @throws {String} if the response is not ok
+*/
+async function getProduct(productId) {
+    const res = await fetch(url + "/products/" + productId,
+        { method: "GET" })
+    if (!res.ok) throw res.statusText
+    const data = await res.json();
+    return data;
+}
+
+export const mangagerAPI = {
+    getTickets, getTicket, assignTicket,
+    relieveExpert, closeTicket, resumeProgress, removeTicket,
+    sendMessage, getMessages, getProducts, getProduct
+};
