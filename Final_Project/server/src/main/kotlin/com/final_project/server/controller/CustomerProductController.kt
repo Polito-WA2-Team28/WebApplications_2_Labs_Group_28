@@ -55,7 +55,12 @@ class CustomerProductController @Autowired constructor(val productService: Produ
     fun registerProduct(@RequestBody @Valid productIds: RegisterProductDTO,
                         br: BindingResult
     ){
-        //Check binding result
+        if (br.hasErrors()) {
+            val invalidFields = br.fieldErrors.map { it.field }
+            logger.error("Endpoint: /api/customers/products/registerProduct Error: Invalid fields: $invalidFields")
+            throw Exception.ValidationException("", invalidFields)
+        }
+
         val customerId = securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB)
 
         return productService.registerProduct(UUID.fromString(customerId), productIds.productId, productIds.serialNumber)

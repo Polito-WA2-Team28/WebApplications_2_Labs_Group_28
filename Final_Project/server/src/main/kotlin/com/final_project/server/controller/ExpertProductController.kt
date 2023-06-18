@@ -23,7 +23,7 @@ class ExpertProductController @Autowired constructor(val productService: Product
     @ResponseStatus(HttpStatus.OK)
     fun getProducts() : List<ProductDTO>{
         val expertId = securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB)
-        //Add logging
+
         return productService.getExpertProducts(UUID.fromString(expertId))
     }
 
