@@ -42,10 +42,10 @@ class CustomerServiceImpl @Autowired constructor(val customerRepository: Custome
 
         val originalCustomer: Customer? = customerRepository.findByIdOrNull(customerId)
         val updatedCustomer: Customer = profile.toModel(
-            id = originalCustomer?.id ?: return null,
-            username = originalCustomer.username,
-            registrationDate = originalCustomer.registrationDate,
-            email = originalCustomer.email
+            originalCustomer?.id ?: return null,
+                originalCustomer.username,
+                originalCustomer.registrationDate,
+                originalCustomer.email
         )
 
         /* Storing the result in the database. */
