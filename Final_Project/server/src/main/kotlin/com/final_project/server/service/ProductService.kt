@@ -2,11 +2,22 @@ package com.final_project.server.service
 
 import com.final_project.server.dto.ProductDTO
 import com.final_project.server.model.Product
+import java.util.UUID
 
 interface ProductService {
-    fun getAllProducts() : List<ProductDTO>
+    fun getManagerProducts() : List<ProductDTO>
 
-    fun getProductById(id:Long) : ProductDTO?
+    fun getCustomerProducts(customerId:UUID) : List<ProductDTO>
 
-    fun getProductBySerialNumber(serialNumber:Long): Product?
+    fun getExpertProducts(expertId:UUID) : List<ProductDTO>
+
+    fun managerGetProductById(productId:Long) : ProductDTO?
+
+    fun expertGetProductById(expertId:UUID, productId:Long) : ProductDTO?
+
+    fun customerGetProductById(customerId: UUID, productId: Long): ProductDTO?
+
+    fun customerGetProductBySerialNumber(customerId:UUID, serialNumber:UUID): Product?
+
+    fun registerProduct(customerId:UUID, productId:Long, serialNumber: UUID)
 }

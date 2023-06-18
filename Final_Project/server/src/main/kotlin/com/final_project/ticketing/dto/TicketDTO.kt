@@ -6,7 +6,7 @@ import java.util.Date
 import java.util.UUID
 
 data class TicketDTO(
-    val ticketId:Long?, val ticketState:TicketState, val description:String, val serialNumber:Long,
+    val ticketId:Long?, val ticketState:TicketState, val description:String, val serialNumber:UUID,
     val customerId:UUID?, val expertId: UUID?, val creationDate:Date, val lastModified:Date) {
 }
 
