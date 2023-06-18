@@ -15,6 +15,7 @@ import jwt_decode from "jwt-decode";
 import TicketPage from './pages/ticketPage';
 import { Roles } from './model/rolesEnum';
 import { successToast, errorToast } from './components/toastHandler';
+import { EditUserPage } from './pages/editUserPage';
 
 function App() {
 
@@ -60,6 +61,17 @@ function App() {
       })
   };
 
+  const handleEditProfile = async (profile) => {
+    await customerAPI.patchProfile(token, profile)
+      .then((user) => {
+        setUser(profile)
+        successToast("Changes saved!")
+      })
+      .catch((err) => {
+        errorToast(err)
+      });
+
+  };
 
   useEffect(() => {
     const checkAut = async () => {
@@ -151,6 +163,7 @@ function App() {
             <Dashboard user={user} tickets={tickets} products={products} role={role} handleCreate={handleCreateTicket} />
             : <Navigate to={"/"} />} />
       <Route path="/user" element={loggedIn ? <UserPage user={user} /> : <Navigate to={"/"} />} />
+      <Route path="/editUser" element={loggedIn ? <EditUserPage user={user} handleEdit={handleEditProfile}/> : <Navigate to={"/"} />} />
       <Route path="/ticket/:ticketId" element={loggedIn ?
         <TicketPage getTicket={getTicket} closeTicket={closeTicket} /> : <Navigate to={"/"} />} />
       <Route path="*" element={<h1 >Not Found</h1>} />

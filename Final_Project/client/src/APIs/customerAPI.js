@@ -18,6 +18,19 @@ async function getProfile(token) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
+async function patchProfile(token, profile) {
+    const res = await fetch(url + "/editProfile",
+        {
+            method: "PATCH", headers: compositeHeader(token),
+            body: JSON.stringify(profile)
+        })
+    if (!res.ok) throw res.statusText
+}
+
+/** 
+* @throws {Error} if the data fails
+* @throws {String} if the response is not ok
+*/
 async function createTicket(token, ticket) {
     const res = await fetch(url + "/tickets",
         {
@@ -133,6 +146,6 @@ async function getProduct(token, productId) {
 }
 
 export const customerAPI = {
-    getProfile, createTicket, getTickets, getTicket,
+    getProfile, createTicket, getTickets, getTicket, patchProfile,
     reopenTicket, compileSurvey, sendMessage, getMessages, getProducts, getProduct
 }

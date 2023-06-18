@@ -27,6 +27,9 @@ function CustomerTabs(props) {
     <Tab eventKey="products" title="Products">
       <ProductsTab />
     </Tab>
+    {/* <Tab eventKey="user" title="User">
+      <UserTab />
+    </Tab> */}
   </Tabs>
 
 }
