@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 export function CustomerTicketTab(props) {
 
   const [showCreate, setShowCreate] = useState(false);
-
   return <>
     <CreationModal show={showCreate} handleClose={() => setShowCreate(false)} handleCreate={props.handleCreate} products={props.products} />
     <Row>
@@ -34,11 +33,14 @@ export function ManagerTicketTab(props) {
 
 
 function TicketListTable(props) {
+
+  const tickets = props.tickets.content
+
   return (
     <Row>
       <CardGroup>
-        {(props.tickets || props.tickets.length === 0) ? <EmptySearch /> :
-          props.tickets.map((ticket) => <TicketItem key={ticket.ticketID} ticket={ticket} />)}
+        {(tickets === undefined || tickets.length === 0) ? <EmptySearch /> :
+          tickets.map((ticket) => <TicketItem key={ticket.ticketID} ticket={ticket} />)}
       </CardGroup>
     </Row>
   );
