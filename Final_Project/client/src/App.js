@@ -31,7 +31,6 @@ function App() {
         var decoded = jwt_decode(data);
         const newRole = decoded.realm_access.roles[2]
         setRole(newRole)
-        console.log(newRole)
         setToken(data);
         setLoggedIn(true);
         successToast("Logged in successfully")
@@ -140,7 +139,7 @@ function App() {
 
 
   return (<><BrowserRouter>
-    <AppNavBar loggedIn={loggedIn} user={user} logout={handleLogout} />
+    <AppNavBar loggedIn={loggedIn} role={role} logout={handleLogout} />
     <Routes>
       <Route path="/" element={user ? <Navigate to={"/dashboard"} /> : <LandingPage />} />
       <Route path="/register" element={<RegisterPage handleRegistration={handleRegistration} />} />

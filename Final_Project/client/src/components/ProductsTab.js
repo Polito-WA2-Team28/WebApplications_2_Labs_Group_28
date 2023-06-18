@@ -6,8 +6,6 @@ export function ProductsTab(props) {
 
     const [show, setShow] = useState(false);
 
-    console.log(props.products);
-
     return <>
         <h1>Products</h1>
         <Button onClick={() => setShow(true)}>Create a ticket</Button>
