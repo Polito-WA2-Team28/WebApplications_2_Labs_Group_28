@@ -69,7 +69,7 @@ class SecurityConfig(val jwtAuthConverter:JwtAuthConverter) {
         if (authentication is JwtAuthenticationToken) {
             val jwt: Jwt = authentication.token
 
-            when (claimType){
+            when (claimType) {
                 ClaimType.SUB -> {
                     val subObject: Any? = jwt.claims["sub"]
 
@@ -77,6 +77,7 @@ class SecurityConfig(val jwtAuthConverter:JwtAuthConverter) {
                         claim = subObject.toString()
                     }
                 }
+
                 ClaimType.USERNAME -> {
                     val subObject: Any? = jwt.claims["preferred_username"]
 
@@ -85,8 +86,6 @@ class SecurityConfig(val jwtAuthConverter:JwtAuthConverter) {
                     }
                 }
             }
-
-
         }
 
         return claim

@@ -1,18 +1,19 @@
-package com.final_project.ticketing.dto
+package com.final_project.server.dto
 
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import org.jetbrains.annotations.NotNull
 import java.util.UUID
 
-class TicketCreationData(
+class RegisterProductDTO(
     @field:NotBlank
     @field:NotNull
-    @field:Size(max = 500)
-    var description:String,
+    @field:Size(max = 10)
+    val productId: Long,
 
+    @field:NotBlank
     @field:NotNull
-    var serialNumber:UUID
-){
-
+    @field:Size(max = 50)
+    val serialNumber: UUID
+) {
 }

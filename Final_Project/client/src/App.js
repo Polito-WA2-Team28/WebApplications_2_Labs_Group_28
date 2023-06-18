@@ -25,6 +25,7 @@ function App() {
   const [tickets, setTickets] = useState([]);
   const [products, setProducts] = useState([]);
   const [role, setRole] = useState(null)
+  const [flag, setFlag] = useState(false)
 
   const handleLogin = async (credentials) => {
     await authAPI.login(credentials)
@@ -32,9 +33,9 @@ function App() {
         var decoded = jwt_decode(data);
         const newRole = decoded.realm_access.roles[2]
         setRole(newRole)
-        console.log(newRole)
         setToken(data);
         setLoggedIn(true);
+        setFlag(true)
         successToast("Logged in successfully")
       })
   };
@@ -57,7 +58,8 @@ function App() {
   const handleCreateTicket = async (ticket) => {
     await customerAPI.createTicket(token, ticket)
       .then((data) => {
-        setTickets((prev) => [...prev, data]);
+        //setTickets((prev) => [...prev, data]);
+        setFlag(true)
       })
   };
 
@@ -90,17 +92,20 @@ function App() {
   useEffect(() => {
     async function customerGetTickets() {
       await customerAPI.getTickets(token)
-        .then(tickets => { setTickets(tickets.content) })
+        .then(tickets => {
+          console.log(tickets)
+          setTickets(tickets)
+        })
         .catch((err) => errorToast(err));
     }
     async function expertGetTickets() {
       await expertAPI.getTickets(token)
-        .then(tickets => { setTickets(tickets.content) })
+        .then(tickets => { setTickets(tickets) })
         .catch((err) => errorToast(err));
     }
     async function managerGetTickets() {
       await managerAPI.getTickets(token)
-        .then(tickets => { setTickets(tickets.content) })
+        .then(tickets => { setTickets(tickets) })
         .catch((err) => errorToast(err));
     }
 
@@ -117,7 +122,9 @@ function App() {
       default:
         break;
     }
-  }, [loggedIn, token, role])
+    setFlag(false)
+
+  }, [loggedIn, token, role, flag])
 
   useEffect(() => {
     const getProducts = async () => {
@@ -133,14 +140,11 @@ function App() {
 
 
   const getTicket = (ticketId) => {
+    ticketId = Number.parseInt(ticketId)
 
-    for (let ticket of tickets) {
-      if (ticket.ticketId === Number.parseInt(ticketId)) {
-        return ticket;
-      }
-    }
-    return undefined
 
+    return tickets.content.find((ticket) => ticket.ticketId === ticketId);
+      
   }
 
   const closeTicket = async (ticketId) => {
@@ -152,7 +156,7 @@ function App() {
 
 
   return (<><BrowserRouter>
-    <AppNavBar loggedIn={loggedIn} user={user} logout={handleLogout} />
+    <AppNavBar loggedIn={loggedIn} role={role} logout={handleLogout} />
     <Routes>
       <Route path="/" element={user ? <Navigate to={"/dashboard"} /> : <LandingPage />} />
       <Route path="/register" element={<RegisterPage handleRegistration={handleRegistration} />} />

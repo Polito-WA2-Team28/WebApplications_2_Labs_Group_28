@@ -1,18 +1,13 @@
-
-div.col{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
-
-.btn{
-    width: 200px;
-    height: 50px;
-    border-radius: 10px;
-    border: none;
-    background-color: #000000;
-    color: white;
-    font-size: 20px;
-}
+/* customStyles.css */
+.my-3 {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .d-inline-block {
+    display: inline-block;
+  }
+  
+  .fw-bold {
+    font-weight: bold;
+  }

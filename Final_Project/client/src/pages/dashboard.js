@@ -2,6 +2,7 @@ import { Container, Tab, Tabs } from "react-bootstrap";
 import { CustomerTicketTab, ExpertTicketTab, ManagerTicketTab } from "../components/TicketTab";
 import { ProductsTab } from "../components/ProductsTab";
 import { Roles } from "../model/rolesEnum";
+import ExpertsInfoTab from "../components/expertsInfoTab";
 
 export function Dashboard(props) {
 
@@ -9,6 +10,8 @@ export function Dashboard(props) {
   const products = props.products;
   const handleCreate = props.handleCreate;
   const role = props.role;
+
+  console.log(role);
 
   return (
     <Container>
@@ -25,7 +28,7 @@ function CustomerTabs(props) {
       <CustomerTicketTab handleCreate={props.handleCreate} tickets={props.tickets} products={props.products} />
     </Tab>
     <Tab eventKey="products" title="Products">
-      <ProductsTab />
+      <ProductsTab products={props.products} />
     </Tab>
     {/* <Tab eventKey="user" title="User">
       <UserTab />
@@ -48,6 +51,9 @@ function ManagersTab(props) {
   return <Tabs>
     <Tab eventKey="tickets" title="Tickets">
     <ManagerTicketTab tickets={props.tickets} />
-  </Tab>
+    </Tab>
+    <Tab eventKey="experts" title="Experts">
+      <ExpertsInfoTab experts={props.experts} />
+      </Tab>
   </Tabs>
 }

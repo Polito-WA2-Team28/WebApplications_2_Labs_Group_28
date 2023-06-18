@@ -1,6 +1,7 @@
 package com.final_project.ticketing.controller
 
 import com.final_project.security.config.SecurityConfig
+import com.final_project.server.controller.CustomerProductController
 import com.final_project.server.exception.Exception
 import com.final_project.server.model.*
 import com.final_project.server.service.*
@@ -26,7 +27,7 @@ import kotlin.math.log
 class TicketCustomerController @Autowired constructor(
     val ticketService: TicketService,
     val customerService: CustomerService,
-    val productService: ProductService,
+    val customerProductController: CustomerProductController,
     val securityConfig: SecurityConfig
 ) {
 
@@ -45,7 +46,7 @@ class TicketCustomerController @Autowired constructor(
             logger.error("Endpoint: /api/customers/tickets Error: Customer not found.")
             throw Exception.CustomerNotFoundException("Customer not found.")
         }
-        val product: Product? = productService.getProductBySerialNumber(ticket.serialNumber)
+        val product: Product? = customerProductController.getProductBySerialNumber(customerId, ticket.serialNumber)
         if (product == null) {
             logger.error("Endpoint: /api/customers/tickets Error: Product not found.")
             throw Exception.ProductNotFoundException("Product not found.")

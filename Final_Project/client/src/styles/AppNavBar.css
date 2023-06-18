@@ -10,19 +10,18 @@
 
 
 .btn-navbar {
-    background-color: rgb(60 58 58 / 100%)!important; 
+    background-color: rgba(0, 0, 0, 0.738)!important; 
     color: white!important;
     font-size: 1.5rem!important;
     border-radius: 0!important;
     font-weight: bold !important;
 } 
 
+.btn-navbar:hover {
+    background-color: rgba(0, 0, 0, 0.856)!important; 
+}
+
 .btn-xl {
     padding: .8rem 1rem!important;
     font-size: 2rem!important;
-}
-
-.sidebar-item {
-    padding: 15px;
-    font-size: 1.1rem;
 }

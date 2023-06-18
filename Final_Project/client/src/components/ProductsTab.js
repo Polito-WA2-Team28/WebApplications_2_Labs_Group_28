@@ -1,12 +1,11 @@
 import { Button, Card, CardGroup, Modal, Form } from "react-bootstrap";
 import EmptySearch from "./EmptySearch";
 import { useState } from "react";
+import "../styles/ProductsTab.css"
 
 export function ProductsTab(props) {
 
     const [show, setShow] = useState(false);
-
-    console.log(props.products);
 
     return <>
         <h1>Products</h1>
@@ -52,33 +51,33 @@ function CreationModal(props) {
         props.handleClose();
     }
 
-    return <Modal show={props.show} onHide={props.handleClose}>
-        <Modal.Header closeButton>
-            <Modal.Title>Create a ticket</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-            <Form>
-                <Form.Group className="mb-3" >
-                    <Form.Label>Product ID</Form.Label>
-                    <Form.Control type="text" placeholder="Enter product ID" value={productId} onChange={ev => setProductId(ev.target.value)} />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Device Type</Form.Label>
-                    <Form.Control type="text" placeholder="Enter device type" value={deviceType} onChange={ev => setDeviceType(ev.target.value)} />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Model</Form.Label>
-                    <Form.Control type="text" placeholder="Enter model" value={model} onChange={ev => setModel(ev.target.value)} />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Serial Number</Form.Label>
-                    <Form.Control type="text" placeholder="Enter serial number" value={serialNumber} onChange={ev => setSerialNumber(ev.target.value)} />
-                </Form.Group>
-            </Form>
-        </Modal.Body>
-        <Modal.Footer>
-            <Button variant="secondary" onClick={props.handleClose}>Close</Button>
-            <Button variant="primary" onClick={handleCreate}>Create</Button>
-        </Modal.Footer>
-    </Modal>
+    return <Modal show={props.show} onHide={props.handleClose} className="custom-modal">
+    <Modal.Header closeButton className="custom-modal-header">
+      <Modal.Title>Create a ticket</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <Form>
+        <Form.Group className="mb-3" controlId="productId">
+          <Form.Label>Product ID</Form.Label>
+          <Form.Control type="text" placeholder="Enter product ID" value={productId} onChange={ev => setProductId(ev.target.value)} className="custom-form-control" />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="deviceType">
+          <Form.Label>Device Type</Form.Label>
+          <Form.Control type="text" placeholder="Enter device type" value={deviceType} onChange={ev => setDeviceType(ev.target.value)} className="custom-form-control" />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="model">
+          <Form.Label>Model</Form.Label>
+          <Form.Control type="text" placeholder="Enter model" value={model} onChange={ev => setModel(ev.target.value)} className="custom-form-control" />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="serialNumber">
+          <Form.Label>Serial Number</Form.Label>
+          <Form.Control type="text" placeholder="Enter serial number" value={serialNumber} onChange={ev => setSerialNumber(ev.target.value)} className="custom-form-control" />
+        </Form.Group>
+      </Form>
+    </Modal.Body>
+    <Modal.Footer className="custom-modal-footer">
+      <Button variant="secondary" onClick={props.handleClose} className="custom-button">Close</Button>
+      <Button variant="primary" onClick={handleCreate} className="custom-button">Create</Button>
+    </Modal.Footer>
+  </Modal>
 }

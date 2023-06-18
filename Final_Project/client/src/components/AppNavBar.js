@@ -1,6 +1,7 @@
 import "../styles/AppNavBar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+	faArrowDown,
 	faCircleUser,
 	faRightToBracket,
 
@@ -16,14 +17,15 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export function AppNavBar(props) {
+
 	let navigate = useNavigate();
 
-	let handleHomeClick = () => {
+	let handleHome = () => {
 		navigate("/");
 	};
 
-	let handleUserClick = () => {
-		props.loggedIn ? navigate("/user") : navigate("/login");
+	let handleLogin = () => {
+		navigate("/login");
 	};
 
 	let handleLogout = () => {
@@ -31,7 +33,27 @@ export function AppNavBar(props) {
 		navigate("/");
 	};
 
-	const navDropdownTitleForUser = <FontAwesomeIcon icon={faCircleUser} />;
+	let handleUser = () => {
+		navigate("/user");
+	};
+
+	const componentIfCustomer =
+		<>
+			<Col>
+				<Button variant="navbar" onClick={handleUser}> <FontAwesomeIcon icon={faCircleUser} /></Button>
+			</Col >
+			<Col>
+				<Button variant="navbar" onClick={handleLogout}><FontAwesomeIcon icon={faArrowDown} /></Button>
+			</Col >
+		</>
+
+	const componentIfLogged = <Col>
+		<Button variant="navbar" onClick={handleLogout}><FontAwesomeIcon icon={faArrowDown} /></Button>
+	</Col >
+
+	const componentIfNotLogged = <Button variant="navbar" onClick={handleLogin}><FontAwesomeIcon icon={faRightToBracket} /></Button>
+
+
 
 	return (
 		<>
@@ -42,10 +64,10 @@ export function AppNavBar(props) {
 							xs={1}
 							className="d-flex align-items-center justify-content-center"
 						>
-							
+
 						</Col>
 						<Col className="d-flex align-items-center justify-content-center">
-							<Button variant="navbar" size="xl" onClick={handleHomeClick}>
+							<Button variant="navbar" size="xl" onClick={handleHome}>
 								TICKETING MANAGEMENT SYSTEM
 							</Button>
 						</Col>
@@ -54,29 +76,13 @@ export function AppNavBar(props) {
 							className="d-flex align-items-center justify-content-center"
 						>
 							{props.loggedIn ? (
-								<NavDropdown variant="navbar"
-									title={navDropdownTitleForUser}
-									id="collasible-nav-dropdown"
-									drop="start"
-								>
-									<NavDropdown.Item onClick={handleUserClick}>
-										Profile
-									</NavDropdown.Item>
-									<NavDropdown.Divider />
-									<NavDropdown.Item onClick={handleLogout}>
-										Log Out
-									</NavDropdown.Item>
-								</NavDropdown>
-							) : (
-								<Button variant="navbar" onClick={handleUserClick}>
-									<FontAwesomeIcon icon={faRightToBracket} />
-								</Button>
-							)}
+								props.role === "CUSTOMER" ? componentIfCustomer
+									: componentIfLogged) : componentIfNotLogged}
 						</Col>
 					</Row>
 				</Container>
 			</Navbar>
-			
+
 		</>
 	);
 }
