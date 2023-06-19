@@ -8,6 +8,8 @@ import com.final_project.server.model.toModel
 import com.final_project.server.repository.ExpertRepository
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -15,6 +17,13 @@ import java.util.UUID
 @Service
 @Transactional
 class ExpertServiceImpl @Autowired constructor(val expertRepository: ExpertRepository): ExpertService  {
+    override fun getAllExpertsWithPaging(pageable: Pageable): Page<ExpertDTO> {
+        return expertRepository.findAll(pageable)
+            .map {
+                it.toDTO()
+            }
+    }
+
     override fun getExpertById(id: UUID): Expert? {
         return expertRepository.findByIdOrNull(id)
     }
