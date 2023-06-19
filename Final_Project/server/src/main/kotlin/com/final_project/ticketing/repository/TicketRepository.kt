@@ -20,4 +20,5 @@ interface TicketRepository : CrudRepository<Ticket, Long>, JpaRepository<Ticket,
     fun findAllByCustomerId(customerId: UUID, pageable: Pageable): Page<Ticket>
 
     fun findAllByExpertId(expertId: UUID, pageable: Pageable): Page<Ticket>
+
 }

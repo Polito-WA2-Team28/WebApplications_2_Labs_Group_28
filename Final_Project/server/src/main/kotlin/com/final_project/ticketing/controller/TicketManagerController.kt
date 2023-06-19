@@ -5,8 +5,8 @@ import com.final_project.server.exception.Exception
 import com.final_project.server.model.Expert
 import com.final_project.server.service.ExpertService
 import com.final_project.server.service.ManagerService
-import com.final_project.ticketing.dto.TicketDTO
-import com.final_project.ticketing.dto.TicketUpdateData
+import com.final_project.ticketing.dto.*
+import com.final_project.ticketing.dto.PageResponseDTO.Companion.toDTO
 import com.final_project.ticketing.exception.TicketException
 import com.final_project.ticketing.model.Ticket
 import com.final_project.ticketing.service.TicketService
@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.util.UUID
@@ -37,7 +38,7 @@ class TicketManagerController @Autowired constructor(
     @GetMapping("/api/managers/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(@RequestParam("pageNo", defaultValue = "0") pageNo: Int
-    ): Page<TicketDTO> {
+    ): PageResponseDTO<TicketDTO> {
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
         /* checking that the manager exists */
@@ -47,10 +48,9 @@ class TicketManagerController @Autowired constructor(
             throw Exception.ManagerNotFoundException("Manager not found.")
         }
 
-
         /* computing page and retrieving all the tickets */
         var page: Pageable = PageRequest.of(pageNo, 3)
-        return ticketService.getAllTicketsWithPaging(page)
+        return ticketService.getAllTicketsWithPaging(page).toDTO()
     }
 
     @GetMapping("/api/managers/tickets/{ticketId}")
@@ -234,16 +234,36 @@ class TicketManagerController @Autowired constructor(
     }
 
 
-    @PostMapping("/api/managers/tickets/{ticketId}/messages")
-    @ResponseStatus(HttpStatus.CREATED)
-    fun sendTicketMessage(){
-
-    }
-
-
     @GetMapping("/api/managers/tickets/{ticketId}/messages")
     @ResponseStatus(HttpStatus.OK)
-    fun getTicketMessages(){
+    fun getTicketMessages(
+        @PathVariable ticketId: Long,
+        @RequestParam("pageNo", defaultValue = "1") pageNo: Int
+    ): PageResponseDTO<MessageDTO> {
+
+        /* checking that manager exists */
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        val manager = managerService.getManagerById(managerId)
+        manager ?: run {
+            logger.error("Endpoint: /api/manager/tickets/$ticketId/messages Error: Manager not found.")
+            throw Exception.ManagerNotFoundException("Manager not found.")
+        }
+
+        /* checking that ticket exists */
+        val ticket = ticketService.getTicketModelById(ticketId)
+        ticket ?: run {
+            logger.error("Endpoint: /api/managers/tickets/$ticketId/messages Error: Ticket not found.")
+            throw TicketException.TicketNotFoundException("Ticket not found.")
+        }
+
+        /* fetching page from DB */
+        var result: PageResponseDTO<MessageDTO> = PageResponseDTO()
+        val sort: Sort = Sort.by("timestamp").descending()
+        val page: Pageable = PageRequest.of(pageNo-1, result.computePageSize(), sort)  /* ticketing-service uses 1-based paged mechanism while Pageable uses 0-based paged mechanism*/
+
+        /* return result to client */
+        result = ticketService.getAllMessagesWithPagingByTicketId(ticketId, page).toDTO()
+        return result
 
     }
 }

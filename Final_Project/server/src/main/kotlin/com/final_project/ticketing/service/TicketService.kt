@@ -10,6 +10,7 @@ import com.final_project.ticketing.model.Ticket
 import com.final_project.ticketing.util.TicketState
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import java.util.UUID
 
 interface TicketService {
@@ -35,5 +36,10 @@ interface TicketService {
 
 
     fun sendTicketMessage(message: MessageObject, ticketId: Long, sender: String?): MessageDTO
+
+    fun getAllMessagesWithPagingByTicketId(
+        ticketId: Long,
+        pageable: Pageable
+    ): Page<MessageDTO>
 
 }

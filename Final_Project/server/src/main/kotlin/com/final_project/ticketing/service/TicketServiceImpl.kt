@@ -17,6 +17,7 @@ import com.final_project.ticketing.dto.TicketDTO
 import com.final_project.ticketing.dto.toDTO
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -118,6 +119,16 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
 
         //Does it make sense to only have the messageID inside each attachment?
         // OneToOne in Attachment instead of OneToMany in Message?
+    }
+
+    override fun getAllMessagesWithPagingByTicketId(
+        ticketId: Long,
+        pageable: Pageable
+    ): Page<MessageDTO> {
+        return messageRepository.findAllByTicketId(ticketId, pageable)
+            .map {
+                it.toDTO()
+            };
     }
 
 }

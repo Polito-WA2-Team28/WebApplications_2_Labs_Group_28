@@ -10,5 +10,14 @@ class MessageDTO(
 }
 
 fun Message.toDTO(): MessageDTO{
-    return MessageDTO(this.getId(), this.messageText, this.sender, this.timestamp, this.attachmentSet.map{it -> it.fileName})
+    return MessageDTO(
+        this.getId(),
+        this.messageText,
+        this.sender,
+        this.timestamp,
+        this.attachmentSet
+            .map {
+                it -> it.fileURI
+            }
+    )
 }

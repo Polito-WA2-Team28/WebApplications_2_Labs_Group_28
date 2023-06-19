@@ -3,6 +3,11 @@
 
 # MacOS filesystem related
 .DS_Store
+
+# Attachments
+Final_Project/attachments/*
+
+# Other folders
 **/bin
 **/*.bin
 **/Docker/tempo-data/**

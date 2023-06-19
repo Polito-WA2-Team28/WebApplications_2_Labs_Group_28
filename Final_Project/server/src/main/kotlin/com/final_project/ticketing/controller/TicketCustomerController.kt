@@ -10,6 +10,7 @@ import com.final_project.ticketing.exception.TicketException
 import com.final_project.ticketing.service.TicketService
 import com.final_project.ticketing.util.TicketState
 import com.final_project.server.controller.StaffController
+import com.final_project.ticketing.dto.PageResponseDTO.Companion.toDTO
 import io.micrometer.observation.annotation.Observed
 import jakarta.validation.Valid
 import org.slf4j.Logger
@@ -20,7 +21,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
 import java.util.*
-import kotlin.math.log
 
 @RestController
 @Observed
@@ -71,7 +71,7 @@ class TicketCustomerController @Autowired constructor(
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(
         @RequestParam("pageNo", defaultValue = "0") pageNo: Int
-    ): Page<TicketDTO> {
+    ): PageResponseDTO<TicketDTO> {
 
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
@@ -84,7 +84,7 @@ class TicketCustomerController @Autowired constructor(
 
         /* computing page and retrieving all the tickets corresponding to this customer */
         val page: Pageable = PageRequest.of(pageNo, 3)
-        return ticketService.getAllTicketsWithPagingByCustomerId(customerId, page)
+        return ticketService.getAllTicketsWithPagingByCustomerId(customerId, page).toDTO()
     }
 
     @GetMapping("/api/customers/tickets/{ticketId}")
@@ -159,17 +159,46 @@ class TicketCustomerController @Autowired constructor(
 
     @PostMapping("/api/customers/tickets/{ticketId}/messages")
     @ResponseStatus(HttpStatus.CREATED)
-    fun sendTicketMessage(@ModelAttribute message:MessageObject,
-                          @PathVariable ticketId: Long):MessageDTO{
+    fun sendTicketMessage(
+        @ModelAttribute message:MessageObject,
+        @PathVariable ticketId: Long
+    ): MessageDTO {
 
-        // Add checks:
-        // if Customer => check ticket ownership
-        // if Expert => check if ticket is assigned (in TicketExpertController)
+        /* checking that customer exists */
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        val customer = customerService.getCustomerById(customerId)
+        customer ?: run {
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Customer not found.")
+            throw Exception.CustomerNotFoundException("Customer not found.")
+        }
 
-        // retrieve sender username
+        /* checking that ticket exists */
+        val ticket = ticketService.getTicketModelById(ticketId)
+        ticket ?: run {
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Ticket not found.")
+            throw TicketException.TicketNotFoundException("Ticket not found.")
+        }
+
+        /* asserting ticket ownership */
+        if (ticket.customer.id != customerId) {
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Forbidden.")
+            throw TicketException.TicketForbiddenException("Forbidden.")
+        }
+
+        /* asserting ticket state */
+        val allowedStates = mutableSetOf(
+            TicketState.IN_PROGRESS,
+            TicketState.RESOLVED
+        )
+        if (!allowedStates.contains(ticket.state)) {
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Invalid ticket status for this operation..")
+            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation..")
+        }
+
+        /* retrieving sender username */
         val sender = securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.USERNAME)
 
-        // call TicketService to save message and attachments
+        /* saving message in DB */
         return ticketService.sendTicketMessage(message, ticketId, sender)
 
     }
@@ -177,7 +206,40 @@ class TicketCustomerController @Autowired constructor(
 
     @GetMapping("/api/customers/tickets/{ticketId}/messages")
     @ResponseStatus(HttpStatus.OK)
-    fun getTicketMessages(){
-        TODO()
+    fun getTicketMessages(
+        @PathVariable ticketId: Long,
+        @RequestParam("pageNo", defaultValue = "1") pageNo: Int
+    ): PageResponseDTO<MessageDTO> {
+
+        /* checking that customer exists */
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        val customer = customerService.getCustomerById(customerId)
+        customer ?: run {
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Customer not found.")
+            throw Exception.CustomerNotFoundException("Customer not found.")
+        }
+
+        /* checking that ticket exists */
+        val ticket = ticketService.getTicketModelById(ticketId)
+        ticket ?: run {
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Ticket not found.")
+            throw TicketException.TicketNotFoundException("Ticket not found.")
+        }
+
+        /* asserting ticket ownership */
+        if (ticket.customer.id != customerId) {
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Forbidden.")
+            throw TicketException.TicketForbiddenException("Forbidden.")
+        }
+
+        /* fetching page from DB */
+        var result: PageResponseDTO<MessageDTO> = PageResponseDTO()
+        val sort: Sort = Sort.by("timestamp").descending()
+        val page: Pageable = PageRequest.of(pageNo-1, result.computePageSize(), sort)  /* ticketing-service uses 1-based paged mechanism while Pageable uses 0-based paged mechanism*/
+
+        /* return result to client */
+        result = ticketService.getAllMessagesWithPagingByTicketId(ticketId, page).toDTO()
+        return result
+
     }
 }
