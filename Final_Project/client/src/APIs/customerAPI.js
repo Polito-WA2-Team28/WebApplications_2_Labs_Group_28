@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { compositeHeader, authHeader } from "./util";
 
 const url = "http://localhost:3001/api/customers";
@@ -98,10 +99,17 @@ async function compileSurvey(token, ticketId) {
 * @throws {String} if the response is not ok
 */
 async function sendMessage(token, message, ticketId) {
+
+    const formdata = new FormData();
+    formdata.append("messageText", message);
+    formdata.append("attachments", null);
+    formdata.forEach((value, key) => console.log(key + " " + value));
+
+
     const res = await fetch(url + "/tickets/" + ticketId + "/messages",
         {
-            method: "POST", headers: compositeHeader(token),
-            body: JSON.stringify(message)
+            method: "POST", headers: {"Authorization": "Bearer " + token, "Content-Type": "multipart/form-data"},
+            body: formdata
         })
     if (!res.ok) throw res.statusText
     const data = await res.json();

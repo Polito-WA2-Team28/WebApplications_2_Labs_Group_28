@@ -31,7 +31,7 @@ function App() {
     await authAPI.login(credentials)
       .then((data) => {
         var decoded = jwt_decode(data);
-        const newRole = decoded.realm_access.roles[2]
+        const newRole = decoded.resource_access["ticketing-service-client"].roles[0]
         setRole(newRole)
         setToken(data);
         setLoggedIn(true);
@@ -55,10 +55,17 @@ function App() {
     successToast("Logged out successfully")
   };
 
+  const getTicket = async (ticketId) => {
+    return await customerAPI.getTicket(token, ticketId)
+      .then((ticket) => { return ticket })
+      .catch((err) => errorToast(err));
+  }
+
+
+
   const handleCreateTicket = async (ticket) => {
     await customerAPI.createTicket(token, ticket)
-      .then((data) => {
-        //setTickets((prev) => [...prev, data]);
+      .then(() => {
         setFlag(true)
       })
   };
@@ -139,19 +146,25 @@ function App() {
   }, [loggedIn, token, role])
 
 
-  const getTicket = (ticketId) => {
-    ticketId = Number.parseInt(ticketId)
-
-
-    return tickets.content.find((ticket) => ticket.ticketId === ticketId);
-      
-  }
-
   const closeTicket = async (ticketId) => {
     ticketId = Number.parseInt(ticketId)
     await customerAPI.compileSurvey(token, ticketId)
       .then(() => setTickets((prev) => prev.filter((ticket) => ticket.ticketId !== ticketId)))
       .catch((err) => errorToast(err))
+  }
+
+  const getMessages = async (ticketId) => {
+    return await customerAPI.getMessages(token, ticketId)
+      .then((messages) => { return messages })
+      .catch((err) => errorToast(err));
+  }
+
+  const sendMessage = async (ticketId, message) => {
+    if (role === Roles.CUSTOMER) {
+      await customerAPI.sendMessage(token, message, ticketId)
+        .then(() => setFlag(true))
+        .catch((err) => errorToast(err));
+    }
   }
 
 
@@ -169,7 +182,7 @@ function App() {
       <Route path="/user" element={loggedIn ? <UserPage user={user} /> : <Navigate to={"/"} />} />
       <Route path="/editUser" element={loggedIn ? <EditUserPage user={user} handleEdit={handleEditProfile}/> : <Navigate to={"/"} />} />
       <Route path="/ticket/:ticketId" element={loggedIn ?
-        <TicketPage getTicket={getTicket} closeTicket={closeTicket} /> : <Navigate to={"/"} />} />
+        <TicketPage getTicket={getTicket} closeTicket={closeTicket} getMessages={getMessages} sendMessage={ sendMessage} /> : <Navigate to={"/"} />} />
       <Route path="*" element={<h1 >Not Found</h1>} />
     </Routes>
   </BrowserRouter>
