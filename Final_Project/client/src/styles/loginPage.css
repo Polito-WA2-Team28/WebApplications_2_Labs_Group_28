@@ -1,0 +1,26 @@
+/* customStyles.css */
+.custom-button-login {
+    background-color: #3f51b5;
+    color: #fff;
+    border: none;
+    transition: background-color 0.3s;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 10px 20px;
+    margin-top: 15px;
+    width: 100%;
+  }
+  
+  .custom-button-login:hover {
+    background-color: #303f9f;
+  }
+  
+  .custom-button-login:focus {
+    outline: none;
+  }
+  
+  .custom-button-login:active {
+    transform: translateY(1px);
+  }

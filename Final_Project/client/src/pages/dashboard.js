@@ -11,6 +11,8 @@ export function Dashboard(props) {
   const handleCreate = props.handleCreate;
   const role = props.role;
 
+  console.log(role);
+
   return (
     <Container>
       {role === Roles.CUSTOMER && <CustomerTabs handleCreate={handleCreate} tickets={tickets} products={products} />}
@@ -26,8 +28,11 @@ function CustomerTabs(props) {
       <CustomerTicketTab handleCreate={props.handleCreate} tickets={props.tickets} products={props.products} />
     </Tab>
     <Tab eventKey="products" title="Products">
-      <ProductsTab />
+      <ProductsTab products={props.products} />
     </Tab>
+    {/* <Tab eventKey="user" title="User">
+      <UserTab />
+    </Tab> */}
   </Tabs>
 
 }

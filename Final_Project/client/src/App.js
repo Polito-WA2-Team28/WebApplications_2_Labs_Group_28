@@ -15,6 +15,7 @@ import jwt_decode from "jwt-decode";
 import TicketPage from './pages/ticketPage';
 import { Roles } from './model/rolesEnum';
 import { successToast, errorToast } from './components/toastHandler';
+import { EditUserPage } from './pages/editUserPage';
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
   const [tickets, setTickets] = useState([]);
   const [products, setProducts] = useState([]);
   const [role, setRole] = useState(null)
+  const [flag, setFlag] = useState(false)
 
   const handleLogin = async (credentials) => {
     await authAPI.login(credentials)
@@ -33,6 +35,7 @@ function App() {
         setRole(newRole)
         setToken(data);
         setLoggedIn(true);
+        setFlag(true)
         successToast("Logged in successfully")
       })
   };
@@ -55,10 +58,22 @@ function App() {
   const handleCreateTicket = async (ticket) => {
     await customerAPI.createTicket(token, ticket)
       .then((data) => {
-        setTickets((prev) => [...prev, data]);
+        //setTickets((prev) => [...prev, data]);
+        setFlag(true)
       })
   };
 
+  const handleEditProfile = async (profile) => {
+    await customerAPI.patchProfile(token, profile)
+      .then((user) => {
+        setUser(profile)
+        successToast("Changes saved!")
+      })
+      .catch((err) => {
+        errorToast(err)
+      });
+
+  };
 
   useEffect(() => {
     const checkAut = async () => {
@@ -77,17 +92,20 @@ function App() {
   useEffect(() => {
     async function customerGetTickets() {
       await customerAPI.getTickets(token)
-        .then(tickets => { setTickets(tickets.content) })
+        .then(tickets => {
+          console.log(tickets)
+          setTickets(tickets)
+        })
         .catch((err) => errorToast(err));
     }
     async function expertGetTickets() {
       await expertAPI.getTickets(token)
-        .then(tickets => { setTickets(tickets.content) })
+        .then(tickets => { setTickets(tickets) })
         .catch((err) => errorToast(err));
     }
     async function managerGetTickets() {
       await managerAPI.getTickets(token)
-        .then(tickets => { setTickets(tickets.content) })
+        .then(tickets => { setTickets(tickets) })
         .catch((err) => errorToast(err));
     }
 
@@ -104,7 +122,9 @@ function App() {
       default:
         break;
     }
-  }, [loggedIn, token, role])
+    setFlag(false)
+
+  }, [loggedIn, token, role, flag])
 
   useEffect(() => {
     const getProducts = async () => {
@@ -120,14 +140,11 @@ function App() {
 
 
   const getTicket = (ticketId) => {
+    ticketId = Number.parseInt(ticketId)
 
-    for (let ticket of tickets) {
-      if (ticket.ticketId === Number.parseInt(ticketId)) {
-        return ticket;
-      }
-    }
-    return undefined
 
+    return tickets.content.find((ticket) => ticket.ticketId === ticketId);
+      
   }
 
   const closeTicket = async (ticketId) => {
@@ -150,6 +167,7 @@ function App() {
             <Dashboard user={user} tickets={tickets} products={products} role={role} handleCreate={handleCreateTicket} />
             : <Navigate to={"/"} />} />
       <Route path="/user" element={loggedIn ? <UserPage user={user} /> : <Navigate to={"/"} />} />
+      <Route path="/editUser" element={loggedIn ? <EditUserPage user={user} handleEdit={handleEditProfile}/> : <Navigate to={"/"} />} />
       <Route path="/ticket/:ticketId" element={loggedIn ?
         <TicketPage getTicket={getTicket} closeTicket={closeTicket} /> : <Navigate to={"/"} />} />
       <Route path="*" element={<h1 >Not Found</h1>} />

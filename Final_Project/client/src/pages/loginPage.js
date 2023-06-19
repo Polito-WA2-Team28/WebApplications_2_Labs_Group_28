@@ -1,24 +1,25 @@
 import { useState } from "react";
 import { Col, Container, Form, Row, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import "../styles/loginPage.css";
 
 export function LoginPage(props) {
 
-    const navigate  = useNavigate();
+	const navigate = useNavigate();
 
-    const handleLogin = async (credentials) => {
-			await props.handleLogin(credentials)
+	const handleLogin = async (credentials) => {
+		await props.handleLogin(credentials)
 			.then(() => { navigate("/dashboard") })
 			.catch((error) => { console.error(error) })
-    }
+	}
 
-    const handleRegistration = () => {
-        navigate("/register");
-    }
+	const handleRegistration = () => {
+		navigate("/register");
+	}
 
 
-    return (
-        <Container className="login-form">
+	return (
+		<Container className="login-form">
 			<Row>
 				<Col xs={3} />
 				<Col xs={6} >
@@ -40,13 +41,14 @@ export function LoginPage(props) {
 				<Col xs={3} />
 			</Row>
 		</Container>
-    );
+	);
 }
 
 function LoginForm(props) {
 	let navigate = useNavigate();
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
+	const [message, setMessage] = useState(null);
 
 	const handleSubmit = async (event) => {
 
@@ -63,35 +65,38 @@ function LoginForm(props) {
 		if (invalids.length === 0) {
 			let value
 			await props.login(credentials)
-			.then(val => {value = val})
+				.then(val => { value = val })
 			if (value === true)
 				navigate("/");
 		} else {
 			console.error("Invalid" + invalids);
+			setMessage("Invalid" + invalids);
 		}
 	};
 
 
 	return (
 		<Container>
-			<Row>
-				<Col>
-					<Form>
-						{props.message ? <Alert variant='danger' onClose={() => props.setMessage('')} dismissible>{props.message}</Alert> : ''}
-						<Form.Group controlId='username'>
-							<Form.Label>E-mail</Form.Label>
-							<Form.Control type='email' value={username} onChange={ev => setUsername(ev.target.value)} />
-						</Form.Group>
-						<Form.Group controlId='password'>
-							<Form.Label>Password</Form.Label>
-							<Form.Control type='password' value={password} onChange={ev => setPassword(ev.target.value)} />
-						</Form.Group>
-						<Row>
-							<Button style={{ marginTop: 20 }} type="submit" onClick={handleSubmit}>Login</Button>
-						</Row>
-					</Form>
-				</Col>
-			</Row>
+			<Col>
+				<Form>
+					{message && (
+						<Alert variant="danger" onClose={() => setMessage(null)} dismissible>
+							{message}
+						</Alert>
+					)}
+					<Form.Group controlId="username">
+						<Form.Label>E-mail</Form.Label>
+						<Form.Control type="email" value={username} onChange={(ev) => setUsername(ev.target.value)} />
+					</Form.Group>
+					<Form.Group controlId="password">
+						<Form.Label>Password</Form.Label>
+						<Form.Control type="password" value={password} onChange={(ev) => setPassword(ev.target.value)} />
+					</Form.Group>
+				</Form>
+				<Button className="custom-button-login" type="submit" onClick={handleSubmit}>
+					Login
+				</Button>
+			</Col>
 		</Container>
 	)
 }

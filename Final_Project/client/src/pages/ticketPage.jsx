@@ -13,18 +13,16 @@ export default function TicketPage(props) {
     if (!ticket) return <h1>404: Ticket not found</h1>
     
     return (
-        <div>
+        <>
             <h1>Ticket Page</h1>
             <p>{ticket.ticketId}</p>
             <p>{ticket.ticketState}</p>
             <p>{ticket.description}</p>
             <p>{ticket.serialNumber}</p>
             {
-                ticket.ticketState === "OPEN" &&
-                <Button variant="primary" onClick={closeTicket()}>Close Ticket</Button>
+                ticket.ticketState === "OPEN" && <Button variant="primary" onClick={closeTicket}>Close Ticket</Button>
             }
             
-
-        </div>
+        </>
     )
 }
