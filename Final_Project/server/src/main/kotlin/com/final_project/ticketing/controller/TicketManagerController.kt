@@ -37,7 +37,7 @@ class TicketManagerController @Autowired constructor(
 
     @GetMapping("/api/managers/tickets")
     @ResponseStatus(HttpStatus.OK)
-    fun getTickets(@RequestParam("pageNo", defaultValue = "0") pageNo: Int
+    fun getTickets(@RequestParam("pageNo", defaultValue = "1") pageNo: Int
     ): PageResponseDTO<TicketDTO> {
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
@@ -48,9 +48,13 @@ class TicketManagerController @Autowired constructor(
             throw Exception.ManagerNotFoundException("Manager not found.")
         }
 
-        /* computing page and retrieving all the tickets */
-        var page: Pageable = PageRequest.of(pageNo, 3)
-        return ticketService.getAllTicketsWithPaging(page).toDTO()
+        /* crafting pageable request */
+        var result: PageResponseDTO<TicketDTO> = PageResponseDTO()
+        var page: Pageable = PageRequest.of(pageNo-1, result.computePageSize())
+
+        /* return result to client */
+        result = ticketService.getAllTicketsWithPaging(page).toDTO()
+        return result
     }
 
     @GetMapping("/api/managers/tickets/{ticketId}")

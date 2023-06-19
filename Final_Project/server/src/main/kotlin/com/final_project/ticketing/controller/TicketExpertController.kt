@@ -35,7 +35,7 @@ class TicketExpertController @Autowired constructor(
 
     @GetMapping("/api/experts/tickets")
     @ResponseStatus(HttpStatus.OK)
-    fun getTickets(@RequestParam("pageNo", defaultValue = "0") pageNo: Int
+    fun getTickets(@RequestParam("pageNo", defaultValue = "1") pageNo: Int
     ): PageResponseDTO<TicketDTO> {
         val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
@@ -47,9 +47,12 @@ class TicketExpertController @Autowired constructor(
             throw Exception.ExpertNotFoundException("Expert not found.")
         }
 
-        /* computing page and retrieving all the tickets corresponding to this expert */
-        val page: Pageable = PageRequest.of(pageNo, 3)
-        return ticketService.getAllTicketsWithPagingByExpertId(expertId, page).toDTO()
+        /* crafting pageable request */
+        var result: PageResponseDTO<TicketDTO> = PageResponseDTO()
+        val page: Pageable = PageRequest.of(pageNo-1, result.computePageSize())
+
+        result = ticketService.getAllTicketsWithPagingByExpertId(expertId, page).toDTO()
+        return result
 
     }
 

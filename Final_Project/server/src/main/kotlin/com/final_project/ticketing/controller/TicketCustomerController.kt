@@ -70,7 +70,7 @@ class TicketCustomerController @Autowired constructor(
     @GetMapping("/api/customers/tickets")
     @ResponseStatus(HttpStatus.OK)
     fun getTickets(
-        @RequestParam("pageNo", defaultValue = "0") pageNo: Int
+        @RequestParam("pageNo", defaultValue = "1") pageNo: Int
     ): PageResponseDTO<TicketDTO> {
 
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
@@ -82,9 +82,13 @@ class TicketCustomerController @Autowired constructor(
                 throw Exception.CustomerNotFoundException("Customer not found.")
             }
 
-        /* computing page and retrieving all the tickets corresponding to this customer */
-        val page: Pageable = PageRequest.of(pageNo, 3)
-        return ticketService.getAllTicketsWithPagingByCustomerId(customerId, page).toDTO()
+        /* crafting pageable request */
+        var result: PageResponseDTO<TicketDTO> = PageResponseDTO()
+        val page: Pageable = PageRequest.of(pageNo-1, result.computePageSize())
+
+        /* return result to client */
+        result = ticketService.getAllTicketsWithPagingByCustomerId(customerId, page).toDTO()
+        return result
     }
 
     @GetMapping("/api/customers/tickets/{ticketId}")
@@ -232,7 +236,7 @@ class TicketCustomerController @Autowired constructor(
             throw TicketException.TicketForbiddenException("Forbidden.")
         }
 
-        /* fetching page from DB */
+        /* crafting pageable request */
         var result: PageResponseDTO<MessageDTO> = PageResponseDTO()
         val sort: Sort = Sort.by("timestamp").descending()
         val page: Pageable = PageRequest.of(pageNo-1, result.computePageSize(), sort)  /* ticketing-service uses 1-based paged mechanism while Pageable uses 0-based paged mechanism*/
