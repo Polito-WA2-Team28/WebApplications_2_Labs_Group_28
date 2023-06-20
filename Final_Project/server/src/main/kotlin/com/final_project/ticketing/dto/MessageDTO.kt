@@ -17,7 +17,7 @@ fun Message.toDTO(): MessageDTO{
         this.timestamp,
         this.attachmentSet
             .map {
-                it -> it.fileURI
+                it -> it.fileUniqueName
             }
     )
 }

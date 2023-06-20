@@ -18,8 +18,10 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.*
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 @RestController
@@ -28,7 +30,8 @@ class TicketCustomerController @Autowired constructor(
     val ticketService: TicketService,
     val customerService: CustomerService,
     val customerProductController: CustomerProductController,
-    val securityConfig: SecurityConfig
+    val securityConfig: SecurityConfig,
+    val fileStorageService: FileStorageService
 ) {
 
     val logger: Logger = LoggerFactory.getLogger(TicketCustomerController::class.java)
@@ -247,4 +250,42 @@ class TicketCustomerController @Autowired constructor(
         return result
 
     }
+
+    @GetMapping("/api/customers/tickets/{ticketId}/attachments/{attachmentUniqueName}")
+    @ResponseStatus(HttpStatus.OK)
+    fun getMessageAttachment(@PathVariable attachmentUniqueName: String,
+                             @PathVariable ticketId: Long):ResponseEntity<ByteArray> {
+
+        /* checking that customer exists */
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        val customer = customerService.getCustomerById(customerId)
+        customer ?: run {
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Customer not found.")
+            throw Exception.CustomerNotFoundException("Customer not found.")
+        }
+
+        /* checking that ticket exists */
+        val ticket = ticketService.getTicketModelById(ticketId)
+        ticket ?: run {
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Ticket not found.")
+            throw TicketException.TicketNotFoundException("Ticket not found.")
+        }
+
+        /* asserting ticket ownership */
+        if (ticket.customer.id != customerId) {
+            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Forbidden.")
+            throw TicketException.TicketForbiddenException("Forbidden.")
+        }
+
+        return fileStorageService.getAttachmentFile(attachmentUniqueName)
+    }
+
+
+    //Add private function to check:
+    // - Customer exists
+    // - Ticket exists (another file since it is shared)
+    // - Check Ticket Ownership
+    // - Other needed checks?
+
+    //Add these checks also on Expert and Manager Controllers
 }

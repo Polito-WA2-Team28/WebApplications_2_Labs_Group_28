@@ -3,11 +3,13 @@ package com.final_project.server.service
 import com.final_project.server.config.GlobalConfig
 import com.final_project.ticketing.model.Attachment
 import com.final_project.ticketing.model.toModel
+import org.apache.commons.io.FileUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
+import java.io.IOException
 import java.util.*
 
 @Service
@@ -33,13 +35,31 @@ class FileStorageService @Autowired constructor(private val globalConfig: Global
         attachment.transferTo(File(System.getProperty("user.dir") + filePath))
 
         //TO BE MODIFIED WITH THE URL THAT WILL RETRIEVE THE ATTACHMENT
-        val attachmentUrl = File.separator + globalConfig.attachmentsDirectory + File.separator + "$uniqueFilename"
+        //val attachmentUrl = File.separator + globalConfig.attachmentsDirectory + File.separator + "$uniqueFilename"
 
         return if (attachment.originalFilename != null && attachment.contentType != null) {
-            attachment.toModel(attachmentUrl)
+            attachment.toModel(uniqueFilename)
         } else{
             //What is better to return? throw exception because of empty attachment?
             null
+        }
+    }
+
+    fun getAttachmentFile(fileUniqueName: String): ResponseEntity<ByteArray> {
+        try {
+            val filePath = System.getProperty("user.dir") + File.separator + globalConfig.attachmentsDirectory + File.separator + fileUniqueName
+            val file = File(filePath)
+            val content:ByteArray = FileUtils.readFileToByteArray(file)
+
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_OCTET_STREAM
+            headers.contentDisposition = ContentDisposition.attachment().filename(file.name).build()
+
+            return ResponseEntity(content, headers, HttpStatus.OK)
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+            throw e
         }
     }
 }

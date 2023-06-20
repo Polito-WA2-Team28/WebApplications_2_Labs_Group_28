@@ -43,6 +43,7 @@ dependencies {
 
 	testImplementation("com.github.dasniko:testcontainers-keycloak:2.5.0")
 
+
 	// using new @Observed on class and enaabled @ObservedAspect
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 	// enabled endpoint and expose metrics

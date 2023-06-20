@@ -12,12 +12,12 @@ class Attachment(
     var fileName: String,
     @Column(name = "contentType")
     var contentType: String,
-    @Column(name = "fileURI")
-    var fileURI: String
+    @Column(name = "fileUniqueName")
+    var fileUniqueName: String
 
 ): EntityBase<Long>() {
 }
 
-fun MultipartFile.toModel(fileURI: String): Attachment{
-    return Attachment(originalFilename.orEmpty(), contentType.orEmpty(), fileURI)
+fun MultipartFile.toModel(fileUniqueName: String): Attachment{
+    return Attachment(originalFilename.orEmpty(), contentType.orEmpty(), fileUniqueName)
 }
