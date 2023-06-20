@@ -1,7 +1,9 @@
 package com.final_project.ticketing.service
 
+import com.final_project.server.config.GlobalConfig
 import com.final_project.server.model.Customer
 import com.final_project.server.model.Product
+import com.final_project.server.service.FileStorageService
 import com.final_project.ticketing.dto.*
 import com.final_project.ticketing.model.Attachment
 import com.final_project.ticketing.model.Ticket
@@ -29,10 +31,8 @@ import java.util.*
 @Transactional
 class TicketServiceImpl @Autowired constructor(private val ticketRepository: TicketRepository,
                                                private val messageRepository: MessageRepository,
-                                               private val attachmentRepository: AttachmentRepository) : TicketService{
+                                               private val fileStorageService: FileStorageService) : TicketService{
 
-    @Value("\${attachment.directory}")
-    private lateinit var attachmentDirectory: String
 
 
     override fun getTicketDTOById(id: Long): TicketDTO? {
@@ -97,22 +97,14 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
         }
 
         if (message.attachments != null) {
-            for (attachment in message.attachments) {
-                var uniqueFilename = UUID.randomUUID().toString() + "_" + attachment.originalFilename
-                val filePath = File.separator + attachmentDirectory + File.separator + uniqueFilename
-
-                attachment.transferTo(File(System.getProperty("user.dir") + filePath))
-
-                //modify?
-                val attachmentUrl = "/attachments/$uniqueFilename"
-
-                if (attachment.originalFilename != null && attachment.contentType != null) {
-                    var attachmentEntity = attachment.toModel(attachmentUrl)
-                    attachmentSet.add(attachmentEntity)
-                }
-            }
+            message.attachments.stream()
+                .map { att -> fileStorageService.persistAttachmentFile(att) }
+                .filter { attStored -> attStored != null }
+                .map { attStored -> attStored!! }
+                .forEach { attStored -> attachmentSet.add(attStored)}
         }
-        // Attachments saved via Cascading
+
+        // Attachments persisted via Cascading
         return messageRepository.save(message.toModel(attachmentSet, sender, ticket)).toDTO()
 
         //Does it make sense to only have the messageID inside each attachment?

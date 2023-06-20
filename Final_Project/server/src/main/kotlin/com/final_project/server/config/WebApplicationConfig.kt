@@ -1,5 +1,6 @@
 package com.final_project.server.config
 
+import com.final_project.server.service.FileStorageService
 import org.springframework.boot.web.server.ErrorPage
 import org.springframework.boot.web.server.WebServerFactoryCustomizer
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory
@@ -23,5 +24,6 @@ class WebApplicationConfig : WebMvcConfigurer {
                 factory -> factory?.addErrorPages(ErrorPage(HttpStatus.NOT_FOUND, "/notFound"))
         }
     }
+
 
 }

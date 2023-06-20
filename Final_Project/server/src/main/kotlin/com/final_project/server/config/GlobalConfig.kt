@@ -28,4 +28,7 @@ class GlobalConfig {
 
     @Value("\${keycloak.password}")
     lateinit var keycloakPassword:String
+
+    @Value("\${attachment.directory}")
+    lateinit var attachmentsDirectory: String
 }
