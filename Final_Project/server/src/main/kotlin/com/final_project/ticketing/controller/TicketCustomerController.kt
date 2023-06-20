@@ -191,6 +191,7 @@ class TicketCustomerController @Autowired constructor(
 
         /* asserting ticket state */
         val allowedStates = mutableSetOf(
+            TicketState.OPEN,
             TicketState.IN_PROGRESS,
             TicketState.RESOLVED
         )

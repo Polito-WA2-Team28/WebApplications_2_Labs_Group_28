@@ -63,10 +63,10 @@ export default function TicketPage(props) {
                           <Col style={{position: "relative"}}>
                               <strong>CHAT HERE</strong>
 
-                              {(messages != null && messages.length != 0) ? messages.map((message, index) => {
+                              {(messages != null && messages.length !== 0) ? messages.map((message, index) => {
                                   return (
                                       <Card.Text key={index}>
-                                          <strong>{message.sender}:</strong> {message.message}
+                                          <strong>{message.sender}:</strong> {message.messageText}
                                       </Card.Text>
                                   )
                               }) : <Card.Text>No messages yet</Card.Text>}

@@ -102,13 +102,13 @@ async function sendMessage(token, message, ticketId) {
 
     const formdata = new FormData();
     formdata.append("messageText", message);
-    formdata.append("attachments", null);
+    //formdata.append("attachments", []);
     formdata.forEach((value, key) => console.log(key + " " + value));
 
 
     const res = await fetch(url + "/tickets/" + ticketId + "/messages",
         {
-            method: "POST", headers: {"Authorization": "Bearer " + token, "Content-Type": "multipart/form-data"},
+            method: "POST", headers: {"Authorization": "Bearer " + token},
             body: formdata
         })
     if (!res.ok) throw res.statusText
