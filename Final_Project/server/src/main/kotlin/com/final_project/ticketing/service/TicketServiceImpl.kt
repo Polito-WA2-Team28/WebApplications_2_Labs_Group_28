@@ -96,24 +96,22 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             throw Exception()
         }
 
+        if (message.attachments != null) {
+            for (attachment in message.attachments) {
+                var uniqueFilename = UUID.randomUUID().toString() + "_" + attachment.originalFilename
+                val filePath = File.separator + attachmentDirectory + File.separator + uniqueFilename
 
-        for (attachment in message.attachments){
-            var uniqueFilename = UUID.randomUUID().toString() + "_" + attachment.originalFilename
-            val filePath = File.separator + attachmentDirectory + File.separator + uniqueFilename
+                attachment.transferTo(File(System.getProperty("user.dir") + filePath))
 
-            attachment.transferTo(File(System.getProperty("user.dir") + filePath))
+                //modify?
+                val attachmentUrl = "/attachments/$uniqueFilename"
 
-            //modify?
-            val attachmentUrl = "/attachments/$uniqueFilename"
-
-            if(attachment.originalFilename != null && attachment.contentType != null){
-                var attachmentEntity = attachment.toModel(attachmentUrl)
-                attachmentSet.add(attachmentEntity)
+                if (attachment.originalFilename != null && attachment.contentType != null) {
+                    var attachmentEntity = attachment.toModel(attachmentUrl)
+                    attachmentSet.add(attachmentEntity)
+                }
             }
-
-
         }
-
         // Attachments saved via Cascading
         return messageRepository.save(message.toModel(attachmentSet, sender, ticket)).toDTO()
 
