@@ -8,7 +8,6 @@ export function ProductsTab(props) {
     const [show, setShow] = useState(false);
 
     return <>
-        <h1>Products</h1>
         <Button onClick={() => setShow(true)}>Create a ticket</Button>
         <CreationModal show={show} handleClose={() => setShow(false)}
             handleCreate={() => { console.log("CREATE") }}
@@ -25,8 +24,7 @@ export function ProductsTab(props) {
 
 
 function ProductItem(props) {
-    return <>
-        <Card key={props.product}>
+    return <Card key={props.product} className="productCard">
             <Card.Body>
                 <Card.Title>
                     {props.product.model}
@@ -35,7 +33,6 @@ function ProductItem(props) {
                 <p>{`Serial Number: ${props.product.serialNumber}`}</p>
             </Card.Body>
         </Card>
-    </>
 }
 
 function CreationModal(props) {

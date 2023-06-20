@@ -1,0 +1,25 @@
+.ticketPageCard {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    color: #333;
+    margin: 10px auto;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+    width: 70%;
+  }
+  
+  .ticketPageCard-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .ticketPageCard-content {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #555;
+  }
+  
