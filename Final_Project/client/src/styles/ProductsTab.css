@@ -1,52 +1,60 @@
-.custom-modal {
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-  }
-  
-  .custom-modal-header {
-    background-color: #f8f9fa;
-    border-bottom: none;
-  }
-  
-  .custom-modal-footer {
-    background-color: #f8f9fa;
-    border-top: none;
-    justify-content: space-between;
-  }
-  
-  .custom-form-control {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 10px;
-  }
-  
-  .custom-button {
-    padding: 8px 16px;
-    font-size: 14px;
-    border-radius: 4px;
-  }
-  
-  .custom-button.variant-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-    color: #fff;
-  }
-  
-  .custom-button.variant-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
-    color: #fff;
-  }
-  
-  .custom-button.variant-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
-    color: #fff;
-  }
-  
-  .custom-button.variant-secondary:hover {
-    background-color: #5a6268;
-    border-color: #5a6268;
-    color: #fff;
-  }
-  
+.productCard {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  color: #333;
+  margin: 10px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
+  min-height: 250px;
+  width: 300px;
+}
+
+.productCard:hover {
+  transform: translateY(-5px);
+}
+
+.productCard-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.productCard-content {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.productCard-action {
+  display: flex;
+  justify-content: center;
+}
+
+.productCard-action button {
+  background-color: #333;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0 5px;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.productCard-action button:hover {
+  background-color: #222;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.action-buttons button {
+  margin: 0 5px;
+}

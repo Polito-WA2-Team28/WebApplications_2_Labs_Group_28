@@ -1,0 +1,61 @@
+.ticketCard {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    color: #333;
+    margin: 10px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+    min-height: 250px;
+    max-width: 300px;
+    width: 300px;
+  }
+  
+  .ticketCard:hover {
+    transform: translateY(-5px);
+  }
+  
+  .ticketCard-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .ticketCard-content {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #555;
+  }
+  
+  .ticketCard-action {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .ticketCard-action button {
+    background-color: #333;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0 5px;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .ticketCard-action button:hover {
+    background-color: #222;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .action-buttons button {
+    margin: 0 5px;
+  }

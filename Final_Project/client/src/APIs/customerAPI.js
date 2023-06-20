@@ -1,4 +1,3 @@
-import { forwardRef } from "react";
 import { compositeHeader, authHeader } from "./util";
 
 const url = "http://localhost:3001/api/customers";

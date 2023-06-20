@@ -1,0 +1,19 @@
+html{
+    scroll-behavior: smooth;
+    width: auto;
+    height: 100vh;
+    overflow-x: hidden;
+}
+
+body{
+    font-family: 'Roboto', sans-serif;
+    width: auto;
+    height: 100%;
+    overflow-x: hidden;
+}
+
+#root{
+    width: auto;
+    height: 100%;
+    overflow-x: hidden;
+}

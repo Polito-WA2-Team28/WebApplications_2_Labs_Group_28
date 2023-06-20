@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button, Card, CardGroup, Col, Form, Modal, Row } from "react-bootstrap";
 import EmptySearch from "./EmptySearch";
 import { useNavigate } from "react-router-dom";
+import "../styles/TicketTab.css"
 
 export function CustomerTicketTab(props) {
 
@@ -51,7 +52,7 @@ function TicketItem(props) {
   const navigate = useNavigate();
 
   return (
-    <Card>
+    <Card className="ticketCard">
       <Card.Body>
         <Card.Title>
           <Row>
