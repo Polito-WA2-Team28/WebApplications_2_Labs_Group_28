@@ -12,6 +12,7 @@ import com.final_project.server.model.Expert
 import com.final_project.ticketing.dto.*
 import com.final_project.ticketing.dto.PageResponseDTO.Companion.toDTO
 import com.final_project.ticketing.model.Ticket
+import com.final_project.ticketing.util.Nexus
 import io.micrometer.observation.annotation.Observed
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -32,20 +33,19 @@ class TicketExpertController @Autowired constructor(
 
     val logger: Logger = LoggerFactory.getLogger(TicketExpertController::class.java)
 
-
     @GetMapping("/api/experts/tickets")
     @ResponseStatus(HttpStatus.OK)
-    fun getTickets(@RequestParam("pageNo", defaultValue = "1") pageNo: Int
+    fun getTickets(
+        @RequestParam("pageNo", defaultValue = "1") pageNo: Int
     ): PageResponseDTO<TicketDTO> {
-        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
-        /* checking that the expert exists */
-       val expert = expertService.getExpertById(expertId)
-        if(expert == null)
-        {
-            logger.error("Endpoint: /api/experts/tickets Error: Expert not found.")
-            throw Exception.ExpertNotFoundException("Expert not found.")
-        }
+        val nexus: Nexus = Nexus(expertService, ticketService)
+
+        /* running checks... */
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/experts/tickets")
+            .assertExpertExists(expertId)
 
         /* crafting pageable request */
         var result: PageResponseDTO<TicketDTO> = PageResponseDTO()
@@ -58,86 +58,66 @@ class TicketExpertController @Autowired constructor(
 
     @GetMapping("/api/experts/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun getSingleTicket(@PathVariable("ticketId") ticketId: Long
+    fun getSingleTicket(
+        @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
-        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
-        
-        /* checking that the expert exists */
-        val expert = expertService.getExpertById(expertId)
-        if(expert == null){
-            logger.error("Endpoint: /api/experts/tickets/$ticketId Error: Expert not found.")
-            throw Exception.ExpertNotFoundException("Expert not found.")
-        }
 
-        val ticket = ticketService.getTicketDTOById(ticketId)
-        if(ticket == null) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-        return ticket
+        val nexus: Nexus = Nexus(expertService, ticketService)
+
+        /* running checks... */
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/experts/tickets/$ticketId")
+            .assertExpertExists(expertId)
+            .assertTicketExists(ticketId)
+            .assertTicketAssignment()
+
+        return nexus.ticket
     }
 
     @PatchMapping("/api/experts/tickets/{ticketId}/resolve")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun resolveTicket(@PathVariable("ticketId") ticketId: Long) {
-        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+    fun resolveTicket(
+        @PathVariable("ticketId") ticketId: Long
+    ): TicketDTO? {
 
-        val ticket = ticketService.getTicketModelById(ticketId)
-        if(ticket == null) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-        val expert = ticket.expert
-        if (expert == null) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve Error: Expert not found.")
-            throw Exception.ExpertNotFoundException("Expert not found.")
-        }
+        val nexus: Nexus = Nexus(expertService, ticketService)
 
+        /* running checks... */
         val allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED, TicketState.IN_PROGRESS)
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/experts/tickets/$ticketId/resolve")
+            .assertExpertExists(expertId)
+            .assertTicketExists(ticketId)
+            .assertTicketAssignment()
+            .assertTicketStatus(allowedStates)
+            .resolveTicket(ticketId)
 
-        if (expert.id != expertId){
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve Error: Expert not found.")
-            throw Exception.ExpertNotFoundException("Expert not found.")
-        }
-
-        else if (!allowedStates.contains(ticket.state)) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/resolve Error: Invalid ticket status for this operation.")
-            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
-        }
-
-        ticketService.changeTicketStatus(ticket, TicketState.RESOLVED)
+        return nexus.ticket
     }
 
     @PatchMapping("/api/experts/tickets/{ticketId}/close")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun closeTicket(@PathVariable("ticketId") ticketId:Long){
-        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+    fun closeTicket(
+        @PathVariable("ticketId") ticketId: Long
+    ): TicketDTO? {
 
-        val ticket = ticketService.getTicketModelById(ticketId)
-        if(ticket == null){
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/close Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
+        val nexus: Nexus = Nexus(expertService, ticketService)
 
-        val expert = ticket.expert
-        if(expert == null){
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/close Error: Expert not found.")
-            throw Exception.ExpertNotFoundException("Expert not found.")
-        }
+        /* running checks... */
         val allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED)
+        val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/experts/tickets/$ticketId/close")
+            .assertExpertExists(expertId)
+            .assertTicketExists(ticketId)
+            .assertTicketAssignment()
+            .assertTicketStatus(allowedStates)
+            .closeTicket(ticketId)
 
-        if (expert.id != expertId) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/close Error: Expert not found.")
-            throw Exception.ExpertNotFoundException("Expert not found.")
-        }
-        else if (!allowedStates.contains(ticket.state)){
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/close Error: Invalid ticket status for this operation.")
-            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
-        }
-
-        ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
+        return nexus.ticket
     }
-
 
     @PostMapping("/api/experts/tickets/{ticketId}/messages")
     @ResponseStatus(HttpStatus.CREATED)
@@ -146,42 +126,17 @@ class TicketExpertController @Autowired constructor(
         @PathVariable ticketId: Long
     ): MessageDTO {
 
-        /* checking that experts exists */
+        val nexus: Nexus = Nexus(expertService, ticketService)
+
+        /* running checks... */
+        val allowedStates = mutableSetOf(TicketState.IN_PROGRESS, TicketState.RESOLVED)
         val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
-        val expert = expertService.getExpertById(expertId)
-        expert ?: run {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/messages Error: Expert not found.")
-            throw Exception.ExpertNotFoundException("Expert not found.")
-        }
-
-        /* checking that ticket exists */
-        val ticket = ticketService.getTicketModelById(ticketId)
-        ticket ?: run {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/messages Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-        /* checking that expert exists in ticket */
-        ticket.expert ?: run {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/messages Error: Expert not assigned to this ticket.")
-            throw Exception.ExpertNotFoundException("Expert not assigned to this ticket.")
-        }
-
-        /* asserting ticket assignment */
-        if (ticket.expert?.id != expertId) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/messages Error: Forbidden.")
-            throw TicketException.TicketForbiddenException("Forbidden.")
-        }
-
-        /* asserting ticket state */
-        val allowedStates = mutableSetOf(
-            TicketState.IN_PROGRESS,
-            TicketState.RESOLVED
-        )
-        if (!allowedStates.contains(ticket.state)) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/messages Error: Invalid ticket status for this operation..")
-            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation..")
-        }
+        nexus
+            .setEndpointForLogger("/api/experts/tickets/$ticketId/close")
+            .assertExpertExists(expertId)
+            .assertTicketExists(ticketId)
+            .assertTicketAssignment()
+            .assertTicketStatus(allowedStates)
 
         /* retrieving sender username */
         val sender = securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.USERNAME)
@@ -191,7 +146,6 @@ class TicketExpertController @Autowired constructor(
 
     }
 
-
     @GetMapping("/api/experts/tickets/{ticketId}/messages")
     @ResponseStatus(HttpStatus.OK)
     fun getTicketMessages(
@@ -199,32 +153,15 @@ class TicketExpertController @Autowired constructor(
         @RequestParam("pageNo", defaultValue = "1") pageNo: Int
     ): PageResponseDTO<MessageDTO> {
 
-        /* checking that expert exists in DB */
+        val nexus: Nexus = Nexus(expertService, ticketService)
+
+        /* running checks... */
         val expertId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
-        val expert = expertService.getExpertById(expertId)
-        expert ?: run {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/messages Error: Expert not found.")
-            throw Exception.ExpertNotFoundException("Expert not found.")
-        }
-
-        /* checking that ticket exists */
-        val ticket = ticketService.getTicketModelById(ticketId)
-        ticket ?: run {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/messages Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-        /* checking that expert exists in ticket */
-        ticket.expert ?: run {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/messages Error: Expert not assigned to this ticket.")
-            throw Exception.ExpertNotFoundException("Expert not assigned to this ticket.")
-        }
-
-        /* asserting ticket assignment */
-        if (ticket.expert?.id != expertId) {
-            logger.error("Endpoint: /api/experts/tickets/$ticketId/messages Error: Forbidden.")
-            throw TicketException.TicketForbiddenException("Forbidden.")
-        }
+        nexus
+            .setEndpointForLogger("/api/experts/tickets/$ticketId/close")
+            .assertExpertExists(expertId)
+            .assertTicketExists(ticketId)
+            .assertTicketAssignment()
 
         /* fetching page from DB */
         var result: PageResponseDTO<MessageDTO> = PageResponseDTO()

@@ -24,8 +24,8 @@ class ExpertServiceImpl @Autowired constructor(val expertRepository: ExpertRepos
             }
     }
 
-    override fun getExpertById(id: UUID): Expert? {
-        return expertRepository.findByIdOrNull(id)
+    override fun getExpertById(id: UUID): ExpertDTO? {
+        return expertRepository.findByIdOrNull(id)?.toDTO()
     }
 
     override fun addProfile(profile: ExpertCompleteRegistration): ExpertDTO? {

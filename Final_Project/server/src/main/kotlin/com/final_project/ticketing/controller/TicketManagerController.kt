@@ -10,6 +10,7 @@ import com.final_project.ticketing.dto.PageResponseDTO.Companion.toDTO
 import com.final_project.ticketing.exception.TicketException
 import com.final_project.ticketing.model.Ticket
 import com.final_project.ticketing.service.TicketService
+import com.final_project.ticketing.util.Nexus
 import com.final_project.ticketing.util.TicketState
 import io.micrometer.observation.annotation.Observed
 import jakarta.validation.Valid
@@ -37,16 +38,17 @@ class TicketManagerController @Autowired constructor(
 
     @GetMapping("/api/managers/tickets")
     @ResponseStatus(HttpStatus.OK)
-    fun getTickets(@RequestParam("pageNo", defaultValue = "1") pageNo: Int
+    fun getTickets(
+        @RequestParam("pageNo", defaultValue = "1") pageNo: Int
     ): PageResponseDTO<TicketDTO> {
-        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
-        /* checking that the manager exists */
-        val manager = managerService.getManagerById(managerId)
-        if (manager == null) {
-            logger.error("Endpoint: /api/managers/tickets Error: Manager not found.")
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
+        val nexus: Nexus = Nexus(managerService, expertService, ticketService)
+
+        /* running checks... */
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/managers/tickets")
+            .assertManagerExists(managerId)
 
         /* crafting pageable request */
         var result: PageResponseDTO<TicketDTO> = PageResponseDTO()
@@ -59,182 +61,127 @@ class TicketManagerController @Autowired constructor(
 
     @GetMapping("/api/managers/tickets/{ticketId}")
     @ResponseStatus(HttpStatus.OK)
-    fun getSingleTicket(@PathVariable("ticketId") ticketId: Long
+    fun getSingleTicket(
+        @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+
+        val nexus: Nexus = Nexus(managerService, expertService, ticketService)
+
+        /* running checks... */
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/managers/tickets/$ticketId")
+            .assertManagerExists(managerId)
+            .assertTicketExists(ticketId)
 
-        /* checking that the manager exists */
-        val manager = managerService.getManagerById(managerId)
-        if (manager == null) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId} Error: Manager not found.")
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
-
-
-        /* retrieving the ticket */
-        ticketService.getTicketDTOById(ticketId)?.let {
-            return it
-        }
-        logger.error("Endpoint: /api/managers/tickets/{ticketId} Error: Ticket not found.")
-        throw TicketException.TicketNotFoundException("Ticket not found.")
+        return nexus.ticket
     }
 
     @PatchMapping("/api/managers/tickets/{ticketId}/assign")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun assignTicket (@PathVariable("ticketId") ticketId: Long,
-                      @RequestBody @Valid ticketUpdateData: TicketUpdateData
+    fun assignTicket (
+        @PathVariable("ticketId") ticketId: Long,
+        @RequestBody @Valid ticketUpdateData: TicketUpdateData
     ): TicketDTO? {
+
+        val nexus: Nexus = Nexus(managerService, expertService, ticketService)
+
+        /* running checks... */
+        val allowedStates = mutableSetOf(TicketState.OPEN)
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/managers/tickets/$ticketId/assign")
+            .assertManagerExists(managerId)
+            .assertTicketExists(ticketId)
+            .assertTicketStatus(allowedStates)
+            .assertExpertExists(ticketUpdateData.expertId)
+            .assignTicketToExpert(ticketId, ticketUpdateData.expertId)
 
-        /* retrieve the ticket from the database and checking the status */
-        val ticket = ticketService.getTicketModelById(ticketId)
-        if (ticket == null) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId}/assign Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-        if (ticket.state != TicketState.OPEN) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId}/assign Error: Invalid ticket status for this operation.")
-            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
-        }
-
-        /* retrieving the expert and checking that manager exists */
-        val expert = expertService.getExpertById(ticketUpdateData.expertId)
-        if (expert == null) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId}/assign Error: Expert not found.")
-            throw Exception.ExpertNotFoundException("Expert not found.")
-        }
-
-        val manager = managerService.getManagerById(managerId)
-        if (manager == null) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId}/assign Error: Manager not found.")
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
-
-        /* assign the expert to the ticket */
-        ticket.assignExpert(expert)
-
-        /* change the ticket status */
-        return ticketService.changeTicketStatus(ticket, TicketState.IN_PROGRESS)
-
+        return nexus.ticket
     }
 
     @PatchMapping("/api/managers/tickets/{ticketId}/relieveExpert")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun relieveExpert (@PathVariable("ticketId") ticketId: Long
+    fun relieveExpert (
+        @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+
+        val nexus: Nexus = Nexus(managerService, expertService, ticketService)
+
+        /* running checks... */
+        val allowedStates = mutableSetOf(TicketState.IN_PROGRESS)
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/managers/tickets/$ticketId/relieveExpert")
+            .assertManagerExists(managerId)
+            .assertTicketExists(ticketId)
+            .assertTicketStatus(allowedStates)
+            .relieveExpertFromTicket(ticketId)
 
-        /* retrieve the ticket from the database and checking the state of the ticket */
-        val ticket = ticketService.getTicketModelById(ticketId)
-        if (ticket == null) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId}/relieveExpert Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-        if (ticket.state != TicketState.IN_PROGRESS) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId}/relieveExpert Error: Invalid ticket status for this operation.")
-            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
-        }
-
-        /* checking if manager exists */
-        val manager = managerService.getManagerById(managerId)
-        if (manager == null) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId}/relieveExpert Error: Manager not found.")
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
-
-
-        /* relieving the expert from the ticket */
-        ticket.relieveExpert()
-
-        /* change the ticket status */
-        return ticketService.changeTicketStatus(ticket, TicketState.OPEN)
+        return nexus.ticket
     }
 
     @PatchMapping("/api/managers/tickets/{ticketId}/close")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun closeTicket (@PathVariable("ticketId") ticketId: Long
+    fun closeTicket (
+        @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+
+        val nexus: Nexus = Nexus(managerService, expertService, ticketService)
+
+        /* running checks... */
+        val allowedStates = mutableSetOf(TicketState.OPEN, TicketState.RESOLVED, TicketState.REOPENED)
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/managers/tickets/$ticketId/close")
+            .assertManagerExists(managerId)
+            .assertTicketExists(ticketId)
+            .assertTicketStatus(allowedStates)
+            .closeTicket(ticketId)
 
-        /* retrieve the ticket from the database and checking the state of the ticket */
-        val ticket = ticketService.getTicketModelById(ticketId)
-        if (ticket == null) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId}/close Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-        if (ticket.state != TicketState.OPEN && ticket.state != TicketState.RESOLVED && ticket.state != TicketState.REOPENED) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId}/close Error: Invalid ticket status for this operation.")
-            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
-        }
-
-        /* checking if manager exists */
-        val manager = managerService.getManagerById(managerId)
-        if (manager == null) {
-            logger.error("Endpoint: /api/managers/tickets/{ticketId}/close Error: Manager not found.")
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
-
-
-        /* change the ticket status */
-        return ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
+        return nexus.ticket
     }
 
     @PatchMapping("/api/managers/tickets/{ticketId}/resumeProgress")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun resumeTicketProgress (@PathVariable("ticketId") ticketId: Long,
-                              @RequestBody @Valid ticketUpdateData: TicketUpdateData
+    fun resumeTicketProgress (
+        @PathVariable("ticketId") ticketId: Long,
+        @RequestBody @Valid ticketUpdateData: TicketUpdateData
     ): TicketDTO? {
+
+        val nexus: Nexus = Nexus(managerService, expertService, ticketService)
+
+        /* running checks... */
+        val allowedStates = mutableSetOf(TicketState.REOPENED)
         val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/managers/tickets/$ticketId/resumeProgress")
+            .assertManagerExists(managerId)
+            .assertTicketExists(ticketId)
+            .assertExpertExists(ticketUpdateData.expertId)
+            .assertTicketStatus(allowedStates)
+            .assignTicketToExpert(ticketId, ticketUpdateData.expertId)
 
-        /* retrieve the ticket from the database and checking the state of the ticket */
-        val ticket = ticketService.getTicketModelById(ticketId)
-            if(ticket == null){
-                logger.error("Endpoint:/api/managers/tickets/{ticketId}/resumeProgress Error: Ticket not found.")
-                throw TicketException.TicketNotFoundException("Ticket not found.")
-            }
-        if (ticket.state != TicketState.REOPENED) {
-            logger.error("Endpoint:/api/managers/tickets/{ticketId}/resumeProgress Error: Invalid ticket status for this operation.")
-            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
-        }
-
-        /* retrieving the expert and checking that manager exists */
-        val expert = expertService.getExpertById(ticketUpdateData.expertId)
-            if(expert == null){
-                logger.error("Endpoint:/api/managers/tickets/{ticketId}/resumeProgress Error: Expert not found.")
-                throw Exception.ExpertNotFoundException("Expert not found.")
-            }
-        val manager = managerService.getManagerById(managerId)
-            if(manager == null){
-                logger.error("Endpoint:/api/managers/tickets/{ticketId}/resumeProgress Error: Manager not found.")
-                throw Exception.ManagerNotFoundException("Manager not found.")
-            }
-
-        /* assign the expert to the ticket */
-        ticket.assignExpert(expert)
-
-        /* change the ticket status */
-        return ticketService.changeTicketStatus(ticket, TicketState.IN_PROGRESS)
+        return nexus.ticket
     }
 
     @DeleteMapping("/api/managers/tickets/{ticketId}/remove")
     @ResponseStatus(HttpStatus.OK)
-    fun removeTicket(@PathVariable("ticketId") ticketId: Long
+    fun removeTicket(
+        @PathVariable("ticketId") ticketId: Long
     ) {
-        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
 
-        /* checking that manager exists */
-        val manager = managerService.getManagerById(managerId)
-            if(manager == null) {
-                logger.error("Endpoint:/api/managers/tickets/{ticketId}/remove Error: Manager not found.")
-                throw Exception.ManagerNotFoundException("Manager not found.")
-            }
+        val nexus: Nexus = Nexus(managerService, expertService, ticketService)
+
+        /* running checks... */
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/managers/tickets/$ticketId/resumeProgress")
+            .assertManagerExists(managerId)
+            .assertTicketExists(ticketId)
 
         /* removing the ticket from the database */
         ticketService.removeTicketById(ticketId)
-
     }
 
 
@@ -245,20 +192,14 @@ class TicketManagerController @Autowired constructor(
         @RequestParam("pageNo", defaultValue = "1") pageNo: Int
     ): PageResponseDTO<MessageDTO> {
 
-        /* checking that manager exists */
-        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
-        val manager = managerService.getManagerById(managerId)
-        manager ?: run {
-            logger.error("Endpoint: /api/manager/tickets/$ticketId/messages Error: Manager not found.")
-            throw Exception.ManagerNotFoundException("Manager not found.")
-        }
+        val nexus: Nexus = Nexus(managerService, expertService, ticketService)
 
-        /* checking that ticket exists */
-        val ticket = ticketService.getTicketModelById(ticketId)
-        ticket ?: run {
-            logger.error("Endpoint: /api/managers/tickets/$ticketId/messages Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
+        /* running checks... */
+        val managerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/managers/tickets/$ticketId/resumeProgress")
+            .assertManagerExists(managerId)
+            .assertTicketExists(ticketId)
 
         /* fetching page from DB */
         var result: PageResponseDTO<MessageDTO> = PageResponseDTO()

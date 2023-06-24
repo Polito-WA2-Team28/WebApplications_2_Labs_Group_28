@@ -46,10 +46,6 @@ class CustomerProductController @Autowired constructor(val productService: Produ
         return products
     }
 
-    fun getProductBySerialNumber(customerId:UUID, serialNumber:UUID): Product?{
-        return productService.customerGetProductBySerialNumber(customerId, serialNumber)
-    }
-
     @PatchMapping("/api/customers/products/registerProduct")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun registerProduct(@RequestBody @Valid productIds: RegisterProductDTO,

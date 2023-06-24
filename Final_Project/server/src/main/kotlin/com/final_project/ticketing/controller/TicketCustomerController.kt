@@ -11,6 +11,7 @@ import com.final_project.ticketing.service.TicketService
 import com.final_project.ticketing.util.TicketState
 import com.final_project.server.controller.StaffController
 import com.final_project.ticketing.dto.PageResponseDTO.Companion.toDTO
+import com.final_project.ticketing.util.Nexus
 import io.micrometer.observation.annotation.Observed
 import jakarta.validation.Valid
 import org.slf4j.Logger
@@ -29,7 +30,7 @@ import java.util.*
 class TicketCustomerController @Autowired constructor(
     val ticketService: TicketService,
     val customerService: CustomerService,
-    val customerProductController: CustomerProductController,
+    val productService: ProductService,
     val securityConfig: SecurityConfig,
     val fileStorageService: FileStorageService
 ) {
@@ -42,32 +43,25 @@ class TicketCustomerController @Autowired constructor(
         @RequestBody @Valid ticket: TicketCreationData,
         br: BindingResult
     ): TicketDTO {
+
+        val nexus: Nexus = Nexus(customerService, ticketService, productService)
+
+        /* running checks... */
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/customers/tickets")
+            .assertCustomerExists(customerId)
+            .assertProductExists(ticket.serialNumber)
+            .assertProductOwnership()
 
-        val customer: Customer? = customerService.getCustomerById(customerId)
-        if (customer == null) {
-            logger.error("Endpoint: /api/customers/tickets Error: Customer not found.")
-            throw Exception.CustomerNotFoundException("Customer not found.")
-        }
-        val product: Product? = customerProductController.getProductBySerialNumber(customerId, ticket.serialNumber)
-        if (product == null) {
-            logger.error("Endpoint: /api/customers/tickets Error: Product not found.")
-            throw Exception.ProductNotFoundException("Product not found.")
-        }
+        /** TODO: Check "!!" safety*/
+        /* creating ticket */
+        val createdTicket = ticketService.createTicket(ticket, nexus.customer!!, nexus.product!!)
+        nexus
+            .assertTicketNonNull(createdTicket)
+            .assertTicketExists(createdTicket!!.ticketId!!)
 
-
-        if (product.owner == customer) {
-            val createdTicket = ticketService.createTicket(ticket, customer, product)
-            if (createdTicket == null) {
-                logger.error("Endpoint: /api/customers/tickets Error: Ticket creation error.")
-                throw TicketException.TicketCreationException("Ticket creation error.")
-            }
-            return createdTicket
-        }
-        else {
-            logger.error("Endpoint: /api/customers/tickets Error: Customer is not the owner of this product.")
-            throw Exception.CustomerNotOwnerException("Customer is not the owner of this product.")
-        }
+        return createdTicket
     }
 
     @GetMapping("/api/customers/tickets")
@@ -76,14 +70,13 @@ class TicketCustomerController @Autowired constructor(
         @RequestParam("pageNo", defaultValue = "1") pageNo: Int
     ): PageResponseDTO<TicketDTO> {
 
-        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        val nexus: Nexus = Nexus(customerService, ticketService, productService)
 
-        /* checking that customer exists */
-        val customer = customerService.getCustomerById(customerId)
-            if(customer == null) {
-                logger.error("Endpoint: /api/customers/tickets Error: Customer not found.")
-                throw Exception.CustomerNotFoundException("Customer not found.")
-            }
+        /* running checks... */
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/customers/tickets")
+            .assertCustomerExists(customerId)
 
         /* crafting pageable request */
         var result: PageResponseDTO<TicketDTO> = PageResponseDTO()
@@ -99,19 +92,17 @@ class TicketCustomerController @Autowired constructor(
     fun getSingleTicket(
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+
+        val nexus: Nexus = Nexus(customerService, ticketService, productService)
+
+        /* running checks... */
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus.setEndpointForLogger("/api/customers/tickets/$ticketId")
+            .assertCustomerExists(customerId)
+            .assertTicketExists(ticketId)
+            .assertTicketOwnership()
 
-        val ticket = ticketService.getTicketDTOById(ticketId)
-        if(ticket == null){
-            logger.error("Endpoint: /api/customers/tickets/$ticketId Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-        if (ticket.customerId == customerId)
-            return ticket
-
-        logger.error("Endpoint: /api/customers/tickets/$ticketId Error: Forbidden.")
-        throw TicketException.TicketForbiddenException("Forbidden.")
+        return nexus.ticket
     }
 
     @PatchMapping("/api/customers/tickets/{ticketId}/reopen")
@@ -119,23 +110,21 @@ class TicketCustomerController @Autowired constructor(
     fun reopenTicket(
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+
+        val nexus: Nexus = Nexus(customerService, ticketService, productService)
+
+        /* running checks... */
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
-
-        val ticket = ticketService.getTicketModelById(ticketId)
-        if(ticket == null){
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/reopen Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-
         val allowedStates = mutableSetOf(TicketState.CLOSED, TicketState.RESOLVED)
+        nexus
+            .setEndpointForLogger("/api/customers/tickets/$ticketId/reopen")
+            .assertCustomerExists(customerId)
+            .assertTicketExists(ticketId)
+            .assertTicketOwnership()
+            .assertTicketStatus(allowedStates)
+            .reopenTicket(ticketId)
 
-        if (ticket.customer.id != customerId || !allowedStates.contains(ticket.state)) {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/reopen Error: Forbidden.")
-            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
-        }
-
-        return ticketService.changeTicketStatus(ticket, TicketState.REOPENED)
+        return nexus.ticket
     }
 
     @PatchMapping("/api/customers/tickets/{ticketId}/compileSurvey")
@@ -143,24 +132,21 @@ class TicketCustomerController @Autowired constructor(
     fun compileTicketSurvey(
         @PathVariable("ticketId") ticketId: Long
     ): TicketDTO? {
+
+        val nexus: Nexus = Nexus(customerService, ticketService, productService)
+
+        /* running checks... */
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        val allowedStates = mutableSetOf(TicketState.RESOLVED)
+        nexus
+            .setEndpointForLogger("/api/customers/tickets/$ticketId/compileSurvey")
+            .assertCustomerExists(customerId)
+            .assertTicketExists(ticketId)
+            .assertTicketOwnership()
+            .assertTicketStatus(allowedStates)
+            .closeTicket(ticketId)
 
-        val ticket = ticketService.getTicketModelById(ticketId)
-        if(ticket==null){
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/compileSurvey Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-        if (ticket.customer.id != customerId) {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/compileSurvey Error: Forbidden.")
-            throw TicketException.TicketForbiddenException("Forbidden.")
-        }
-        else if (ticket.state != TicketState.RESOLVED) {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/compileSurvey Error: Invalid ticket status for this operation.")
-            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation.")
-        }
-
-        return ticketService.changeTicketStatus(ticket, TicketState.CLOSED)
+        return nexus.ticket
     }
 
 
@@ -171,37 +157,17 @@ class TicketCustomerController @Autowired constructor(
         @PathVariable ticketId: Long
     ): MessageDTO {
 
-        /* checking that customer exists */
+        val nexus: Nexus = Nexus(customerService, ticketService, productService)
+
+        /* running checks... */
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
-        val customer = customerService.getCustomerById(customerId)
-        customer ?: run {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Customer not found.")
-            throw Exception.CustomerNotFoundException("Customer not found.")
-        }
-
-        /* checking that ticket exists */
-        val ticket = ticketService.getTicketModelById(ticketId)
-        ticket ?: run {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-        /* asserting ticket ownership */
-        if (ticket.customer.id != customerId) {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Forbidden.")
-            throw TicketException.TicketForbiddenException("Forbidden.")
-        }
-
-        /* asserting ticket state */
-        val allowedStates = mutableSetOf(
-            TicketState.OPEN,
-            TicketState.IN_PROGRESS,
-            TicketState.RESOLVED
-        )
-        if (!allowedStates.contains(ticket.state)) {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Invalid ticket status for this operation..")
-            throw TicketException.TicketInvalidOperationException("Invalid ticket status for this operation..")
-        }
+        val allowedStates = mutableSetOf(TicketState.OPEN, TicketState.IN_PROGRESS, TicketState.RESOLVED)
+        nexus
+            .setEndpointForLogger("/api/customers/tickets/$ticketId/messages")
+            .assertCustomerExists(customerId)
+            .assertTicketExists(ticketId)
+            .assertTicketOwnership()
+            .assertTicketStatus(allowedStates)
 
         /* retrieving sender username */
         val sender = securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.USERNAME)
@@ -219,26 +185,15 @@ class TicketCustomerController @Autowired constructor(
         @RequestParam("pageNo", defaultValue = "1") pageNo: Int
     ): PageResponseDTO<MessageDTO> {
 
-        /* checking that customer exists */
+        val nexus: Nexus = Nexus(customerService, ticketService, productService)
+
+        /* running checks... */
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
-        val customer = customerService.getCustomerById(customerId)
-        customer ?: run {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Customer not found.")
-            throw Exception.CustomerNotFoundException("Customer not found.")
-        }
-
-        /* checking that ticket exists */
-        val ticket = ticketService.getTicketModelById(ticketId)
-        ticket ?: run {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-        /* asserting ticket ownership */
-        if (ticket.customer.id != customerId) {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Forbidden.")
-            throw TicketException.TicketForbiddenException("Forbidden.")
-        }
+        nexus
+            .setEndpointForLogger("/api/customers/tickets/$ticketId/messages")
+            .assertCustomerExists(customerId)
+            .assertTicketExists(ticketId)
+            .assertTicketOwnership()
 
         /* crafting pageable request */
         var result: PageResponseDTO<MessageDTO> = PageResponseDTO()
@@ -253,39 +208,23 @@ class TicketCustomerController @Autowired constructor(
 
     @GetMapping("/api/customers/tickets/{ticketId}/attachments/{attachmentUniqueName}")
     @ResponseStatus(HttpStatus.OK)
-    fun getMessageAttachment(@PathVariable attachmentUniqueName: String,
-                             @PathVariable ticketId: Long):ResponseEntity<ByteArray> {
+    fun getMessageAttachment(
+        @PathVariable attachmentUniqueName: String,
+        @PathVariable ticketId: Long
+    ): ResponseEntity<ByteArray> {
 
-        /* checking that customer exists */
+        val nexus: Nexus = Nexus(customerService, ticketService, productService)
+
+        /* running checks... */
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
-        val customer = customerService.getCustomerById(customerId)
-        customer ?: run {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Customer not found.")
-            throw Exception.CustomerNotFoundException("Customer not found.")
-        }
-
-        /* checking that ticket exists */
-        val ticket = ticketService.getTicketModelById(ticketId)
-        ticket ?: run {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Ticket not found.")
-            throw TicketException.TicketNotFoundException("Ticket not found.")
-        }
-
-        /* asserting ticket ownership */
-        if (ticket.customer.id != customerId) {
-            logger.error("Endpoint: /api/customers/tickets/$ticketId/messages Error: Forbidden.")
-            throw TicketException.TicketForbiddenException("Forbidden.")
-        }
+        nexus
+            .setEndpointForLogger("/api/customers/tickets/$ticketId/attachments/$attachmentUniqueName")
+            .assertCustomerExists(customerId)
+            .assertTicketExists(ticketId)
+            .assertTicketOwnership()
+            //.assertFileExists() /* TODO: need to assert that the uniqueFileName corresponds to a file that exists */
 
         return fileStorageService.getAttachmentFile(attachmentUniqueName)
     }
 
-
-    //Add private function to check:
-    // - Customer exists
-    // - Ticket exists (another file since it is shared)
-    // - Check Ticket Ownership
-    // - Other needed checks?
-
-    //Add these checks also on Expert and Manager Controllers
 }

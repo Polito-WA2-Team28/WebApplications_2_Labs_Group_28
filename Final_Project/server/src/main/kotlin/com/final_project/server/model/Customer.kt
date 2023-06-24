@@ -2,6 +2,7 @@ package com.final_project.server.model
 
 
 import com.final_project.server.dto.CustomerCompleteRegistration
+import com.final_project.server.dto.CustomerDTO
 import com.final_project.server.dto.CustomerFormModification
 import jakarta.persistence.*
 import java.util.*
@@ -47,6 +48,6 @@ fun CustomerFormModification.toModel(id: UUID, username:String, registrationDate
 }
 
 
-/*fun CustomerDTO.toModel():Customer{
-    return Customer(name, surname, registrationDate, birthDate, email, phoneNumber)
-}*/
+fun CustomerDTO.toModel():Customer{
+    return Customer(this.id, this.name, this.surname, this.username, this.registrationDate, this.birthDate, this.email, this.phoneNumber)
+}

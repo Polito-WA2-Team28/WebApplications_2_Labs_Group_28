@@ -11,7 +11,7 @@ interface ExpertService {
 
     fun getAllExpertsWithPaging(pageable: Pageable): Page<ExpertDTO>
 
-    fun getExpertById(id: UUID): Expert?
+    fun getExpertById(id: UUID): ExpertDTO?
 
     fun addProfile(profile: ExpertCompleteRegistration): ExpertDTO?
 

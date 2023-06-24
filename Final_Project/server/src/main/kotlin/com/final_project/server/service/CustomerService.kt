@@ -11,7 +11,7 @@ interface CustomerService {
 
     fun getProfileByEmail(email:String) : CustomerDTO?
 
-    fun getCustomerById(id: UUID): Customer?
+    fun getCustomerById(id: UUID): CustomerDTO?
 
     fun addProfile(profile:CustomerCompleteRegistration):CustomerDTO?
 

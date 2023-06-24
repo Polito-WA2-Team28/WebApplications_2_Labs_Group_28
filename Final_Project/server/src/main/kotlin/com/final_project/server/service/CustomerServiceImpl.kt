@@ -19,8 +19,8 @@ class CustomerServiceImpl @Autowired constructor(val customerRepository: Custome
         return customerRepository.findByEmail(email)?.toDTO()
     }
 
-    override fun getCustomerById(id: UUID): Customer? {
-        return customerRepository.findByIdOrNull(id)
+    override fun getCustomerById(id: UUID): CustomerDTO? {
+        return customerRepository.findByIdOrNull(id)?.toDTO()
     }
 
 
