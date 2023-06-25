@@ -4,8 +4,6 @@ import com.final_project.security.config.KeycloakProperties
 import com.final_project.server.dto.*
 import com.final_project.server.service.CustomerServiceImpl
 import com.final_project.server.service.ExpertServiceImpl
-import org.springframework.transaction.annotation.Transactional
-import com.final_project.server.service.ExpertService
 import org.keycloak.admin.client.Keycloak
 import org.keycloak.representations.idm.ClientRepresentation
 import org.keycloak.representations.idm.CredentialRepresentation
@@ -17,7 +15,6 @@ import javax.ws.rs.core.Response
 
 
 @Service
-@Transactional
 class KeycloakService(
     private val keycloak: Keycloak,
     private val keycloakProperties: KeycloakProperties,
@@ -51,7 +48,7 @@ class KeycloakService(
             CredentialRepresentation().apply {
                 this.isTemporary = false
                 this.type = CredentialRepresentation.PASSWORD
-                this.value = "test"
+                this.value = customer.password
                 // Don't use hardcoded password, modify DTO to accept password from customer
             }
         )

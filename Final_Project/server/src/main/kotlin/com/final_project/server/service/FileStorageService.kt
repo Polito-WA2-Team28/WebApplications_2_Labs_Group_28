@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.*
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.io.IOException
@@ -26,16 +27,12 @@ class FileStorageService @Autowired constructor(private val globalConfig: Global
         }
     }
 
-    //Method to persist files
+
     fun persistAttachmentFile(attachment:MultipartFile): Attachment? {
         var uniqueFilename = UUID.randomUUID().toString() + "_" + attachment.originalFilename
         val filePath = File.separator + globalConfig.attachmentsDirectory + File.separator + uniqueFilename
 
-        //is it right when it will be deployed? user.dir should use the workdir path
         attachment.transferTo(File(System.getProperty("user.dir") + filePath))
-
-        //TO BE MODIFIED WITH THE URL THAT WILL RETRIEVE THE ATTACHMENT
-        //val attachmentUrl = File.separator + globalConfig.attachmentsDirectory + File.separator + "$uniqueFilename"
 
         return if (attachment.originalFilename != null && attachment.contentType != null) {
             attachment.toModel(uniqueFilename)

@@ -99,6 +99,7 @@ jib {
 		jvmFlags = listOf("-Xms512m", "-Xdebug")
 		args = listOf()
 		ports = listOf("8081/tcp")
+		workingDirectory = "/ticketing-service"
 	}
 }
 

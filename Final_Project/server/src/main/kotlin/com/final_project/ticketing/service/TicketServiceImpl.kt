@@ -6,7 +6,6 @@ import com.final_project.server.model.toModel
 import com.final_project.server.service.FileStorageService
 import com.final_project.ticketing.dto.*
 import com.final_project.ticketing.model.Attachment
-import com.final_project.ticketing.model.Ticket
 import com.final_project.ticketing.model.toModel
 import com.final_project.ticketing.repository.MessageRepository
 import com.final_project.ticketing.repository.TicketRepository
@@ -24,7 +23,6 @@ import java.util.*
 
 
 @Service
-@Transactional
 class TicketServiceImpl @Autowired constructor(private val ticketRepository: TicketRepository,
                                                private val messageRepository: MessageRepository,
                                                private val fileStorageService: FileStorageService) : TicketService{
@@ -35,19 +33,10 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
         return ticketRepository.findByIdOrNull(id)?.toDTO()
     }
 
-    override fun getTicketModelById(id: Long): Ticket? {
-        return ticketRepository.findByIdOrNull(id)
-    }
-
     override fun createTicket(ticketDTO: TicketCreationData, customerDTO: CustomerDTO, productDTO: ProductDTO): TicketDTO? {
         val customer = customerDTO.toModel()
         val product = productDTO.toModel(customer)
         return ticketRepository.save(ticketDTO.toModel(customer, product)).toDTO()
-    }
-
-
-    override fun getAllTickets(): List<TicketDTO> {
-        return ticketRepository.findAll().map{it.toDTO()}
     }
 
     override fun getAllExpertTickets(expertId: UUID): List<TicketDTO> {
@@ -70,6 +59,7 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
         ticketRepository.deleteById(ticketId)
     }
 
+    @Transactional(readOnly=true)
     override fun getAllTicketsWithPaging(pageable: Pageable): Page<TicketDTO> {
         return ticketRepository.findAll(pageable)
             .map {
@@ -77,6 +67,8 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             }
     }
 
+
+    @Transactional(readOnly=true)
     override fun getAllTicketsWithPagingByCustomerId(customerId: UUID, pageable: Pageable): Page<TicketDTO> {
         return ticketRepository.findAllByCustomerId(customerId, pageable)
             .map {
@@ -84,6 +76,7 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             }
     }
 
+    @Transactional(readOnly=true)
     override fun getAllTicketsWithPagingByExpertId(expertId: UUID, pageable: Pageable): Page<TicketDTO> {
         return ticketRepository.findAllByExpertId(expertId, pageable)
             .map {
@@ -91,10 +84,10 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
             }
     }
 
-
+    @Transactional
     override fun sendTicketMessage(message: MessageObject, ticketId: Long, sender: String?): MessageDTO {
         val ticket = ticketRepository.findByIdOrNull(ticketId)
-        var attachmentSet = mutableSetOf<Attachment>()
+        val attachmentSet = mutableSetOf<Attachment>()
 
         if(ticket == null){
             // error
@@ -111,11 +104,9 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
 
         // Attachments persisted via Cascading
         return messageRepository.save(message.toModel(attachmentSet, sender, ticket)).toDTO()
-
-        //Does it make sense to only have the messageID inside each attachment?
-        // OneToOne in Attachment instead of OneToMany in Message?
     }
 
+    @Transactional(readOnly=true)
     override fun getAllMessagesWithPagingByTicketId(
         ticketId: Long,
         pageable: Pageable

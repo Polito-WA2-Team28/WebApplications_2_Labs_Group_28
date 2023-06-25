@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-@Transactional
 class CustomerServiceImpl @Autowired constructor(val customerRepository: CustomerRepository) : CustomerService {
-
 
     override fun getProfileByEmail(email: String): CustomerDTO? {
         return customerRepository.findByEmail(email)?.toDTO()
