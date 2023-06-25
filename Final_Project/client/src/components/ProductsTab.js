@@ -1,4 +1,4 @@
-import { Button, Card, CardGroup, Modal, Form, Col, Row, Tab } from "react-bootstrap";
+import { Button, Card, CardGroup, Modal, Form, Col, Row } from "react-bootstrap";
 import EmptySearch from "./EmptySearch";
 import { useContext, useState } from "react";
 import "../styles/ProductsTab.css"

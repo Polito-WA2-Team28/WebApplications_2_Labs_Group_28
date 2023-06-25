@@ -18,6 +18,7 @@ import Roles from './model/rolesEnum';
 import { successToast, errorToast } from './components/toastHandler';
 import EditUserPage from './pages/editUserPage';
 import { ActionContext, UserContext } from './Context';
+import TicketState from './model/TicketState';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
   const [products, setProducts] = useState([]);
   const [role, setRole] = useState(null)
   const [flag, setFlag] = useState(false)
+  const [experts, setExperts] = useState(null)
 
 
   const handleLogin = async (credentials) => {
@@ -156,6 +158,16 @@ function App() {
         .then(tickets => { setTickets(tickets) })
         .catch((err) => errorToast(err));
     }
+    async function managerGetProducts() {
+      await managerAPI.getProducts(token)
+        .then(products => { setProducts(products) })
+        .catch((err) => errorToast(err));
+    }
+    async function managerGetExperts() {
+      await managerAPI.getExperts(token)
+        .then(experts => { setExperts(experts) })
+        .catch((err) => errorToast(err));
+    }
 
     switch (role) {
       case Roles.CUSTOMER:
@@ -167,6 +179,8 @@ function App() {
         break;
       case Roles.MANAGER:
         managerGetTickets();
+        managerGetProducts();
+        managerGetExperts();
         break;
       default:
         break;
@@ -175,11 +189,15 @@ function App() {
 
   }, [loggedIn, token, role, flag])
 
-  const closeTicket = async (ticketId) => {
-    ticketId = Number.parseInt(ticketId)
+  const customerCloseTicket = async (ticketId) => {
     await customerAPI.compileSurvey(token, ticketId)
       .then(() => setTickets((prev) => prev.filter((ticket) => ticket.ticketId !== ticketId)))
       .catch((err) => errorToast(err))
+  }
+
+  const customerReopenTicket = async (ticketId) => {
+    await customerAPI.reopenTicket(token, ticketId)
+      .catch(err => errorToast(err))
   }
 
   const getMessages = async (ticketId) => {
@@ -222,6 +240,43 @@ function App() {
     }
   }
 
+  const managerAssignExpert = async (ticketId, expertId) => {
+    console.log("Assigning expert", ticketId, expertId)
+    await managerAPI.assignTicket(token, ticketId, expertId)
+      .catch((err) => errorToast(err));
+  }
+
+  const managerHandleCloseTicket = async (ticket) => {
+    switch (ticket.ticketState) {
+      case TicketState.OPEN:
+        managerAPI.closeTicket(token, ticket.ticketId)
+          .then(() => console.log('Manager close open ticket'))
+        break
+      case TicketState.IN_PROGRESS:
+        managerAPI.closeTicket(token, ticket.ticketId)
+          .then(() => console.log('Manager close in progress ticket'))
+        break
+      case TicketState.REOPENED:
+        managerAPI.closeTicket(token, ticket.ticketId)
+          .then(() => console.log('Manager close reopened ticket'))
+        break
+      default:
+        console.error('Invalid ticket state')
+        throw new Error('Invalid ticket state')
+    }
+  }
+
+  const managerRelieveExpert = async (ticketId) => {
+    await managerAPI.relieveExpert(token, ticketId)
+      .catch((err) => errorToast(err));
+  }
+
+  const expertResolveTicket = async (ticketId) => {
+    await expertAPI.resolveTicket(token, ticketId)
+      .catch((err) => errorToast(err));
+  }
+
+
   const actions = {
     getMessages: getMessages,
     sendMessage: sendMessage,
@@ -231,7 +286,13 @@ function App() {
     handleEditProfile: handleEditProfile,
     handleCreateTicket: handleCreateTicket,
     getTicketByID: getTicketByID,
-    getProductByID: getProductByID
+    getProductByID: getProductByID,
+    customerCloseTicket: customerCloseTicket,
+    customerReopenTicket: customerReopenTicket,
+    managerAssignExpert: managerAssignExpert,
+    managerHandleCloseTicket: managerHandleCloseTicket,
+    managerRelieveExpert: managerRelieveExpert,
+    expertResolveTicket: expertResolveTicket,
   }
 
   const userValues = {
@@ -239,7 +300,8 @@ function App() {
     loggedIn: loggedIn,
     role: role,
     products: products,
-    tickets: tickets
+    tickets: tickets,
+    experts: experts
   }
 
   return (

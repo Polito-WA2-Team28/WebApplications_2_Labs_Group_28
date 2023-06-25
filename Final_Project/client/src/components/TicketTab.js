@@ -1,7 +1,7 @@
 import { faUpRightAndDownLeftFromCenter } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
-import { Button, Card, CardGroup, Col, Row, Tab } from "react-bootstrap";
+import { Button, Card, CardGroup, Col, Row} from "react-bootstrap";
 import EmptySearch from "./EmptySearch";
 import { useNavigate } from "react-router-dom";
 import "../styles/TicketTab.css"

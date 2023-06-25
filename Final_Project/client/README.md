@@ -8,7 +8,7 @@ npm ci
 
 ### Run
 
-npm run start # Run the app in development mode on port 3001
+npm run start # Run the app in development mode on port 3000
 
 ## Credentials
 

@@ -3,6 +3,7 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faCalendar, faPhone, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs'; // Import dayjs
 
 export default function UserPage(props) {
   const { user } = props;
@@ -10,6 +11,10 @@ export default function UserPage(props) {
 
   const handleEditProfileClick = () => {
     navigate('/editUser');
+  };
+
+  const formatDate = (date) => {
+    return dayjs(date).format('YYYY-MM-DD'); // Format the date using dayjs
   };
 
   return (
@@ -45,7 +50,7 @@ export default function UserPage(props) {
                   <FontAwesomeIcon icon={faCalendar} className="profile-icon" />
                   <label><strong>Registration Date:</strong></label>
                 </div>
-                <span>{user.registrationDate}</span>
+                <span>{formatDate(user.registrationDate)}</span>
               </div>
             </Col>
             <Col xs={12} md={6}>
