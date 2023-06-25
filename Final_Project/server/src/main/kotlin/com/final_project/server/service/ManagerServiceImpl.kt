@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-@Transactional
 class ManagerServiceImpl @Autowired constructor(val managerRepository: ManagerRepository): ManagerService  {
     override fun getManagerById(id: UUID): ManagerDTO? {
         return managerRepository.findByIdOrNull(id)?.toDTO()

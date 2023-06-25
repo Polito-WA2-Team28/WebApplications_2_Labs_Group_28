@@ -19,11 +19,7 @@ interface TicketService {
 
     fun getTicketDTOById(id:Long) : TicketDTO?
 
-    fun getTicketModelById(id:Long) : Ticket?
-
-    fun createTicket(ticket: TicketCreationData, customer: CustomerDTO, product: ProductDTO): TicketDTO?
-
-    fun getAllTickets(): List<TicketDTO>
+    fun createTicket(ticketDTO: TicketCreationData, customerDTO: CustomerDTO, productDTO: ProductDTO): TicketDTO?
 
     fun getAllExpertTickets(expertId: UUID): List<TicketDTO>
 

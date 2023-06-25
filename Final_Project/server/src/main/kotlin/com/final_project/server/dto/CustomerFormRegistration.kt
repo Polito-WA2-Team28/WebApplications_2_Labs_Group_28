@@ -24,6 +24,11 @@ class CustomerFormRegistration(
     @field:Size(max = 20)
     val username:String,
 
+    @field:NotBlank
+    @field:NotNull
+    @field:Size(max = 30)
+    val password:String,
+
     @field:DateTimeFormat
     @field:NotNull
     val registrationDate: Date,
