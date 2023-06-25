@@ -18,7 +18,7 @@ import Roles from './model/rolesEnum';
 import { successToast, errorToast } from './components/toastHandler';
 import EditUserPage from './pages/editUserPage';
 import { ActionContext, UserContext } from './Context';
-import TicketState from './model/TicketState';
+import TicketState from './model/ticketState';
 
 function App() {
 
@@ -109,7 +109,7 @@ function App() {
 
   const handleEditProfile = async (profile) => {
     await customerAPI.patchProfile(token, profile)
-      .then((user) => {
+      .then(() => {
         setUser(profile)
         successToast("Changes saved!")
       })
@@ -314,8 +314,8 @@ function App() {
             <Route path="/register" element={loggedIn ? <Navigate to={"/dashboard"} /> : <RegisterPage />} />
             <Route path="/login" element={loggedIn ? <Navigate to={"/dashboard"} /> : <LoginPage />} />
             <Route path="/dashboard" element={loggedIn ? <Dashboard /> : <Navigate to={"/"} />} />
-            <Route path="/user" element={loggedIn ? <UserPage /> : <Navigate to={"/"} />} />
-            <Route path="/editUser" element={loggedIn ? <EditUserPage /> : <Navigate to={"/"} />} />
+            <Route path="/user" element={loggedIn ? <UserPage user={user} /> : <Navigate to={"/"} />} />
+            <Route path="/editUser" element={loggedIn ? <EditUserPage user={user} handleEdit={handleEditProfile} /> : <Navigate to={"/"} />} />
             <Route path="/ticket/:ticketId" element={loggedIn ? <TicketPage /> : <Navigate to={"/"} />} />
             <Route path="/product/:productId" element={loggedIn ? <ProductPage /> : <Navigate to={"/"} />} />
 

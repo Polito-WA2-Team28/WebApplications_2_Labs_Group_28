@@ -9,6 +9,8 @@ export default function UserPage(props) {
   const { user } = props;
   const navigate = useNavigate();
 
+  console.log(user)
+
   const handleEditProfileClick = () => {
     navigate('/editUser');
   };

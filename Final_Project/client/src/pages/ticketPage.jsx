@@ -4,7 +4,7 @@ import { useContext, useState } from 'react'
 import '../styles/TicketPage.css'
 import { ActionContext, UserContext } from '../Context'
 import Roles from '../model/rolesEnum'
-import TicketState from '../model/TicketState'
+import TicketState from '../model/ticketState'
 
 export default function TicketPage() {
   const { ticketId } = useParams()
