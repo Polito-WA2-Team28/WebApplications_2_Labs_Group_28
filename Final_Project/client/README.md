@@ -18,7 +18,7 @@ npm run start # Run the app in development mode on port 3001
 
 ### Expert
 - username: expert-1
-- password: test
+- password: password1
 
 ### Manager
 - username: manager-1

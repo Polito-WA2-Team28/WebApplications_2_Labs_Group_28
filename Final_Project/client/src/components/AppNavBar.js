@@ -12,11 +12,15 @@ import {
 	Container,
 	Navbar,
 	Row,
-	NavDropdown,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { ActionContext, UserContext } from "../Context";
 
-export function AppNavBar(props) {
+export default function AppNavBar(props) {
+
+	const { role, loggedIn } = useContext(UserContext)
+	const { handleLogout } = useContext(ActionContext)
 
 	let navigate = useNavigate();
 
@@ -28,8 +32,8 @@ export function AppNavBar(props) {
 		navigate("/login");
 	};
 
-	let handleLogout = () => {
-		props.logout();
+	let myHandleLogout = () => {
+		handleLogout();
 		navigate("/");
 	};
 
@@ -43,12 +47,12 @@ export function AppNavBar(props) {
 				<Button variant="navbar" onClick={handleUser}> <FontAwesomeIcon icon={faCircleUser} /></Button>
 			</Col >
 			<Col>
-				<Button variant="navbar" onClick={handleLogout}><FontAwesomeIcon icon={faArrowDown} /></Button>
+				<Button variant="navbar" onClick={myHandleLogout}><FontAwesomeIcon icon={faArrowDown} /></Button>
 			</Col >
 		</>
 
 	const componentIfLogged = <Col>
-		<Button variant="navbar" onClick={handleLogout}><FontAwesomeIcon icon={faArrowDown} /></Button>
+		<Button variant="navbar" onClick={myHandleLogout}><FontAwesomeIcon icon={faArrowDown} /></Button>
 	</Col >
 
 	const componentIfNotLogged = <Button variant="navbar" onClick={handleLogin}><FontAwesomeIcon icon={faRightToBracket} /></Button>
@@ -75,8 +79,8 @@ export function AppNavBar(props) {
 							xs={1}
 							className="d-flex align-items-center justify-content-center"
 						>
-							{props.loggedIn ? (
-								props.role === "CUSTOMER" ? componentIfCustomer
+							{loggedIn ? (
+								role === "CUSTOMER" ? componentIfCustomer
 									: componentIfLogged) : componentIfNotLogged}
 						</Col>
 					</Row>

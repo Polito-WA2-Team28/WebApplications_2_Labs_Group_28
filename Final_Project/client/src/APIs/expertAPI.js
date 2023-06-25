@@ -105,8 +105,10 @@ async function getProduct(token,productId) {
     return data;
 }
 
-export const expertAPI = {
+ const expertAPI = {
     getTickets, getTicket, resolveTicket,
     closeTicket, sendMessage, getMessages,
     getProducts, getProduct
 }
+
+export default expertAPI;
