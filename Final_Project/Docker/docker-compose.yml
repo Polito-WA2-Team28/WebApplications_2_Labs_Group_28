@@ -20,6 +20,7 @@ services:
        condition: service_healthy
 
     image: runcor3/ticketing-service:final-project
+    command: sh -c "mkdir /ticketing-service"
     container_name: ticketing-service
     ports:
       - "8081:8081"

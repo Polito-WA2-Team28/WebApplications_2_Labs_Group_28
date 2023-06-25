@@ -12,7 +12,6 @@ import java.util.*
 
 
 @Service
-@Transactional
 class ProductServiceImpl @Autowired constructor(private val productRepository: ProductRepository) : ProductService {
     override fun registerProduct(customerId:UUID, productId: Long, serialNumber: UUID) {
         return productRepository.registerProduct(customerId, productId, serialNumber)
@@ -46,11 +45,4 @@ class ProductServiceImpl @Autowired constructor(private val productRepository: P
     override fun expertGetProductById(expertId: UUID, productId: Long): ProductDTO? {
         return productRepository.expertFindProductById(expertId, productId)?.toDTO()
     }
-
-
-
-
-
-
-
 }
