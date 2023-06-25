@@ -8,20 +8,22 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { successToast, errorToast } from '../components/toastHandler';
 import SaveChangesModal from '../components/SaveChangesModal';
 import validator from 'validator';
+import dayjs from 'dayjs'; // Import dayjs
+
+const formatDate = (date) => {
+    return dayjs(date).format('YYYY-MM-DD'); // Format the date using dayjs
+};
 
 export function EditUserPage(props) {
     const { user } = props;
     const [name, setName] = useState(user.name);
     const [surname, setSurname] = useState(user.surname);
     const [username, setUsername] = useState(user.username);
-    const [birthDate, setBirthDate] = useState(new Date(user.birthDate));
+    const [birthDate, setBirthDate] = useState(formatDate(user.birthDate));
     const [email, setEmail] = useState(user.email);
     const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
     const [showModal, setShowModal] = useState(false);
     const [newUser  , setNewUser] = useState(user);
-
-    console.log("!!!!!!!!!!!!")
-    console.log(user.birthDate)
 
     const navigate = useNavigate();
     
@@ -57,13 +59,6 @@ export function EditUserPage(props) {
             errors.surname = 'Surname should not exceed 30 characters';
         }
 
-        // console.log(birthDate)
-        // console.log(birthDate.toString)
-        // Validate birth date
-        // if (validator.isEmpty(birthDate.toString)) {
-        //     errors.surname = 'Birth date is required';
-        // }
-
         // Validate phone number
         if (validator.isEmpty(phoneNumber)) {
             errors.phoneNumber = 'Phone number is required';
@@ -77,7 +72,7 @@ export function EditUserPage(props) {
             tempUser.surname = surname;
             // tempUser.username = username;
             //tempUser.email = email;
-            tempUser.birthDate = `${birthDate.getFullYear()}-${birthDate.getMonth()+1}-${birthDate.getDate()}`;
+            tempUser.birthDate = formatDate(birthDate);
             tempUser.phoneNumber = phoneNumber;
             setNewUser(tempUser)
             openModal()
@@ -89,7 +84,6 @@ export function EditUserPage(props) {
         }
     };
 
-
     const handleSaveConfirmation = (user) => {
         // Implement logic to save the data
         setShowModal(false);
@@ -98,8 +92,9 @@ export function EditUserPage(props) {
     };
 
     const handleBirthDateChange = (date) => {
-        setBirthDate(date);
-    };
+        const selectedDate = formatDate(date);
+        setBirthDate(selectedDate);
+    };      
 
     return (
         <Container>
@@ -148,30 +143,30 @@ export function EditUserPage(props) {
                                 <FontAwesomeIcon icon={faCalendar} className="profile-icon" />
                                 <Form.Label><strong>Registration Date:</strong></Form.Label>
                             </div>
-                            <Form.Control type="text" defaultValue={user.registrationDate} disabled />
+                            <Form.Control type="text" defaultValue={formatDate(user.registrationDate)} disabled />
                         </Form.Group>
                     </Form>
                     </Col>
                     <Col xs={12} md={6}>
                     <Form>
-                    <Form.Group className="m-2">
-                        <div>
-                            <FontAwesomeIcon icon={faCalendar} className="profile-icon" />
-                            <Form.Label><strong>Birth Date:</strong></Form.Label>
-                        </div>
-                        <DatePicker
+                        <Form.Group className="m-2">
+                            <div>
+                                <FontAwesomeIcon icon={faCalendar} className="profile-icon" />
+                                <Form.Label><strong>Birth Date:</strong></Form.Label>
+                            </div>
+                            <DatePicker
                                 className="form-control"
                                 name="birthDate"
-                                selected={birthDate.setDate(birthDate.getDate()+1)}
+                                selected={dayjs(birthDate).toDate()}
                                 dateFormat="yyyy-MM-dd"
                                 onChange={handleBirthDateChange}
                             />
                         </Form.Group>
                         <Form.Group className="m-2">
-                        <div>
-                            <FontAwesomeIcon icon={faEnvelope} className="profile-icon" />
-                            <Form.Label><strong>Email:</strong></Form.Label>
-                        </div>
+                            <div>
+                                <FontAwesomeIcon icon={faEnvelope} className="profile-icon" />
+                                <Form.Label><strong>Email:</strong></Form.Label>
+                            </div>
                         <Form.Control
                             type="email"
                             value={email}
