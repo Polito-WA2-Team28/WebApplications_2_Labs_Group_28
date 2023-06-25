@@ -1,70 +1,79 @@
-import { Button, Card, CardGroup, Modal, Form } from "react-bootstrap";
+import { Button, Card, CardGroup, Modal, Form, Col, Row } from "react-bootstrap";
 import EmptySearch from "./EmptySearch";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "../styles/ProductsTab.css"
+import { UserContext } from "../Context";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router-dom";
+import { faUpRightAndDownLeftFromCenter } from "@fortawesome/free-solid-svg-icons";
 
-export function ProductsTab(props) {
+export function ProductsTab() {
 
-    const [show, setShow] = useState(false);
+  const productsPage = useContext(UserContext).products;
+  const products = productsPage
+  //.content;
 
-    return <>
-        <Button onClick={() => setShow(true)}>Create a ticket</Button>
-        <CreationModal show={show} handleClose={() => setShow(false)}
-            handleCreate={() => { console.log("CREATE") }}
-        />
+  const [show, setShow] = useState(false);
 
-        <CardGroup>
-            {(props.products === undefined || props.products.length === 0) ?
-                <EmptySearch /> :
-                props.products.map((product) => <ProductItem key={product.serialNumber} product={product} />)
-            }
-        </CardGroup>
-    </>;
+  return <>
+    <Button onClick={() => setShow(true)}>Register a new product</Button>
+    <RegisterNewProductModal show={show} handleClose={() => setShow(false)}
+      handleCreate={() => { console.log("CREATE") }}
+    />
+    <CardGroup>
+      {(products === undefined || products.length === 0) ?
+        <EmptySearch /> :
+        products.map((product) => <ProductItem key={product.id} product={product} />)
+      }
+    </CardGroup>
+  </ >;
 }
 
 
 function ProductItem(props) {
-    return <Card key={props.product} className="productCard">
-            <Card.Body>
-                <Card.Title>
-                    {props.product.model}
-                </Card.Title>
-                <p>{`Device type: ${props.product.deviceType}`}</p>
-                <p>{`Serial Number: ${props.product.serialNumber}`}</p>
-            </Card.Body>
-        </Card>
+
+  const navigate = useNavigate();
+
+  return <>
+    <Card key={props.product} className="productCard">
+      <Card.Body>
+        <Card.Title>
+          <Row>
+            <Col> {props.product.model}</Col>
+            <Col className="text-end">
+              <Button onClick={() => navigate(`/product/${props.product.id}`)}>
+                <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} />
+              </Button></Col>
+          </Row>
+
+        </Card.Title>
+        <p>{`Device type: ${props.product.deviceType}`}</p>
+        <p>{`Serial Number: ${props.product.serialNumber}`}</p>
+      </Card.Body>
+    </Card>
+  </>
 }
 
-function CreationModal(props) {
+function RegisterNewProductModal(props) {
 
-    const [productId, setProductId] = useState("");
-    const [deviceType, setDeviceType] = useState("");
-    const [model, setModel] = useState("");
-    const [serialNumber, setSerialNumber] = useState("");
+  const [productId, setProductId] = useState("");
+  const [serialNumber, setSerialNumber] = useState("");
 
-    const handleCreate = () => {
-        const product = { deviceType, model, serialNumber }
-        props.handleCreate(product);
-        props.handleClose();
-    }
+  const handleCreate = () => {
+    const product = { serialNumber }
+    props.handleCreate(product);
+    props.handleClose();
+  }
 
-    return <Modal show={props.show} onHide={props.handleClose} className="custom-modal">
+  return <Modal show={props.show} onHide={props.handleClose} className="custom-modal">
     <Modal.Header closeButton className="custom-modal-header">
-      <Modal.Title>Create a ticket</Modal.Title>
+      <Modal.Title>Register a new product</Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <Form>
         <Form.Group className="mb-3" controlId="productId">
           <Form.Label>Product ID</Form.Label>
           <Form.Control type="text" placeholder="Enter product ID" value={productId} onChange={ev => setProductId(ev.target.value)} className="custom-form-control" />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="deviceType">
-          <Form.Label>Device Type</Form.Label>
-          <Form.Control type="text" placeholder="Enter device type" value={deviceType} onChange={ev => setDeviceType(ev.target.value)} className="custom-form-control" />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="model">
-          <Form.Label>Model</Form.Label>
-          <Form.Control type="text" placeholder="Enter model" value={model} onChange={ev => setModel(ev.target.value)} className="custom-form-control" />
         </Form.Group>
         <Form.Group className="mb-3" controlId="serialNumber">
           <Form.Label>Serial Number</Form.Label>

@@ -6,8 +6,27 @@ import java.util.Date
 import java.util.UUID
 
 data class TicketDTO(
-    val ticketId:Long?, val ticketState:TicketState, val description:String, val serialNumber:UUID,
-    val customerId:UUID?, val expertId: UUID?, val creationDate:Date, val lastModified:Date) {
+    val ticketId: Long?,
+    var ticketState: TicketState,
+    val description: String,
+    val serialNumber: UUID,
+    val customerId: UUID?,
+    var expertId: UUID?,
+    val creationDate: Date,
+    val lastModified:Date
+) {
+
+    fun assignExpert(expertId: UUID?) {
+        this.expertId = expertId
+    }
+
+    fun relieveExpert() {
+        this.expertId = null
+    }
+
+    fun changeState(newState: TicketState) {
+        this.ticketState = newState
+    }
 }
 
 

@@ -1,5 +1,6 @@
 package com.final_project.server.model
 
+import com.final_project.server.dto.ProductDTO
 import jakarta.persistence.*
 import java.util.UUID
 
@@ -21,6 +22,6 @@ class Product(
 }
 
 
-/*fun ProductDTO.toModel(owner: Customer): Product{
-    return Product(deviceType, model, serialNumber, owner)
-}*/
+fun ProductDTO.toModel(owner: Customer): Product{
+    return Product(this.id, this.serialNumber, this.deviceType, this.model, this.registered, owner)
+}

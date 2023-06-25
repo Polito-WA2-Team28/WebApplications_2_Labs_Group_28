@@ -5,7 +5,7 @@ import { faUser, faEnvelope, faCalendar, faPhone, faEdit } from '@fortawesome/fr
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs'; // Import dayjs
 
-export function UserPage(props) {
+export default function UserPage(props) {
   const { user } = props;
   const navigate = useNavigate();
 

@@ -1,5 +1,5 @@
 import { authHeader, compositeHeader } from './util.js';
-const url = "http://localhost:3001/api/experts";
+const url = "http://localhost:3000/api/experts";
 
 /** 
 * @throws {Error} if the data fails
@@ -105,8 +105,10 @@ async function getProduct(token,productId) {
     return data;
 }
 
-export const expertAPI = {
+ const expertAPI = {
     getTickets, getTicket, resolveTicket,
     closeTicket, sendMessage, getMessages,
     getProducts, getProduct
 }
+
+export default expertAPI;

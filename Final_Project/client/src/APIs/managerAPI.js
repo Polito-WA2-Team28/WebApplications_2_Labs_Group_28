@@ -1,5 +1,5 @@
 import { authHeader, compositeHeader } from "./util.js";
-const url = "http://localhost:3001/api/managers";
+const url = "http://localhost:3000/api/managers";
 
 /** 
 * @throws {Error} if the data fails
@@ -30,12 +30,10 @@ async function getTicket(token, ticketId) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function assignTicket(token, ticketId, ticketUpdateData) {
+async function assignTicket(token, ticketId, expertId) {
     const res = await fetch(url + "/tickets/" + ticketId + "/assign",
-        { method: "PATCH", headers: compositeHeader(token), body: JSON.stringify(ticketUpdateData) })
+        { method: "PATCH", headers: compositeHeader(token), body: JSON.stringify({expertId: expertId}) })
     if (!res.ok) throw res.statusText
-    const data = await res.json();
-    return data;
 }
 
 
@@ -47,8 +45,6 @@ async function relieveExpert(token, ticketId) {
     const res = await fetch(url + "/tickets/" + ticketId + "/relieveExpert",
         { method: "PATCH", headers: authHeader(token) })
     if (!res.ok) throw res.statusText
-    const data = await res.json();
-    return data;
 }
 
 /** 
@@ -128,16 +124,26 @@ async function getProducts(token) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function getProduct(productId) {
+async function getProduct(token, productId) {
     const res = await fetch(url + "/products/" + productId,
-        { method: "GET" })
+        { method: "GET", headers: authHeader(token) })
     if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
 
-export const managerAPI = {
+async function getExperts(token) {
+    const res = await fetch(url + "/experts", 
+        { method: "GET", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
+    const data = await res.json();
+    return data;
+}
+
+ const managerAPI = {
     getTickets, getTicket, assignTicket,
     relieveExpert, closeTicket, resumeProgress, removeTicket,
-    sendMessage, getMessages, getProducts, getProduct
+    sendMessage, getMessages, getProducts, getProduct,getExperts
 };
+
+export default managerAPI;

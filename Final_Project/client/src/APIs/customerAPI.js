@@ -1,6 +1,6 @@
 import { compositeHeader, authHeader } from "./util";
 
-const url = "http://localhost:3001/api/customers";
+const url = "http://localhost:3000/api/customers";
 
 /** 
 * @throws {Error} if the data fails
@@ -107,7 +107,7 @@ async function sendMessage(token, message, ticketId) {
 
     const res = await fetch(url + "/tickets/" + ticketId + "/messages",
         {
-            method: "POST", headers: {"Authorization": "Bearer " + token},
+            method: "POST", headers: { "Authorization": "Bearer " + token },
             body: formdata
         })
     if (!res.ok) throw res.statusText
@@ -134,7 +134,7 @@ async function getMessages(token, ticketId) {
 */
 async function getProducts(token) {
     const res = await fetch(url + "/products",
-        { method: "GET", headers: authHeader(token)})
+        { method: "GET", headers: authHeader(token) })
     if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
@@ -152,7 +152,9 @@ async function getProduct(token, productId) {
     return data;
 }
 
-export const customerAPI = {
+const customerAPI = {
     getProfile, createTicket, getTickets, getTicket, patchProfile,
     reopenTicket, compileSurvey, sendMessage, getMessages, getProducts, getProduct
 }
+
+export default customerAPI
