@@ -62,16 +62,13 @@ function App() {
   const getTicketByID = async (ticketId) => {
     switch (role) {
       case Roles.CUSTOMER:
-        return await customerAPI.getTicket(token, ticketId)
-          .then((ticket) => { return ticket })
+        return customerAPI.getTicket(token, ticketId)
           .catch((err) => errorToast(err));
       case Roles.EXPERT:
-        return await expertAPI.getTicket(token, ticketId)
-          .then((ticket) => { return ticket })
+        return expertAPI.getTicket(token, ticketId)
           .catch((err) => errorToast(err));
       case Roles.MANAGER:
-        return await managerAPI.getTicket(token, ticketId)
-          .then((ticket) => { return ticket })
+        return managerAPI.getTicket(token, ticketId)
           .catch((err) => errorToast(err));
       default:
         console.error("Error: No role found")
@@ -204,22 +201,17 @@ function App() {
   }
 
   const getMessages = async (ticketId) => {
+
     switch (role) {
       case Roles.CUSTOMER:
-        await customerAPI.getMessages(token, ticketId)
-          .then((messages) => { return messages })
+        return await customerAPI.getMessages(token, ticketId)
           .catch((err) => errorToast(err));
-        break;
       case Roles.EXPERT:
-        await expertAPI.getMessages(token, ticketId)
-          .then((messages) => { return messages })
+        return await expertAPI.getMessages(token, ticketId)
           .catch((err) => errorToast(err));
-        break;
       case Roles.MANAGER:
-        await managerAPI.getMessages(token, ticketId)
-          .then((messages) => { return messages })
+        return await managerAPI.getMessages(token, ticketId)
           .catch((err) => errorToast(err));
-        break;
       default:
         errorToast("You are not allowed to see messages")
     }

@@ -1,6 +1,6 @@
 import { Button, Card, Col, Row, Form, Modal } from 'react-bootstrap'
 import { useParams } from 'react-router-dom'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import '../styles/TicketPage.css'
 import { ActionContext, UserContext } from '../Context'
 import Roles from '../model/rolesEnum'
@@ -11,6 +11,7 @@ export default function TicketPage() {
   const [ticket, setTicket] = useState(null)
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
+  const [dirty, setDirty] = useState(false)
 
   const { sendMessage, getMessages, getTicketByID } = useContext(ActionContext)
   const { role, experts } = useContext(UserContext)
@@ -19,27 +20,46 @@ export default function TicketPage() {
     sendMessage(ticketId, newMessage)
       .then(() => {
         setNewMessage('')
-        getMessages(ticketId).then(
-          (messages) =>
-            messages &&
+        getMessages(ticketId).then((messages) => {
+          console.log(messages)
+          messages &&
             messages.content != null &&
-            setMessages(messages.content),
-        )
+            setMessages(
+              messages.content.sort((a, b) =>
+                a.timestamp.localeCompare(b.timestamp),
+              ),
+            )
+        })
       })
       .catch((error) => console.error(error))
   }
 
-  ticket == null &&
+  useEffect(() => {
+    
+      getTicketByID(ticketId).then((ticket) => {
+        setTicket(ticket)
+      })
+    
+      getMessages(ticketId).then((messages) => {
+        if (messages && messages.content != null)
+          setMessages(
+            messages.content.sort((a, b) =>
+              a.timestamp.localeCompare(b.timestamp),
+            ),
+          )
+      })
+    setDirty(false)
+  }, [ticket, dirty])
+
+  /* ticket == null &&
     getTicketByID(ticketId).then((ticket) => {
-      console.log(ticket)
       setTicket(ticket)
     })
 
   ticket != null &&
     getMessages(ticketId).then((messages) => {
-      console.log(messages)
       if (messages && messages.content != null) setMessages(messages.content)
-    })
+    }) */
 
   return (
     <>
@@ -65,11 +85,17 @@ export default function TicketPage() {
                 </Card.Text>
                 <Row>
                   {role === Roles.CUSTOMER && (
-                    <CustomerButton ticket={ticket} />
+                    <CustomerButton ticket={ticket} setDirty={setDirty} />
                   )}
-                  {role === Roles.EXPERT && <ExpertButton ticket={ticket} />}
+                  {role === Roles.EXPERT && (
+                    <ExpertButton ticket={ticket} setDirty={setDirty} />
+                  )}
                   {role === Roles.MANAGER && (
-                    <ManagerButton ticket={ticket} experts={experts} />
+                    <ManagerButton
+                      ticket={ticket}
+                      experts={experts}
+                      setDirty={setDirty}
+                    />
                   )}
                 </Row>
               </Col>
@@ -170,7 +196,7 @@ function CustomerButton(props) {
         <Button
           variant="primary"
           disabled={ticket.ticketState !== TicketState.CLOSED}
-          onClick={() => customerReopenTicket(ticket.ticketId)}
+          onClick={() => { customerReopenTicket(ticket.ticketId); props.setDirty(true)}}
         >
           Reopen Ticket
         </Button>
@@ -189,7 +215,7 @@ function ExpertButton(props) {
       <Button
         variant="primary"
         disabled={ticket.ticketState !== TicketState.IN_PROGRESS}
-        onClick={() => expertResolveTicket(ticket.ticketId)}
+        onClick={() => { expertResolveTicket(ticket.ticketId); props.setDirty(true)}}
       >
         Resolve Ticket
       </Button>
@@ -200,8 +226,6 @@ function ExpertButton(props) {
 function ManagerButton(props) {
   const ticket = props.ticket
   const experts = props.experts
-
-  console.log("experts",experts)
 
   const [show, setShow] = useState(false)
   const {
@@ -218,6 +242,7 @@ function ManagerButton(props) {
         show={show}
         handleClose={() => setShow(false)}
         handleAssign={managerAssignExpert}
+        setDirty = {props.setDirty}
       />
       <Col>
         <Button
@@ -229,7 +254,7 @@ function ManagerButton(props) {
               TicketState.REOPENED,
             ].includes(ticket.ticketState)
           }
-          onClick={() => managerHandleCloseTicket(ticket)}
+          onClick={() => { managerHandleCloseTicket(ticket); props.setDirty(true)}}
         >
           Close Ticket
         </Button>
@@ -249,7 +274,7 @@ function ManagerButton(props) {
         <Button
           variant="primary"
           disabled={ticket.ticketState !== TicketState.IN_PROGRESS}
-          onClick={() => managerRelieveExpert(ticket.ticketId)}
+          onClick={() => { managerRelieveExpert(ticket.ticketId);  props.setDirty(true)}}
         >
           Relieve expert
         </Button>
@@ -259,14 +284,15 @@ function ManagerButton(props) {
 }
 
 function AssignExpertModal(props) {
-
   const experts = props.experts
   const ticket = props.ticket
-  const [expert, setExpert] = useState(experts && experts.content && experts.content[0])
+  const [expert, setExpert] = useState(
+    experts && experts.content && experts.content[0],
+  )
 
   const assign = () => {
-    console.log('Assigning expert', expert)
     props.handleAssign(ticket.ticketId, expert.id)
+    props.setDirty(true)
     props.handleClose()
   }
 
@@ -283,11 +309,13 @@ function AssignExpertModal(props) {
               as="select"
               onSelect={(ev) => setExpert(ev.target.value)}
             >
-              {experts && experts.content && experts.content.map((expert, index) => 
+              {experts &&
+                experts.content &&
+                experts.content.map((expert, index) => (
                   <option key={index} value={expert}>
                     {expert.email}
                   </option>
-                )}
+                ))}
             </Form.Control>
           </Form.Group>
         </Form>

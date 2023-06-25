@@ -7,8 +7,8 @@ const url = "http://localhost:3000/api/experts";
 */
 async function getTickets(token) {
     const res = await fetch(url + "/tickets",
-        { method: "GET", headers: authHeader(token)})
-        if (!res.ok) throw res.statusText
+        { method: "GET", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -20,8 +20,8 @@ async function getTickets(token) {
 */
 async function getTicket(token, ticketId) {
     const res = await fetch(url + "/tickets/" + ticketId,
-        {method: "GET", headers:authHeader(token)})
-        if (!res.ok) throw res.statusText
+        { method: "GET", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
 
     const data = await res.json();
     return data;
@@ -33,11 +33,8 @@ async function getTicket(token, ticketId) {
 */
 async function resolveTicket(token, ticketId) {
     const res = await fetch(url + "/tickets/" + ticketId + "/resolve",
-        {method: "PATCH", headers:authHeader(token)})
-        if (!res.ok) throw res.statusText
-
-    const data = await res.json();
-    return data;
+        { method: "PATCH", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
 }
 
 
@@ -47,8 +44,8 @@ async function resolveTicket(token, ticketId) {
 */
 async function closeTicket(token, ticketId) {
     const res = await fetch(url + "/tickets/" + ticketId + "/close",
-        {method: "PATCH", headers:authHeader(token)})
-        if (!res.ok) throw res.statusText
+        { method: "PATCH", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
 
     const data = await res.json();
     return data;
@@ -59,10 +56,20 @@ async function closeTicket(token, ticketId) {
 * @throws {String} if the response is not ok
 */
 async function sendMessage(token, message, ticketId) {
-    const res = await fetch(url + "/tickets/" + ticketId + "/messages",
-        {method: "POST", headers: compositeHeader(token), body: JSON.stringify(message)})
-        if (!res.ok) throw res.statusText
 
+    const formdata = new FormData();
+    formdata.append("messageText", message);
+    //formdata.append("attachments", []);
+
+    console.log("message", message);
+
+    formdata.forEach((value, key) => console.log(key + " " + value));
+    const res = await fetch(url + "/tickets/" + ticketId + "/messages",
+        {
+            method: "POST", headers: { "Authorization": "Bearer " + token },
+            body: formdata
+        })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -74,8 +81,8 @@ async function sendMessage(token, message, ticketId) {
 */
 async function getMessages(token, ticketId) {
     const res = await fetch(url + "/tickets/" + ticketId + "/messages",
-        {method: "GET", headers:authHeader(token)})
-        if (!res.ok) throw res.statusText
+        { method: "GET", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
 
     const data = await res.json();
     return data;
@@ -87,8 +94,8 @@ async function getMessages(token, ticketId) {
 */
 async function getProducts(token) {
     const res = await fetch(url + "/products",
-        {method: "GET", headers:authHeader(token)})
-        if (!res.ok) throw res.statusText
+        { method: "GET", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
@@ -97,15 +104,15 @@ async function getProducts(token) {
 * @throws {Error} if the data fails
 * @throws {String} if the response is not ok
 */
-async function getProduct(token,productId) {
+async function getProduct(token, productId) {
     const res = await fetch(url + "/products/" + productId,
-        {method: "GET", headers:authHeader(token)})
-        if (!res.ok) throw res.statusText
+        { method: "GET", headers: authHeader(token) })
+    if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
 }
 
- const expertAPI = {
+const expertAPI = {
     getTickets, getTicket, resolveTicket,
     closeTicket, sendMessage, getMessages,
     getProducts, getProduct

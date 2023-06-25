@@ -76,8 +76,6 @@ async function reopenTicket(token, ticketId) {
     const res = await fetch(url + "/tickets/" + ticketId + "/reopen",
         { method: "PATCH", headers: authHeader(token) })
     if (!res.ok) throw res.statusText
-    const data = await res.json();
-    return data;
 }
 
 
