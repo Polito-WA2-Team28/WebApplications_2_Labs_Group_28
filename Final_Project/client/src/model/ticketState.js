@@ -1,7 +1,9 @@
-export const ticketState = {
-    OPEN: 0,
-    CLOSED: 1,
-    RESOLVED: 3,
-    IN_PROGRESS: 4,
-    REOPENED: 5
+const TicketState = {
+    OPEN: "OPEN",
+    CLOSED: "CLOSED",
+    RESOLVED: "RESOLVED",
+    IN_PROGRESS: "IN_PROGRESS",
+    REOPENED: "REOPENED"
 }
+
+export default TicketState;

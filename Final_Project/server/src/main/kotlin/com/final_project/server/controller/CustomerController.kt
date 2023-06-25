@@ -4,6 +4,7 @@ import com.final_project.security.config.SecurityConfig
 import com.final_project.server.dto.*
 import com.final_project.server.exception.Exception
 import com.final_project.server.service.CustomerServiceImpl
+import com.final_project.ticketing.util.Nexus
 import io.micrometer.observation.annotation.Observed
 import jakarta.validation.Valid
 import org.slf4j.*
@@ -15,29 +16,27 @@ import java.util.*
 
 @RestController
 @Observed
-class CustomerController @Autowired constructor(val profileService: CustomerServiceImpl,
-                                                val securityConfig: SecurityConfig) {
+class CustomerController @Autowired constructor(
+    val customerService: CustomerServiceImpl,
+    val securityConfig: SecurityConfig
+) {
 
     val logger: Logger = LoggerFactory.getLogger(CustomerController::class.java)
 
     @GetMapping("/api/customers/getProfile")
     @ResponseStatus(HttpStatus.OK)
     fun getCustomerById(): CustomerDTO? {
+
+        val nexus: Nexus = Nexus(customerService)
+
+        /* running checks... */
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
-        val profile = profileService.getCustomerById(customerId)
-        logger.info("Testing Login Endpoint Log")
+        nexus
+            .setEndpointForLogger("/api/customers/getProfile")
+            .assertCustomerExists(customerId)
 
-        if (profile != null)
-            return profile.toDTO()
-
-        else {
-            logger.error("Endpoint: /api/customers/getProfile Error: This profile couldn't be found")
-            throw Exception.ProfileNotFoundException("This profile couldn't be found")
-        }
-
+        return nexus.customer
     }
-
-
 
 
     /**
@@ -53,9 +52,9 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
     fun editProfile(
         @RequestBody @Valid profile: CustomerFormModification,
         br: BindingResult
-    ) {
+    ): CustomerDTO? {
 
-        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        val nexus: Nexus = Nexus(customerService)
 
         /* Checking errors */
         if (br.hasErrors()) {
@@ -63,15 +62,14 @@ class CustomerController @Autowired constructor(val profileService: CustomerServ
             logger.error("Endpoint: /api/customers/editProfile Error: Invalid fields: $invalidFields")
             throw Exception.ValidationException("", invalidFields)
         }
-        else if (profileService.getCustomerById(customerId) == null) {
-            logger.error("Endpoint: /api/customers/editProfile Error: This profile couldn't be found")
-            throw Exception.ProfileNotFoundException("This profile couldn't be found")
-        }
+
+        /* running checks... */
+        val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
+        nexus
+            .setEndpointForLogger("/api/customers/editProfile")
+            .assertCustomerExists(customerId)
 
         /* Updating... */
-        profileService.editProfile(customerId, profile)
-
+        return customerService.editProfile(customerId, profile)
     }
-
-
 }

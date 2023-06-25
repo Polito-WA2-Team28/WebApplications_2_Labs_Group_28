@@ -1,29 +1,25 @@
 package com.final_project.ticketing.service
 
-import com.final_project.server.config.GlobalConfig
-import com.final_project.server.model.Customer
-import com.final_project.server.model.Product
+import com.final_project.server.dto.CustomerDTO
+import com.final_project.server.dto.ProductDTO
+import com.final_project.server.model.toModel
 import com.final_project.server.service.FileStorageService
 import com.final_project.ticketing.dto.*
 import com.final_project.ticketing.model.Attachment
 import com.final_project.ticketing.model.Ticket
 import com.final_project.ticketing.model.toModel
-import com.final_project.ticketing.repository.AttachmentRepository
 import com.final_project.ticketing.repository.MessageRepository
 import com.final_project.ticketing.repository.TicketRepository
 import com.final_project.ticketing.util.TicketState
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import com.final_project.ticketing.dto.TicketCreationData
 import com.final_project.ticketing.dto.TicketDTO
 import com.final_project.ticketing.dto.toDTO
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.io.File
 import java.util.*
 
 
@@ -43,10 +39,12 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
         return ticketRepository.findByIdOrNull(id)
     }
 
-    @Transactional
-    override fun createTicket(ticket: TicketCreationData, customer: Customer, product: Product): TicketDTO? {
-        return ticketRepository.save(ticket.toModel(customer, product)).toDTO()
+    override fun createTicket(ticketDTO: TicketCreationData, customerDTO: CustomerDTO, productDTO: ProductDTO): TicketDTO? {
+        val customer = customerDTO.toModel()
+        val product = productDTO.toModel(customer)
+        return ticketRepository.save(ticketDTO.toModel(customer, product)).toDTO()
     }
+
 
     override fun getAllTickets(): List<TicketDTO> {
         return ticketRepository.findAll().map{it.toDTO()}
@@ -56,9 +54,16 @@ class TicketServiceImpl @Autowired constructor(private val ticketRepository: Tic
         return ticketRepository.findByExpertId(expertId).map{it.toDTO()}
     }
 
-    override fun changeTicketStatus(ticket: Ticket, newState: TicketState): TicketDTO {
-        ticket.state = newState
-        return ticketRepository.save(ticket).toDTO()
+    override fun changeTicketStatus(ticketId: Long, newState: TicketState) {
+        return ticketRepository.updateTicketState(ticketId, newState)
+    }
+
+    override fun assignTicketToExpert(ticketId: Long, expertId: UUID) {
+        return ticketRepository.assignTicketToExpert(ticketId, expertId)
+    }
+
+    override fun relieveExpertFromTicket(ticketId: Long) {
+        return ticketRepository.relieveExpertFromTicket(ticketId)
     }
 
     override fun removeTicketById(ticketId: Long): Unit {

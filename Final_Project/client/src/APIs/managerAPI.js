@@ -136,8 +136,10 @@ async function getProduct(productId) {
     return data;
 }
 
-export const managerAPI = {
+ const managerAPI = {
     getTickets, getTicket, assignTicket,
     relieveExpert, closeTicket, resumeProgress, removeTicket,
     sendMessage, getMessages, getProducts, getProduct
 };
+
+export default managerAPI;

@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faCalendar, faPhone, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 
-export function UserPage(props) {
+export default function UserPage(props) {
   const { user } = props;
   const navigate = useNavigate();
 

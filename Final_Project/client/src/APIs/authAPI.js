@@ -12,6 +12,7 @@ async function login(credentials) {
             headers: jsonHeader,
             body: JSON.stringify(credentials)
         })
+        .catch((err) => { throw Error("Server error") })
     if (!res.ok) throw res.statusText
     const data = await res.json();
     return data.accessToken;
@@ -28,6 +29,8 @@ async function register(profile) {
             headers: jsonHeader,
             body: JSON.stringify(profile)
         })
+        .catch((err) => { throw Error("Server error") })
+    
     if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;
@@ -44,6 +47,8 @@ async function editProfile(token, profile) {
             headers: compositeHeader(token),
             body: JSON.stringify(profile)
         })
+        .catch((err) => { throw Error("Server error") })
+    
     if (!res.ok) throw res.statusText
     const data = await res.json();
     return data;

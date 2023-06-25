@@ -1,9 +1,9 @@
 
 
-import { Row, Container } from "react-bootstrap";
-export function LandingPage(props) {
+import { Row } from "react-bootstrap";
+export default function LandingPage(props) {
 	return (
-		<Container className="text-center">
+		<div className="text-center">
 			<img
 				src="https://freepngimg.com/thumb/wrench/3-2-wrench-picture.png"
 				width="200px"
@@ -20,6 +20,6 @@ export function LandingPage(props) {
 					the technical support you need!
 				</span>
 			</Row>
-		</Container>
+		</div>
 	);
 }
