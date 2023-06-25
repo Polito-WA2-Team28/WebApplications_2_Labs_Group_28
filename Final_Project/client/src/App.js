@@ -28,8 +28,8 @@ function App() {
   const [tickets, setTickets] = useState([]);
   const [products, setProducts] = useState([]);
   const [role, setRole] = useState(null)
-  const [flag, setFlag] = useState(false)
   const [experts, setExperts] = useState(null)
+  const [dirty, setDirty] = useState(false)
 
 
   const handleLogin = async (credentials) => {
@@ -40,7 +40,6 @@ function App() {
         setRole(newRole)
         setToken(data);
         setLoggedIn(true);
-        setFlag(true)
         successToast("Logged in successfully")
       })
   };
@@ -103,13 +102,13 @@ function App() {
   const handleCreateTicket = async (ticket) => {
     await customerAPI.createTicket(token, ticket)
       .then(() => {
-        setFlag(true)
+        setDirty(true)
       })
   };
 
   const handleEditProfile = async (profile) => {
     await customerAPI.patchProfile(token, profile)
-      .then((user) => {
+      .then(() => {
         setUser(profile)
         successToast("Changes saved!")
       })
@@ -131,7 +130,7 @@ function App() {
     }
     if (role === Roles.CUSTOMER)
       checkAut();
-  }, [token, role])
+  }, [token, role, dirty])
 
   useEffect(() => {
     async function customerGetTickets() {
@@ -185,18 +184,22 @@ function App() {
       default:
         break;
     }
-    setFlag(false)
+    setDirty(false)
 
-  }, [loggedIn, token, role, flag])
+  }, [loggedIn, token, role, dirty])
 
   const customerCloseTicket = async (ticketId) => {
     await customerAPI.compileSurvey(token, ticketId)
-      .then(() => setTickets((prev) => prev.filter((ticket) => ticket.ticketId !== ticketId)))
+      .then(() => {
+        setTickets((prev) => prev.filter((ticket) => ticket.ticketId !== ticketId))
+        setDirty(true)
+      })
       .catch((err) => errorToast(err))
   }
 
   const customerReopenTicket = async (ticketId) => {
     await customerAPI.reopenTicket(token, ticketId)
+      .then(() => { setDirty(true) })
       .catch(err => errorToast(err))
   }
 
@@ -223,15 +226,16 @@ function App() {
   }
 
   const sendMessage = async (ticketId, message) => {
+    console.log("Sending message", ticketId, message)
     switch (role) {
       case Roles.CUSTOMER:
         await customerAPI.sendMessage(token, message, ticketId)
-          .then(() => setFlag(true))
+          .then(() => setDirty(true))
           .catch((err) => errorToast(err));
         break;
       case Roles.EXPERT:
         await expertAPI.sendMessage(token, message, ticketId)
-          .then(() => setFlag(true))
+          .then(() => setDirty(true))
           .catch((err) => errorToast(err));
         break;
       default:
@@ -243,6 +247,7 @@ function App() {
   const managerAssignExpert = async (ticketId, expertId) => {
     console.log("Assigning expert", ticketId, expertId)
     await managerAPI.assignTicket(token, ticketId, expertId)
+      .then(() => setDirty(true))
       .catch((err) => errorToast(err));
   }
 
@@ -250,15 +255,15 @@ function App() {
     switch (ticket.ticketState) {
       case TicketState.OPEN:
         managerAPI.closeTicket(token, ticket.ticketId)
-          .then(() => console.log('Manager close open ticket'))
+          .then(() => setDirty(true))
         break
       case TicketState.IN_PROGRESS:
         managerAPI.closeTicket(token, ticket.ticketId)
-          .then(() => console.log('Manager close in progress ticket'))
+          .then(() => setDirty(true))
         break
       case TicketState.REOPENED:
         managerAPI.closeTicket(token, ticket.ticketId)
-          .then(() => console.log('Manager close reopened ticket'))
+          .then(() => setDirty(true))
         break
       default:
         console.error('Invalid ticket state')
@@ -268,11 +273,13 @@ function App() {
 
   const managerRelieveExpert = async (ticketId) => {
     await managerAPI.relieveExpert(token, ticketId)
+      .then(() => setDirty(true))
       .catch((err) => errorToast(err));
   }
 
   const expertResolveTicket = async (ticketId) => {
     await expertAPI.resolveTicket(token, ticketId)
+      .then(() => setDirty(true))
       .catch((err) => errorToast(err));
   }
 
