@@ -1,4 +1,4 @@
-import { Button, Card, Col, Row, Form } from 'react-bootstrap'
+import { Button, Card, Col, Row, Form, Modal } from 'react-bootstrap'
 import { useParams } from 'react-router-dom'
 import { useContext, useState } from 'react'
 import '../styles/TicketPage.css'
@@ -13,16 +13,17 @@ export default function TicketPage() {
   const [newMessage, setNewMessage] = useState('')
 
   const { sendMessage, getMessages, getTicketByID } = useContext(ActionContext)
-  const { role } = useContext(UserContext)
+  const { role, experts } = useContext(UserContext)
 
-  
   const sendNewMessage = () => {
     sendMessage(ticketId, newMessage)
       .then(() => {
         setNewMessage('')
         getMessages(ticketId).then(
-          messages =>
-          messages && messages.content != null && setMessages(messages.content),
+          (messages) =>
+            messages &&
+            messages.content != null &&
+            setMessages(messages.content),
         )
       })
       .catch((error) => console.error(error))
@@ -67,7 +68,9 @@ export default function TicketPage() {
                     <CustomerButton ticket={ticket} />
                   )}
                   {role === Roles.EXPERT && <ExpertButton ticket={ticket} />}
-                  {role === Roles.MANAGER && <ManagerButton ticket={ticket} />}
+                  {role === Roles.MANAGER && (
+                    <ManagerButton ticket={ticket} experts={experts} />
+                  )}
                 </Row>
               </Col>
               <Col style={{ position: 'relative' }}>
@@ -91,8 +94,8 @@ export default function TicketPage() {
                 ) : (
                   <Card.Text>No messages yet</Card.Text>
                 )}
-                  {(role === Roles.CUSTOMER || role === Roles.EXPERT) &&
-                    (<Row
+                {(role === Roles.CUSTOMER || role === Roles.EXPERT) && (
+                  <Row
                     style={{
                       position: 'absolute',
                       bottom: '20px',
@@ -113,7 +116,8 @@ export default function TicketPage() {
                     <Col>
                       <Button onClick={sendNewMessage}>Send</Button>
                     </Col>
-                  </Row>)}
+                  </Row>
+                )}
               </Col>
             </Row>
           </Card.Body>
@@ -125,6 +129,8 @@ export default function TicketPage() {
 
 function CustomerButton(props) {
   const ticket = props.ticket
+
+  const { customerReopenTicket } = useContext(ActionContext)
 
   const handleClose = () => {
     switch (ticket.ticketState) {
@@ -142,29 +148,33 @@ function CustomerButton(props) {
     }
   }
 
-  const handleReopen = () => {
-    console.log('Customer reopen ticket')
-  }
-
-
   return (
     <>
-      <Col><Button
-        variant="primary"
-        disabled={![TicketState.OPEN, TicketState.REOPENED, TicketState.RESOLVED ].includes(ticket.ticketState) }
-        onClick={handleClose}
-      >
-        Close Ticket
-      </Button></Col>
+      <Col>
+        <Button
+          variant="primary"
+          disabled={
+            ![
+              TicketState.OPEN,
+              TicketState.REOPENED,
+              TicketState.RESOLVED,
+            ].includes(ticket.ticketState)
+          }
+          onClick={handleClose}
+        >
+          Close Ticket
+        </Button>
+      </Col>
 
-
-      <Col><Button
-        variant="primary"
-        disabled={ticket.ticketState !== TicketState.CLOSED}
-        onClick={handleReopen}
-      >
-        Reopen Ticket
-      </Button></Col>
+      <Col>
+        <Button
+          variant="primary"
+          disabled={ticket.ticketState !== TicketState.CLOSED}
+          onClick={() => customerReopenTicket(ticket.ticketId)}
+        >
+          Reopen Ticket
+        </Button>
+      </Col>
     </>
   )
 }
@@ -172,69 +182,124 @@ function CustomerButton(props) {
 function ExpertButton(props) {
   const ticket = props.ticket
 
+  const { expertResolveTicket } = useContext(ActionContext)
+
   return (
-      <Col><Button
+    <Col>
+      <Button
         variant="primary"
         disabled={ticket.ticketState !== TicketState.IN_PROGRESS}
-        onClick={() => console.log('Expert resolve ticket')}
+        onClick={() => expertResolveTicket(ticket.ticketId)}
       >
         Resolve Ticket
-      </Button></Col>
+      </Button>
+    </Col>
   )
 }
 
 function ManagerButton(props) {
   const ticket = props.ticket
+  const experts = props.experts
 
-  const handleClose = () => {
-    switch (ticket.ticketState) {
-      case TicketState.OPEN:
-        console.log('Manager close open ticket')
-        break
-      case TicketState.IN_PROGRESS:
-        console.log('Manager close in progress ticket')
-        break
-      case TicketState.REOPENED:
-        console.log('Manager close reopened ticket')
-        break
-      default:
-        console.error('Invalid ticket state')
-    }
-  }
+  console.log("experts",experts)
 
-  const handleAssign = () => {
-    console.log('Manager assign ticket')
-  }
-
-  const handleRelieve = () => {
-    console.log('Manager relieve expert')
-  }
+  const [show, setShow] = useState(false)
+  const {
+    managerHandleCloseTicket,
+    managerAssignExpert,
+    managerRelieveExpert,
+  } = useContext(ActionContext)
 
   return (
     <>
-      <Col><Button
-        variant="primary"
-        disabled={ticket.ticketState !== TicketState.OPEN}
-        onClick={handleClose}
-      >
-        Close Ticket
-      </Button></Col>
+      <AssignExpertModal
+        ticket={ticket}
+        experts={experts}
+        show={show}
+        handleClose={() => setShow(false)}
+        handleAssign={managerAssignExpert}
+      />
+      <Col>
+        <Button
+          variant="primary"
+          disabled={
+            ![
+              TicketState.OPEN,
+              TicketState.IN_PROGRESS,
+              TicketState.REOPENED,
+            ].includes(ticket.ticketState)
+          }
+          onClick={() => managerHandleCloseTicket(ticket)}
+        >
+          Close Ticket
+        </Button>
+      </Col>
 
-     <Col><Button
-        variant="primary"
-        disabled={ticket.ticketState !== TicketState.OPEN}
-        onClick={handleAssign}
-      >
-        Assign Ticket
-      </Button></Col> 
+      <Col>
+        <Button
+          variant="primary"
+          disabled={ticket.ticketState !== TicketState.OPEN}
+          onClick={() => setShow(true)}
+        >
+          Assign Ticket
+        </Button>
+      </Col>
 
-      <Col><Button
-        variant="primary"
-        disabled={ticket.ticketState !== TicketState.IN_PROGRESS}
-        onClick={handleRelieve}
-      >
-        Relieve expert
-      </Button></Col> 
+      <Col>
+        <Button
+          variant="primary"
+          disabled={ticket.ticketState !== TicketState.IN_PROGRESS}
+          onClick={() => managerRelieveExpert(ticket.ticketId)}
+        >
+          Relieve expert
+        </Button>
+      </Col>
     </>
+  )
+}
+
+function AssignExpertModal(props) {
+
+  const experts = props.experts
+  const ticket = props.ticket
+  const [expert, setExpert] = useState(experts && experts.content && experts.content[0])
+
+  const assign = () => {
+    console.log('Assigning expert', expert)
+    props.handleAssign(ticket.ticketId, expert.id)
+    props.handleClose()
+  }
+
+  return (
+    <Modal show={props.show} onHide={props.handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Assign Expert</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <Form.Group controlId="exampleForm.ControlSelect1">
+            <Form.Label>Expert</Form.Label>
+            <Form.Control
+              as="select"
+              onSelect={(ev) => setExpert(ev.target.value)}
+            >
+              {experts && experts.content && experts.content.map((expert, index) => 
+                  <option key={index} value={expert}>
+                    {expert.email}
+                  </option>
+                )}
+            </Form.Control>
+          </Form.Group>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={props.handleClose}>
+          Cancel
+        </Button>
+        <Button variant="primary" onClick={assign}>
+          Assign
+        </Button>
+      </Modal.Footer>
+    </Modal>
   )
 }

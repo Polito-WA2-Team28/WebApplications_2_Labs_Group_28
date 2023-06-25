@@ -1,6 +1,6 @@
 import { compositeHeader, authHeader } from "./util";
 
-const url = "http://localhost:3001/api/customers";
+const url = "http://localhost:3000/api/customers";
 
 /** 
 * @throws {Error} if the data fails
