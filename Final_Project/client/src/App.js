@@ -18,7 +18,7 @@ import Roles from './model/rolesEnum';
 import { successToast, errorToast } from './components/toastHandler';
 import EditUserPage from './pages/editUserPage';
 import { ActionContext, UserContext } from './Context';
-import TicketState from './model/TicketState';
+import TicketState from './model/ticketState';
 
 function App() {
 
@@ -28,8 +28,8 @@ function App() {
   const [tickets, setTickets] = useState([]);
   const [products, setProducts] = useState([]);
   const [role, setRole] = useState(null)
-  const [flag, setFlag] = useState(false)
   const [experts, setExperts] = useState(null)
+  const [dirty, setDirty] = useState(false)
 
 
   const handleLogin = async (credentials) => {
@@ -40,7 +40,6 @@ function App() {
         setRole(newRole)
         setToken(data);
         setLoggedIn(true);
-        setFlag(true)
         successToast("Logged in successfully")
       })
   };
@@ -63,16 +62,13 @@ function App() {
   const getTicketByID = async (ticketId) => {
     switch (role) {
       case Roles.CUSTOMER:
-        return await customerAPI.getTicket(token, ticketId)
-          .then((ticket) => { return ticket })
+        return customerAPI.getTicket(token, ticketId)
           .catch((err) => errorToast(err));
       case Roles.EXPERT:
-        return await expertAPI.getTicket(token, ticketId)
-          .then((ticket) => { return ticket })
+        return expertAPI.getTicket(token, ticketId)
           .catch((err) => errorToast(err));
       case Roles.MANAGER:
-        return await managerAPI.getTicket(token, ticketId)
-          .then((ticket) => { return ticket })
+        return managerAPI.getTicket(token, ticketId)
           .catch((err) => errorToast(err));
       default:
         console.error("Error: No role found")
@@ -103,13 +99,13 @@ function App() {
   const handleCreateTicket = async (ticket) => {
     await customerAPI.createTicket(token, ticket)
       .then(() => {
-        setFlag(true)
+        setDirty(true)
       })
   };
 
   const handleEditProfile = async (profile) => {
     await customerAPI.patchProfile(token, profile)
-      .then((user) => {
+      .then(() => {
         setUser(profile)
         successToast("Changes saved!")
       })
@@ -131,7 +127,7 @@ function App() {
     }
     if (role === Roles.CUSTOMER)
       checkAut();
-  }, [token, role])
+  }, [token, role, dirty])
 
   useEffect(() => {
     async function customerGetTickets() {
@@ -185,53 +181,53 @@ function App() {
       default:
         break;
     }
-    setFlag(false)
+    setDirty(false)
 
-  }, [loggedIn, token, role, flag])
+  }, [loggedIn, token, role, dirty])
 
   const customerCloseTicket = async (ticketId) => {
     await customerAPI.compileSurvey(token, ticketId)
-      .then(() => setTickets((prev) => prev.filter((ticket) => ticket.ticketId !== ticketId)))
+      .then(() => {
+        setTickets((prev) => prev.filter((ticket) => ticket.ticketId !== ticketId))
+        setDirty(true)
+      })
       .catch((err) => errorToast(err))
   }
 
   const customerReopenTicket = async (ticketId) => {
     await customerAPI.reopenTicket(token, ticketId)
+      .then(() => { setDirty(true) })
       .catch(err => errorToast(err))
   }
 
   const getMessages = async (ticketId) => {
+
     switch (role) {
       case Roles.CUSTOMER:
-        await customerAPI.getMessages(token, ticketId)
-          .then((messages) => { return messages })
+        return await customerAPI.getMessages(token, ticketId)
           .catch((err) => errorToast(err));
-        break;
       case Roles.EXPERT:
-        await expertAPI.getMessages(token, ticketId)
-          .then((messages) => { return messages })
+        return await expertAPI.getMessages(token, ticketId)
           .catch((err) => errorToast(err));
-        break;
       case Roles.MANAGER:
-        await managerAPI.getMessages(token, ticketId)
-          .then((messages) => { return messages })
+        return await managerAPI.getMessages(token, ticketId)
           .catch((err) => errorToast(err));
-        break;
       default:
         errorToast("You are not allowed to see messages")
     }
   }
 
   const sendMessage = async (ticketId, message) => {
+    console.log("Sending message", ticketId, message)
     switch (role) {
       case Roles.CUSTOMER:
         await customerAPI.sendMessage(token, message, ticketId)
-          .then(() => setFlag(true))
+          .then(() => setDirty(true))
           .catch((err) => errorToast(err));
         break;
       case Roles.EXPERT:
         await expertAPI.sendMessage(token, message, ticketId)
-          .then(() => setFlag(true))
+          .then(() => setDirty(true))
           .catch((err) => errorToast(err));
         break;
       default:
@@ -243,6 +239,7 @@ function App() {
   const managerAssignExpert = async (ticketId, expertId) => {
     console.log("Assigning expert", ticketId, expertId)
     await managerAPI.assignTicket(token, ticketId, expertId)
+      .then(() => setDirty(true))
       .catch((err) => errorToast(err));
   }
 
@@ -250,15 +247,15 @@ function App() {
     switch (ticket.ticketState) {
       case TicketState.OPEN:
         managerAPI.closeTicket(token, ticket.ticketId)
-          .then(() => console.log('Manager close open ticket'))
+          .then(() => setDirty(true))
         break
       case TicketState.IN_PROGRESS:
         managerAPI.closeTicket(token, ticket.ticketId)
-          .then(() => console.log('Manager close in progress ticket'))
+          .then(() => setDirty(true))
         break
       case TicketState.REOPENED:
         managerAPI.closeTicket(token, ticket.ticketId)
-          .then(() => console.log('Manager close reopened ticket'))
+          .then(() => setDirty(true))
         break
       default:
         console.error('Invalid ticket state')
@@ -268,11 +265,13 @@ function App() {
 
   const managerRelieveExpert = async (ticketId) => {
     await managerAPI.relieveExpert(token, ticketId)
+      .then(() => setDirty(true))
       .catch((err) => errorToast(err));
   }
 
   const expertResolveTicket = async (ticketId) => {
     await expertAPI.resolveTicket(token, ticketId)
+      .then(() => setDirty(true))
       .catch((err) => errorToast(err));
   }
 
@@ -314,8 +313,8 @@ function App() {
             <Route path="/register" element={loggedIn ? <Navigate to={"/dashboard"} /> : <RegisterPage />} />
             <Route path="/login" element={loggedIn ? <Navigate to={"/dashboard"} /> : <LoginPage />} />
             <Route path="/dashboard" element={loggedIn ? <Dashboard /> : <Navigate to={"/"} />} />
-            <Route path="/user" element={loggedIn ? <UserPage /> : <Navigate to={"/"} />} />
-            <Route path="/editUser" element={loggedIn ? <EditUserPage /> : <Navigate to={"/"} />} />
+            <Route path="/user" element={loggedIn ? <UserPage user={user} /> : <Navigate to={"/"} />} />
+            <Route path="/editUser" element={loggedIn ? <EditUserPage user={user} handleEdit={handleEditProfile} /> : <Navigate to={"/"} />} />
             <Route path="/ticket/:ticketId" element={loggedIn ? <TicketPage /> : <Navigate to={"/"} />} />
             <Route path="/product/:productId" element={loggedIn ? <ProductPage /> : <Navigate to={"/"} />} />
 

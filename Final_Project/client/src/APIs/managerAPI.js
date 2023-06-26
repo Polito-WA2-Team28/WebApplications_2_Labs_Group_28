@@ -55,8 +55,6 @@ async function closeTicket(token, ticketId) {
     const res = await fetch(url + "/tickets/" + ticketId + "/close",
         { method: "PATCH", headers: authHeader(token) })
     if (!res.ok) throw res.statusText
-    const data = await res.json();
-    return data;
 }
 
 /** 
@@ -67,8 +65,6 @@ async function resumeProgress(token, ticketId, ticketUpdateData) {
     const res = await fetch(url + "/tickets/" + ticketId + "/resumeProgress",
         { method: "PATCH", headers: authHeader(token) })
     if (!res.ok) throw res.statusText
-    const data = await res.json();
-    return data;
 }
 
 /** 
@@ -79,8 +75,6 @@ async function removeTicket(token, ticketId) {
     const res = await fetch(url + "/tickets/" + ticketId + "/remove",
         { method: "DELETE", headers: authHeader(token) })
     if (!res.ok) throw res.statusText
-    const data = await res.json();
-    return data;
 }
 
 /** 
