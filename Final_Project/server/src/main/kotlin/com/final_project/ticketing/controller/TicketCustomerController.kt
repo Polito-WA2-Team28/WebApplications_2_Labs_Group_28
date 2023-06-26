@@ -161,7 +161,7 @@ class TicketCustomerController @Autowired constructor(
 
         /* running checks... */
         val customerId = UUID.fromString(securityConfig.retrieveUserClaim(SecurityConfig.ClaimType.SUB))
-        val allowedStates = mutableSetOf(TicketState.OPEN, TicketState.IN_PROGRESS, TicketState.RESOLVED)
+        val allowedStates = mutableSetOf(TicketState.OPEN, TicketState.REOPENED, TicketState.IN_PROGRESS, TicketState.RESOLVED)
         nexus
             .setEndpointForLogger("/api/customers/tickets/$ticketId/messages")
             .assertCustomerExists(customerId)
