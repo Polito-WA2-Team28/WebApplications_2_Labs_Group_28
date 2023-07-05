@@ -7,8 +7,6 @@ import com.final_project.server.service.ExpertService
 import com.final_project.server.service.ManagerService
 import com.final_project.ticketing.dto.*
 import com.final_project.ticketing.dto.PageResponseDTO.Companion.toDTO
-import com.final_project.ticketing.exception.TicketException
-import com.final_project.ticketing.model.Ticket
 import com.final_project.ticketing.service.TicketService
 import com.final_project.ticketing.util.Nexus
 import com.final_project.ticketing.util.TicketState

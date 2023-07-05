@@ -1,15 +1,11 @@
 package com.final_project.ticketing.controller
 
 import com.final_project.security.config.SecurityConfig
-import com.final_project.server.controller.CustomerProductController
-import com.final_project.server.exception.Exception
 import com.final_project.server.model.*
 import com.final_project.server.service.*
 import com.final_project.ticketing.dto.*
-import com.final_project.ticketing.exception.TicketException
 import com.final_project.ticketing.service.TicketService
 import com.final_project.ticketing.util.TicketState
-import com.final_project.server.controller.StaffController
 import com.final_project.ticketing.dto.PageResponseDTO.Companion.toDTO
 import com.final_project.ticketing.util.Nexus
 import io.micrometer.observation.annotation.Observed
@@ -22,7 +18,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
 import java.util.*
 
 @RestController

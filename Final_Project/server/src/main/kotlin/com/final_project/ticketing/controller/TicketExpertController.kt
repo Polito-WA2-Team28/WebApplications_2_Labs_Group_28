@@ -8,10 +8,8 @@ import com.final_project.ticketing.service.TicketService
 import com.final_project.ticketing.util.TicketState
 
 
-import com.final_project.server.model.Expert
 import com.final_project.ticketing.dto.*
 import com.final_project.ticketing.dto.PageResponseDTO.Companion.toDTO
-import com.final_project.ticketing.model.Ticket
 import com.final_project.ticketing.util.Nexus
 import io.micrometer.observation.annotation.Observed
 import org.slf4j.Logger
